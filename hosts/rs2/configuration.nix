@@ -21,7 +21,6 @@
     '';
   };
   networking.useDHCP = false;
-  networking.interfaces.enp8s0f4u1u4.useDHCP = true;
    environment.systemPackages = with pkgs; [
      vim 
      wget

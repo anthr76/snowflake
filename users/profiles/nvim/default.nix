@@ -3,6 +3,7 @@
 
   programs.neovim = {
     enable = true;
+    vimAlias = true;
     extraConfig = /* vim */ ''
       "Use truecolor
       set termguicolors
