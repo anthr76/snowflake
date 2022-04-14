@@ -119,7 +119,8 @@
                yubikey 
                ssh 
                misc.gnupg
-               graphical.sway 
+               graphical.greetd
+               graphical.sway
                users.anthonyjrabbito
                users.root 
               ];

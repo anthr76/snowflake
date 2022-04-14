@@ -20,6 +20,7 @@ in {
     extraPackages = with pkgs;
       options.programs.sway.extraPackages.default ++ [
         wofi
+        mako
         firefox-wayland
         pinentry
         qt5.qtwayland
@@ -27,7 +28,7 @@ in {
         wl-clipboard
         grim
         slurp
-	waybar
+	      waybar
       ];
   };
 
@@ -49,5 +50,36 @@ in {
     after = [ "graphical-session-pre.target" ];
     requiredBy = [ "graphical-session.target" "graphical-session-pre.target" ];
   };
+  systemd.user.services.mako = {
+    enable = true;
+    description = "Lightweight Wayland notification daemon";
+    documentation = [ "man:mako(1)" ];
+    wantedBy = [ "sway-session.target" ];
+    partOf = [ "sway-session.target" ];
+    after = ["sway-session.target"];
+    serviceConfig = {
+      Type = "dbus";
+      BusName = "org.freedesktop.Notifications";
+      ExecStart = "${pkgs.mako}/bin/mako";
+      ExecReload = "${pkgs.mako}/bin/makoctl reload";
+    };
+  };
+  fonts = {
+    enableDefaultFonts = true;
+    fonts = with pkgs; [ 
+      pkgs.nerdfonts
+      pkgs.fira-code
+      pkgs.fira-code-symbols
+      pkgs.fira
+    ];
+  
+    fontconfig = {
+      defaultFonts = {
+        monospace = [ "Fira Code Nerd Font" ];
+        serif = ["Fira Sans"];
+      };
+    };
+  };
 
 }
+
