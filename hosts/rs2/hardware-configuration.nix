@@ -14,40 +14,40 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/57436643-9a0e-4909-83d6-4dcc61d44f17";
+    { device = "/dev/mapper/enc";
       fsType = "btrfs";
       options = [ "subvol=root" "compress=zstd" "noatime" ];
     };
 
-  boot.initrd.luks.devices."enc".device = "/dev/disk/by-uuid/321dcd2b-2b9c-4ecf-b738-f7c92e66239a";
+  boot.initrd.luks.devices."enc".device = "/dev/nvme0n1p2";
 
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/57436643-9a0e-4909-83d6-4dcc61d44f17";
+    { device = "/dev/mapper/enc";
       fsType = "btrfs";
       options = [ "subvol=home" "compress=zstd" "noatime" ];
     };
 
   fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/57436643-9a0e-4909-83d6-4dcc61d44f17";
+    { device = "/dev/mapper/enc";
       fsType = "btrfs";
       options = [ "subvol=nix" "compress=zstd" "noatime" ];
     };
 
   fileSystems."/persist" =
-    { device = "/dev/disk/by-uuid/57436643-9a0e-4909-83d6-4dcc61d44f17";
+    { device = "/dev/mapper/enc";
       fsType = "btrfs";
       options = [ "subvol=persist" "compress=zstd" "noatime"];
     };
 
   fileSystems."/var/log" =
-    { device = "/dev/disk/by-uuid/57436643-9a0e-4909-83d6-4dcc61d44f17";
+    { device = "/dev/mapper/enc";
       fsType = "btrfs";
       options = [ "subvol=log" "compress=zstd" "noatime"];
       neededForBoot = true;
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/EC71-6F3B";
+    { device = "/dev/nvme0n1p1";
       fsType = "vfat";
     };
 

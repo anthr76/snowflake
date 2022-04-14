@@ -7,6 +7,6 @@
     description = "default";
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager"];
-    password = "password";
   };
 }
+

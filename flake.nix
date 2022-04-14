@@ -134,7 +134,8 @@
             profiles = digga.lib.rakeLeaves ./users/profiles;
             suites = with profiles; rec {
               base = [ 
-                fish 
+                fish
+                nvim
                 git
               ];
             };
