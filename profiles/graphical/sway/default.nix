@@ -20,6 +20,7 @@ in {
     extraPackages = with pkgs;
       options.programs.sway.extraPackages.default ++ [
         wofi
+        brightnessctl
         mako
         firefox-wayland
         pinentry
