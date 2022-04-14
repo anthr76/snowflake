@@ -1,0 +1,8 @@
+keys:
+  - &rs2 age1m4xc52pz2l2jpdqr5nslyj63aq90t62ywyv8te56wf7c2u7y3shs0avjud
+  - &personal_yubi 16742B67E1D1403F8E9F9C257B5EDD176B969A31
+creation_rules:
+  - path_regex: secrets/[^/]+\.yaml$
+    key_groups:
+      - age:
+         - *rs2

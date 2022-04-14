@@ -1,0 +1,7 @@
+# nvfetcher.toml
+[manix]
+src.git = "https://github.com/mlvzk/manix"
+fetch.github = "mlvzk/manix"
+[asusctl]
+src.git = "https://gitlab.com/asus-linux/asusctl.git"
+fetch.gitlab = "asus-linux/asusctl"
