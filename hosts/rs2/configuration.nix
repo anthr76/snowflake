@@ -21,6 +21,7 @@
     '';
   };
   networking.useDHCP = false;
+  services.asusd.enable = true;
    environment.systemPackages = with pkgs; [
      vim 
      wget
@@ -31,9 +32,9 @@
      pcsctools
      sops
      age
-     # asusctl
+     asusctl
    ];
-  system.stateVersion = "21.11"; 
+   system.stateVersion = "21.11"; 
   users.users.temp = {
     group = "wheel";
     isNormalUser = true;

@@ -4,7 +4,6 @@ let
   inherit (builtins) readFile;
 
 in {
-  sound.enable = true;
   programs.sway = {
     enable = true;
 
@@ -20,6 +19,7 @@ in {
     extraPackages = with pkgs;
       options.programs.sway.extraPackages.default ++ [
         wofi
+        gnome.adwaita-icon-theme
         brightnessctl
         mako
         firefox-wayland

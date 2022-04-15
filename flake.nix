@@ -106,7 +106,11 @@
           hosts = {
             rs2 = { 
               channelName = "nixos";
-              modules = [ nixos-hardware.nixosModules.common-pc-laptop nixos-hardware.nixosModules.common-cpu-amd nixos-hardware.nixosModules.common-gpu-amd ];
+              modules = [ 
+                nixos-hardware.nixosModules.common-pc-laptop 
+                nixos-hardware.nixosModules.common-cpu-amd 
+                nixos-hardware.nixosModules.common-gpu-amd 
+              ];
             };
           };
           importables = rec {
@@ -121,6 +125,8 @@
                misc.gnupg
                graphical.greetd
                graphical.sway
+               graphical.chromium
+               graphical.audio
                users.anthonyjrabbito
                users.root 
               ];
@@ -135,8 +141,10 @@
             profiles = digga.lib.rakeLeaves ./users/profiles;
             suites = with profiles; rec {
               base = [ 
+                alacritty
                 fish
                 nvim
+                starship
                 git
               ];
             };
