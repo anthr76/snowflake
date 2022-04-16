@@ -8,7 +8,7 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "sd_mod" "sdhci_pci" ];
+  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
@@ -19,7 +19,7 @@
       options = [ "subvol=root" "compress=zstd" "noatime" ];
     };
 
-  boot.initrd.luks.devices."enc".device = "/dev/nvme0n1p2";
+  boot.initrd.luks.devices."enc".device = "/dev/nvme0n1p3";
 
   fileSystems."/home" =
     { device = "/dev/mapper/enc";
@@ -51,7 +51,9 @@
       fsType = "vfat";
     };
 
-  swapDevices = [ ];
+    swapDevices = 
+    [ { device = "/dev/nvme0n1p2"; }
+    ];
 
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

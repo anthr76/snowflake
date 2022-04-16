@@ -13,6 +13,7 @@ channels: final: prev: {
     signal-desktop
     starship
     deploy-rs
+    sway-launcher-desktop
     ;
 
   haskellPackages = prev.haskellPackages.override

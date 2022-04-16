@@ -29,7 +29,8 @@ in {
         wl-clipboard
         grim
         slurp
-	      waybar
+        waybar
+        sway-launcher-desktop
       ];
   };
 
