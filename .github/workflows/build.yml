@@ -15,11 +15,11 @@ jobs:
       - name: "Install Nix ❄️"
         uses: cachix/install-nix-action@v17
 
-      - name: "Install Cachix ❄️"
-        uses: cachix/cachix-action@v10
-        with:
-          name: snowflake
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+#      - name: "Install Cachix ❄️"
+#        uses: cachix/cachix-action@v10
+#        with:
+#          name: snowflake
+#          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       - name: "Build NixOS config ❄️"
         run: |
@@ -27,6 +27,5 @@ jobs:
           # If I end up continue using this the pattern should be re-worked.
           # It's hardcore tech debt that will likely bite me soon :)
           sed -i '/work/d' flake.nix
-          rm flake.lock
           # End glue
           nix build .#nixosConfigurations.rs2.system.build.toplevel

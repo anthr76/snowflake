@@ -129,7 +129,6 @@
                core
                yubikey 
                ssh 
-               misc.gnupg
                graphical.greetd
                graphical.sway
                graphical.chromium
