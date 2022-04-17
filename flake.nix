@@ -152,6 +152,7 @@
                 fish
                 lsd
                 nvim
+                gnupg
                 direnv
                 starship
                 git-work

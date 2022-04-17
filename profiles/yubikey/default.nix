@@ -14,7 +14,7 @@
       ;
   };
 in {
-  imports = with profiles; [ssh misc.gnupg];
+  imports = with profiles; [ ssh ];
   services.udev.packages = yubicoPackages;
   environment.systemPackages = yubicoPackages;
   services.yubikey-agent.enable = true;
