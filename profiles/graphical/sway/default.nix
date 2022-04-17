@@ -19,6 +19,7 @@ in {
     extraPackages = with pkgs;
       options.programs.sway.extraPackages.default ++ [
         wofi
+        xdg-utils
         gnome.adwaita-icon-theme
         brightnessctl
         mako
@@ -31,6 +32,7 @@ in {
         slurp
         waybar
         sway-launcher-desktop
+        thunderbird
       ];
   };
 
@@ -39,6 +41,11 @@ in {
       ${readFile ./config}
     '';
     "xdg/waybar".source = ./waybar;
+  };
+  xdg.portal = {
+    enable = true;
+    gtkUsePortal = true;
+    wlr.enable = true;
   };
 
 

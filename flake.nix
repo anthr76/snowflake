@@ -42,6 +42,8 @@
       nixos-hardware.url = "github:nixos/nixos-hardware";
 
       nixos-generators.url = "github:nix-community/nixos-generators";
+
+      work.url = "path:/home/anthonyjrabbito/dev/work-flake";
     };
 
   outputs =
@@ -51,6 +53,7 @@
     , nixos
     , home
     , nixos-hardware
+    , work
     , nur
     , agenix
     , nvfetcher
@@ -110,6 +113,8 @@
                 nixos-hardware.nixosModules.common-pc-laptop 
                 nixos-hardware.nixosModules.common-cpu-amd 
                 nixos-hardware.nixosModules.common-gpu-amd 
+                work.nixosModules.vpn
+                work.nixosModules.private-ca
               ];
             };
           };
@@ -119,7 +124,7 @@
             };
             suites = with profiles; rec {
               base = [ 
-               cachix 
+               core
                yubikey 
                ssh 
                misc.gnupg
@@ -143,9 +148,13 @@
               base = [ 
                 alacritty
                 fish
+                lsd
                 nvim
+                direnv
                 starship
-                git
+                git-work
+                xdg
+                kanshi
               ];
             };
           };
