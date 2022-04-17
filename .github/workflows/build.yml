@@ -22,4 +22,4 @@ jobs:
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       - name: "Build NixOS config ❄️"
-        run: nix build .#nixosConfigurations.rs2.system.build.toplevel
+        run: nix build .#nixosConfigurations.bootstrap.system.build.toplevel
