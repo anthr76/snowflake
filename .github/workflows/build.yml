@@ -27,4 +27,4 @@ jobs:
           # If I end up continue using this the pattern should be re-worked.
           # It's hardcore tech debt that will likely bite me soon :)
           sed -i '/work/d' flake.nix
-          nix build .#nixosConfigurations.bootstrap.system.build.toplevel
+          nix build .#nixosConfigurations.rs2.system.build.toplevel
