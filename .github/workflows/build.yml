@@ -28,4 +28,6 @@ jobs:
           # It's hardcore tech debt that will likely bite me soon :)
           sed -i '/work/d' flake.nix
           # End glue
-          nix build .#nixosConfigurations.rs2.system.build.toplevel
+          nix develop
+          bud build rs2
+          bud home anthonyjrabbito

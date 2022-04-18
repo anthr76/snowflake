@@ -1,82 +1,120 @@
 { pkgs, ... }: {
   programs.neovim.plugins = with pkgs.vimPlugins; [
+
     # LSP
     {
       plugin = nvim-lspconfig;
-      config = /* vim */ ''
-        lua << EOF
-          local lspconfig = require('lspconfig')
-          local capabilities = vim.lsp.protocol.make_client_capabilities()
-          capabilities.textDocument.completion.completionItem.snippetSupport = true
-          lspconfig.dockerls.setup{} -- Docker
-          lspconfig.bashls.setup{} -- Bash
-          lspconfig.clangd.setup{} -- C/C++
-          lspconfig.rnix.setup{} -- Nix
-          lspconfig.jsonls.setup{} -- JSON
-          lspconfig.sqls.setup{} -- SQL
-          lspconfig.pylsp.setup{} -- Python
-          lspconfig.sumneko_lua.setup{cmd = {"lua-language-server"}} -- Lua
-          lspconfig.dartls.setup{} -- Dart
-          lspconfig.hls.setup{} -- Haskell
-          lspconfig.kotlin_language_server.setup{} -- Kotlin
-          lspconfig.html.setup{} -- HTML
-          lspconfig.cssls.setup{capabilities = capabilities} -- CSS/SASS
-          lspconfig.terraformls.setup{filetypes={"terraform","tf","hcl"}} -- Terraform
-          lspconfig.rust_analyzer.setup{ -- Rust
-            settings = {
-              ["rust-analyzer"] = {
-                checkOnSave = {
-                  command = "clippy",
-                }
-              }
-            }
-          }
-        EOF
-        nmap gD       :lua vim.lsp.buf.declaration()<CR>
-        nmap gd       :lua vim.lsp.buf.definition()<CR>
-        nmap <space>f :lua vim.lsp.buf.formatting()<CR>
-        nmap <space>e :lua vim.diagnostic.get()<CR>
-        autocmd CursorHold <buf> :lua vim.lsp.buf.hover()<CR>
-        nmap K :lua vim.lsp.buf.hover()<CR>
-      '';
+      config = # vim
+        ''
+          lua << EOF
+            local nvim_lsp = require('lspconfig')
+            local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+            local servers = { 'ansiblels', 'bashls', 'dockerls', 'jsonls', 'gopls', 'puppet', 'terraformls', 'yamlls', 'rnix' }
+            for _, lsp in ipairs(servers) do
+              nvim_lsp[lsp].setup{ capabilities = capabilities }
+            end
+          EOF
+        '';
     }
     {
-      plugin = rust-tools-nvim;
-      config = /* lua */ ''
-        lua require('rust-tools').setup{tools={autoSetHints = true}}
-      '';
+      plugin = lspsaga-nvim;
+      config = # vim
+        ''
+          lua << EOF
+            require('lspsaga').init_lsp_saga()
+          EOF
+        '';
     }
-
+    {
+      plugin = (nvim-treesitter.withPlugins (plugins:
+        with pkgs.tree-sitter-grammars; [
+          tree-sitter-nix
+          # TODO: rust and others only on dev machines
+          tree-sitter-c
+          tree-sitter-comment
+          tree-sitter-lua
+          tree-sitter-markdown
+          tree-sitter-ocaml
+          tree-sitter-rust
+          tree-sitter-vim
+        ]));
+      config = # vim
+        ''
+          lua << EOF
+            require('nvim-treesitter.configs').setup {
+              highlight = {
+                enable = true,
+                disable = {},
+              },
+              indent = {
+                enable = false,
+                disable = {},
+              },
+            }
+          EOF
+        '';
+    }
     # Completions
     cmp-nvim-lsp
     cmp-buffer
-    lspkind-nvim
+    cmp-path
+    cmp-cmdline
+    cmp-vsnip
+    vim-vsnip
     {
       plugin = nvim-cmp;
-      config = /* vim */ ''
-        lua << EOF
-          local cmp = require('cmp')
-          local lspkind = require('lspkind')
-          cmp.setup{
-            formatting = {
-              format = lspkind.cmp_format()
-            },
-            mapping = {
-              ['<C-n>'] = cmp.mapping.select_next_item({
-                behavior = cmp.SelectBehavior.Insert }
-              ),
-              ['<C-m>'] = cmp.mapping.select_prev_item({
-                behavior = cmp.SelectBehavior.Insert }
-              ),
-              ['<C-e>'] = cmp.mapping.close(),
-            },
-            sources = {
-              { name='nvim_lsp' },
-              { name='buffer' },
-            },
-          }
-        EOF
-      '';
+      config = # vim
+        ''
+          lua << EOF
+            local cmp = require'cmp'
+            
+            cmp.setup({
+              snippet = {
+                -- REQUIRED - you must specify a snippet engine
+                expand = function(args)
+                  vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+                  -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+                  -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+                  -- require'snippy'.expand_snippet(args.body) -- For `snippy` users.
+                end,
+              },
+              mapping = {
+                ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+                ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+                ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+                ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+                ['<C-e>'] = cmp.mapping({
+                  i = cmp.mapping.abort(),
+                  c = cmp.mapping.close(),
+                }),
+                ['<CR>'] = cmp.mapping.confirm({ select = true }),
+              },
+              sources = cmp.config.sources({
+                { name = 'nvim_lsp' },
+                { name = 'vsnip' }, -- For vsnip users.
+                -- { name = 'luasnip' }, -- For luasnip users.
+                -- { name = 'ultisnips' }, -- For ultisnips users.
+                -- { name = 'snippy' }, -- For snippy users.
+              }, {
+                { name = 'buffer' },
+              })
+            })
+            -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+            cmp.setup.cmdline('/', {
+              sources = {
+                { name = 'buffer' }
+              }
+            })
+            -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+            cmp.setup.cmdline(':', {
+              sources = cmp.config.sources({
+                { name = 'path' }
+              }, {
+                { name = 'cmdline' }
+              })
+            })
+          EOF
+        '';
     }
   ];
 }

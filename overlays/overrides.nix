@@ -3,10 +3,13 @@ channels: final: prev: {
   __dontExport = true; # overrides clutter up actual creations
 
   inherit (channels.latest)
+    gnupg
+    pcsclite
+    yubikey-manager
+    ccid
     cachix
     dhall
     discord
-    element-desktop
     rage
     nixpkgs-fmt
     qutebrowser
@@ -14,6 +17,12 @@ channels: final: prev: {
     starship
     deploy-rs
     sway-launcher-desktop
+    google-chrome-dev
+    super-productivity
+    #element-desktop
+    ;
+  inherit (channels.yubico-piv-tool-pr-161198)
+    yubico-piv-tool
     ;
 
   haskellPackages = prev.haskellPackages.override
@@ -26,5 +35,6 @@ channels: final: prev: {
           inherit (channels.latest.haskell.packages."ghc${version}")
             haskell-language-server;
         });
-    });
+      });
+
 }

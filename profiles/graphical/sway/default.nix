@@ -33,6 +33,9 @@ in {
         waybar
         sway-launcher-desktop
         thunderbird
+        element-desktop
+        pcmanfm
+        super-productivity
       ];
   };
 
@@ -44,7 +47,7 @@ in {
   };
   xdg.portal = {
     enable = true;
-    gtkUsePortal = true;
+    #gtkUsePortal = true;
     wlr.enable = true;
   };
 
@@ -58,20 +61,6 @@ in {
     wants = [ "graphical-session-pre.target" ];
     after = [ "graphical-session-pre.target" ];
     requiredBy = [ "graphical-session.target" "graphical-session-pre.target" ];
-  };
-  systemd.user.services.mako = {
-    enable = true;
-    description = "Lightweight Wayland notification daemon";
-    documentation = [ "man:mako(1)" ];
-    wantedBy = [ "sway-session.target" ];
-    partOf = [ "sway-session.target" ];
-    after = ["sway-session.target"];
-    serviceConfig = {
-      Type = "dbus";
-      BusName = "org.freedesktop.Notifications";
-      ExecStart = "${pkgs.mako}/bin/mako";
-      ExecReload = "${pkgs.mako}/bin/makoctl reload";
-    };
   };
   fonts = {
     enableDefaultFonts = true;
