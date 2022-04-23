@@ -22,8 +22,7 @@ let
       -b 'Reboot' 'systemctl reboot'
     exec "dbus-update-activation-environment --systemd --all; systemctl --user import-environment"
   '';
-in
-{
+in {
   environment = {
     etc."greetd/environments" = {
       text = ''
@@ -31,9 +30,7 @@ in
       '';
     };
 
-    systemPackages = with pkgs; [
-      greetd.gtkgreet
-    ];
+    systemPackages = with pkgs; [ greetd.gtkgreet ];
   };
 
   services.greetd = {

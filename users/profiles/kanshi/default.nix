@@ -3,14 +3,12 @@
     enable = true;
     profiles = {
       undocked = {
-        outputs = [
-          {
-            criteria = "eDP-1";
-            status = "enable";
-            mode = "1920x1080";
-            position = "0,0";
-          }
-        ];
+        outputs = [{
+          criteria = "eDP-1";
+          status = "enable";
+          mode = "1920x1080";
+          position = "0,0";
+        }];
       };
       docked = {
         outputs = [

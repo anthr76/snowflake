@@ -1,12 +1,8 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.asusd;
-  tomlFormat = pkgs.formats.toml {};
+  tomlFormat = pkgs.formats.toml { };
 in {
   options = {
     services.asusd = {
@@ -20,30 +16,26 @@ in {
           <filename>asusd-ledmodes.toml</filename> as a Nix attribute set.
           See <link xlink:href="https://gitlab.com/asus-linux/asusctl/-/blob/main/data/asusd-ledmodes.toml">asusd-ledmodes.toml</link> for examples.
         '';
-        default = {};
+        default = { };
       };
     };
   };
 
   config = mkIf cfg.enable {
     # Set the ledmodes to the packaged ledmodes by default.
-    services.asusd.ledmodes = mkDefault (
-      let
-        # Convert packaged asusd-ledmodes.toml to JSON.
-        json =
-          pkgs.runCommand "asusd-ledmodes.json" {
-            nativeBuildInputs = [pkgs.remarshal];
-          } ''
-            toml2json "${pkgs.asusctl}/etc/asusd/asusd-ledmodes.toml" "$out"
-          '';
-        # Convert JSON to Nix attribute-set.
-        attrs = builtins.fromJSON (builtins.readFile json);
-      in
-        attrs
-    );
+    services.asusd.ledmodes = mkDefault (let
+      # Convert packaged asusd-ledmodes.toml to JSON.
+      json = pkgs.runCommand "asusd-ledmodes.json" {
+        nativeBuildInputs = [ pkgs.remarshal ];
+      } ''
+        toml2json "${pkgs.asusctl}/etc/asusd/asusd-ledmodes.toml" "$out"
+      '';
+      # Convert JSON to Nix attribute-set.
+      attrs = builtins.fromJSON (builtins.readFile json);
+    in attrs);
 
-    environment.systemPackages = with pkgs; [asusctl];
-    services.dbus.packages = with pkgs; [asusctl];
+    environment.systemPackages = with pkgs; [ asusctl ];
+    services.dbus.packages = with pkgs; [ asusctl ];
 
     # Avoiding adding udev rules file of asusctl as-is due to the reference to systemd.
     # services.udev.packages = with pkgs; [ asusctl ];
@@ -54,7 +46,8 @@ in {
       ACTION=="add|remove", SUBSYSTEM=="input", ENV{ID_VENDOR_ID}=="0b05", ENV{ID_MODEL_ID}=="1[89][a-zA-Z0-9][a-zA-Z0-9]|193b", RUN+="${pkgs.systemd}/bin/systemctl restart asusd.service"
     '';
 
-    environment.etc."asusd/asusd-ledmodes.toml".source = tomlFormat.generate "asusd-ledmodes.toml" cfg.ledmodes;
+    environment.etc."asusd/asusd-ledmodes.toml".source =
+      tomlFormat.generate "asusd-ledmodes.toml" cfg.ledmodes;
 
     services.power-profiles-daemon.enable = true;
 
@@ -62,8 +55,8 @@ in {
 
     systemd.services.asusd = {
       description = "Asus Control Daemon";
-      wantedBy = ["multi-user.target"];
-      wants = ["dbus.socket"];
+      wantedBy = [ "multi-user.target" ];
+      wants = [ "dbus.socket" ];
       environment.IS_SERVICE = "1";
       unitConfig = {
         StartLimitInterval = 200;
@@ -82,18 +75,18 @@ in {
 
     services.actkbd.bindings = [
       {
-        keys = [230];
-        events = ["key"];
+        keys = [ 230 ];
+        events = [ "key" ];
         command = "${pkgs.asusctl}/bin/asusctl -n";
       }
       {
-        keys = [229];
-        events = ["key"];
+        keys = [ 229 ];
+        events = [ "key" ];
         command = "${pkgs.asusctl}/bin/asusctl -p";
       }
       {
-        keys = [202];
-        events = ["key"];
+        keys = [ 202 ];
+        events = [ "key" ];
         command = "${pkgs.asusctl}/bin/asusctl led-mode -n";
       }
     ];

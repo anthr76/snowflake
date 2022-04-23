@@ -1,11 +1,6 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  cfg = config.services.supergfxd;
+{ config, lib, pkgs, ... }:
+with lib;
+let cfg = config.services.supergfxd;
 in {
   options = {
     services.supergfxd = {
@@ -17,16 +12,16 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [supergfxctl];
-    services.dbus.packages = with pkgs; [supergfxctl];
-    services.udev.packages = with pkgs; [supergfxctl];
+    environment.systemPackages = with pkgs; [ supergfxctl ];
+    services.dbus.packages = with pkgs; [ supergfxctl ];
+    services.udev.packages = with pkgs; [ supergfxctl ];
 
-    boot.kernelParams = ["nvidia-drm.modeset=0"];
+    boot.kernelParams = [ "nvidia-drm.modeset=0" ];
 
     systemd.services.supergfxd = {
       description = "SUPERGFX";
-      wantedBy = ["multi-user.target"];
-      wants = ["dbus.socket"];
+      wantedBy = [ "multi-user.target" ];
+      wants = [ "dbus.socket" ];
       environment.IS_SUPERGFX_SERVICE = "1";
       unitConfig = {
         StartLimitInterval = 200;

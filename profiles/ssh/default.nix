@@ -1,5 +1,1 @@
-{lib, ...}: {
-  services.openssh = {
-    enable = true;
-    };
-}
+{ lib, ... }: { services.openssh = { enable = true; }; }

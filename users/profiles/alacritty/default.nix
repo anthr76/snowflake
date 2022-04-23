@@ -11,9 +11,7 @@
         size = 11.0;
         normal.family = "Fira Code Nerd Font";
       };
-      window = {
-        dynamic_title = true;
-      };
+      window = { dynamic_title = true; };
     };
   };
 }

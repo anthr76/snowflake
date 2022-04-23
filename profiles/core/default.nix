@@ -1,7 +1,6 @@
 { self, config, lib, pkgs, ... }:
 let inherit (lib) fileContents;
-in
-{
+in {
   # Sets nrdxp.cachix.org binary cache which just speeds up some builds
   imports = [ ../cachix ];
 
@@ -10,7 +9,6 @@ in
     enable = true;
     openFirewall = lib.mkDefault false;
   };
-
 
   # This is just a representation of the nix default
   nix.systemFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];

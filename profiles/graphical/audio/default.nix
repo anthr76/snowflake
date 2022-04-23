@@ -9,7 +9,7 @@
   };
   environment.systemPackages = with pkgs; [
     pavucontrol
-    pulseaudio  # pactl
+    pulseaudio # pactl
     easyeffects
   ];
 }

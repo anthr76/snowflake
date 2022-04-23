@@ -30,7 +30,7 @@
     #        '';
     #      }
     #    ];
-    extraPackages = with pkgs; [ 
+    extraPackages = with pkgs; [
       docker-ls
       nodePackages.vscode-json-languageserver
       nodePackages.bash-language-server

@@ -1,4 +1,4 @@
-{pkgs, lib, ...}: {
+{ pkgs, lib, ... }: {
   home.packages = with pkgs; [ fzf fd bat ];
   programs.fish = {
     enable = true;
@@ -13,16 +13,14 @@
       };
       gitignore = "curl -sL https://www.gitignore.io/api/$argv";
     };
-    plugins = [
-      {
-        name = "fzf";
-        src = pkgs.fetchFromGitHub {
-          owner = "PatrickF1";
-          repo = "fzf.fish";
-          rev = "v8.3";
-          sha256 = "eSNUqvKXTxcuvICxo8BmVWL1ESXQuU7VhOl7aONrhwM=";
-        };
-      }
-    ];
+    plugins = [{
+      name = "fzf";
+      src = pkgs.fetchFromGitHub {
+        owner = "PatrickF1";
+        repo = "fzf.fish";
+        rev = "v8.3";
+        sha256 = "eSNUqvKXTxcuvICxo8BmVWL1ESXQuU7VhOl7aONrhwM=";
+      };
+    }];
   };
 }

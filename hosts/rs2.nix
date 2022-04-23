@@ -1,5 +1,4 @@
 # This file isn't being looked at yet?
-{ suites, ... }:
-{
+{ suites, ... }: {
   imports = suites.mobileWS;
 }

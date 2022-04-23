@@ -1,7 +1,5 @@
-
 { lib, config, options, pkgs, ... }:
-let
-  inherit (builtins) readFile;
+let inherit (builtins) readFile;
 
 in {
   programs.sway = {
@@ -51,7 +49,6 @@ in {
     wlr.enable = true;
   };
 
-
   systemd.user.targets.sway-session = {
     enable = true;
     description = "sway compositor session";
@@ -64,17 +61,17 @@ in {
   };
   fonts = {
     enableDefaultFonts = true;
-    fonts = with pkgs; [ 
+    fonts = with pkgs; [
       pkgs.nerdfonts
       pkgs.fira-code
       pkgs.fira-code-symbols
       pkgs.fira
     ];
-  
+
     fontconfig = {
       defaultFonts = {
         monospace = [ "Fira Code Nerd Font" ];
-        serif = ["Fira Sans"];
+        serif = [ "Fira Sans" ];
       };
     };
   };
