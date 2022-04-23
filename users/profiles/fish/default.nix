@@ -2,10 +2,9 @@
   home.packages = with pkgs; [ fzf fd bat ];
   programs.fish = {
     enable = true;
-    interactiveShellInit = 
-      ''
-        set -gx SSH_AUTH_SOCK "$XDG_RUNTIME_DIR/yubikey-agent/yubikey-agent.sock"
-      '';
+    shellAliases = {
+      yssh = "ssh-add -s ${pkgs.yubico-piv-tool}/lib/libykcs11.so";
+    };
     functions = {
       fish_greeting = "";
       __fish_command_not_found_handler = {

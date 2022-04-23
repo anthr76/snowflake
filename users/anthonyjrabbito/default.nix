@@ -5,6 +5,7 @@
   users.users.anthonyjrabbito = {
     description = "default";
     isNormalUser = true;
+    group = "anthonyjrabbito";
     extraGroups = [ "wheel" "networkmanager"];
   };
 }

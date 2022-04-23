@@ -33,10 +33,6 @@
      age
    ];
    system.stateVersion = "21.11"; 
-  users.users.temp = {
-    group = "wheel";
-    isNormalUser = true;
-  };
   nix = {
   package = pkgs.nixFlakes; 
   extraOptions = ''

@@ -4,3 +4,4 @@
     #pinentryFlavor = "curses";
   };
 }
+
