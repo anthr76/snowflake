@@ -1,6 +1,7 @@
 {
   programs.direnv = {
-    enable = true;
+    # Use nix.
+    enable = false;
     enableFishIntegration = true;
     nix-direnv = { enable = true; };
   };
