@@ -4,6 +4,7 @@
     enable = true;
     shellAliases = {
       yssh = "ssh-add -s ${pkgs.yubico-piv-tool}/lib/libykcs11.so";
+      nixdev = "nix develop --command fish";
     };
     functions = {
       fish_greeting = "";
