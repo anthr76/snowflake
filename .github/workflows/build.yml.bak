@@ -1,0 +1,41 @@
+---
+name: NixOS
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2.3.2
+        with:
+          fetch-depth: 0
+
+      - name: "Install Nix ❄️"
+        uses: cachix/install-nix-action@master
+        with:
+          install_url: https://github.com/numtide/nix-unstable-installer/releases/download/nix-2.8.0pre20220314_a618097/install
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            system-features = nixos-test benchmark big-parallel kvm recursive-nix
+            substituters = https://cache.nixos.org https://nrdxp.cachix.org https://nix-community.cachix.org
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nrdxp.cachix.org-1:Fc5PSqY2Jm1TrWfm88l6cvGWwz3s93c6IOifQWnhNW4= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+
+#      - name: "Install Cachix ❄️"
+#        uses: cachix/cachix-action@v10
+#        with:
+#          name: snowflake
+#          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: "Build NixOS config ❄️"
+        run: |
+          # This is a gross hack, but I can't figure out a nicer way
+          # If I end up continue using this the pattern should be re-worked.
+          # It's hardcore tech debt that will likely bite me soon :)
+          sed -i '/work/d' flake.nix
+          # End glue
+          nix-shell "https://github.com/divnix/digga/archive/main.tar.gz" --run "nix develop"
+          bud rebuld rs2
