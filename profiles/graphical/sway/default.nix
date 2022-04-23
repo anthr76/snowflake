@@ -34,6 +34,7 @@ in {
         element-desktop
         pcmanfm
         super-productivity
+	tdesktop
       ];
   };
 
