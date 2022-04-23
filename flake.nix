@@ -49,8 +49,20 @@
     work.url = "path:/home/anthonyjrabbito/dev/work-flake";
   };
 
-  outputs = { self, digga, bud, nixos, home, nixos-hardware, work, nur, agenix
-    , nvfetcher, deploy, ... }@inputs:
+  outputs =
+    { self
+    , digga
+    , bud
+    , nixos
+    , home
+    , nixos-hardware
+    , work
+    , nur
+    , agenix
+    , nvfetcher
+    , deploy
+    , ...
+    }@inputs:
     digga.lib.mkFlake {
       inherit self inputs;
       supportedSystems = [ "x86_64-linux" "aarch64-linux" ];
@@ -141,7 +153,8 @@
               direnv
               starship
               git-work
-	      kubernetes
+              kubernetes
+              any-nix-shell
               gh
               teams
               xdg
