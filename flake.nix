@@ -141,6 +141,7 @@
               direnv
               starship
               git-work
+	      kubernetes
               gh
               teams
               xdg
