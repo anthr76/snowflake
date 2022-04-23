@@ -159,6 +159,7 @@
                 direnv
                 starship
                 git-work
+		gh
                 teams
                 xdg
                 kanshi
