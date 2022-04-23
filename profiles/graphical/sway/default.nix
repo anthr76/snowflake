@@ -33,7 +33,6 @@ in {
         thunderbird
         element-desktop
         pcmanfm
-        super-productivity
 	tdesktop
       ];
   };
