@@ -28,5 +28,8 @@ jobs:
 
     # - run: nix build ".#nixosConfigurations.NixOS.config.system.build.toplevel"
 
+    - name: Cleanup unusable flake
+      run: sed -i '/work/d' flake.nix
+
     - name: Quick Nix Eval
       run: nix develop --command evalnix
