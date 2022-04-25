@@ -1,4 +1,2 @@
 result
-**/.direnv
-.direnv/flake-profile
-.direnv*
+.direnv/
