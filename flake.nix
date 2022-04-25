@@ -3,9 +3,9 @@
 
   nixConfig.extra-experimental-features = "nix-command flakes";
   nixConfig.extra-substituters =
-    "https://nrdxp.cachix.org https://nix-community.cachix.org";
+    "https://nrdxp.cachix.org https://nix-community.cachix.org https://snowflake.cachix.org";
   nixConfig.extra-trusted-public-keys =
-    "nrdxp.cachix.org-1:Fc5PSqY2Jm1TrWfm88l6cvGWwz3s93c6IOifQWnhNW4= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=";
+    "nrdxp.cachix.org-1:Fc5PSqY2Jm1TrWfm88l6cvGWwz3s93c6IOifQWnhNW4= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= snowflake.cachix.org-1:p9pP30w7PFDuzkJ2v4TQ446cXLUglrnBUhN6tUzp2sA=";
 
   inputs = {
     # Track channels with commits tested and built by hydra

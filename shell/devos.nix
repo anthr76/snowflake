@@ -40,6 +40,13 @@ in {
         command =
           "cd $PRJ_ROOT/pkgs; ${pkgs.nvfetcher-bin}/bin/nvfetcher -c ./sources.toml $@";
       }
+      {
+        category = "linter";
+        name = "evalnix";
+        help = "Check Nix parsing";
+        command =
+          "fd --extension nix --exec nix-instantiate --parse --quiet {} >/dev/null";
+      }
       (linter nixpkgs-fmt)
       (linter editorconfig-checker)
       # (docs python3Packages.grip) too many deps
