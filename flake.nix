@@ -154,6 +154,7 @@
               starship
               git-work
               kubernetes
+              viddy
               any-nix-shell
               gh
               teams
