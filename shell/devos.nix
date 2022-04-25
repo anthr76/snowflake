@@ -8,7 +8,8 @@ let
   docs = pkgWithCategory "docs";
   devos = pkgWithCategory "devos";
 
-in {
+in
+{
   _file = toString ./.;
 
   imports = [ "${extraModulesPath}/git/hooks.nix" ];
@@ -48,11 +49,12 @@ in {
           "fd --extension nix --exec nix-instantiate --parse --quiet {} >/dev/null";
       }
       (linter nixpkgs-fmt)
+      (devos fd)
       (linter editorconfig-checker)
       # (docs python3Packages.grip) too many deps
       (docs mdbook)
       (devos inputs.deploy.packages.${pkgs.system}.deploy-rs)
     ] ++ lib.optional (system != "i686-linux") (devos cachix)
     ++ lib.optional (system != "aarch64-darwin")
-    (devos inputs.nixos-generators.defaultPackage.${pkgs.system});
+      (devos inputs.nixos-generators.defaultPackage.${pkgs.system});
 }
