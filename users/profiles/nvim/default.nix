@@ -6,30 +6,13 @@
     enable = true;
     vimAlias = true;
     viAlias = true;
-    extraConfig = # vim
+    # https://github.com/nix-community/home-manager/issues/1907
+    # Solved in unstable.
+    extraConfig = builtins.concatStringsSep "\n" [
       ''
-        "Use truecolor
-        set termguicolors
-        "Reload automatically
-        set autoread
-        "Clipboard
-        set clipboard=unnamedplus
-        "Fix nvim size according to terminal
-        "(https://github.com/neovim/neovim/issues/11330)
-        autocmd VimEnter * silent exec "!kill -s SIGWINCH" getpid()
-        "Scroll up and down
-        nmap <C-j> <C-e>
-        nmap <C-k> <C-y>
-      '';
-    #    plugins = with pkgs.vimPlugins; [
-    #      tree-sitter-grammars.tree-sitter-nix
-    #      {
-    #        plugin = which-key-nvim;
-    #        config = /* lua */ ''
-    #          lua require('which-key').setup{}
-    #        '';
-    #      }
-    #    ];
+      luafile ${builtins.toString ./configure.lua}
+      ''
+    ];
     extraPackages = with pkgs; [
       docker-ls
       nodePackages.vscode-json-languageserver
