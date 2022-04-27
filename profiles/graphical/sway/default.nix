@@ -41,6 +41,12 @@ in {
     "sway/config".text = ''
       ${readFile ./config}
     '';
+    "sway/sway-launcher-desktop.conf".text = ''
+      [desktop]
+      list_cmd=sway-launcher-desktop list-entries
+      preview_cmd=sway-launcher-desktop describe-desktop "{1}"
+      launch_cmd=sway-launcher-desktop run-desktop '{1}' {2}
+    '';
     "xdg/waybar".source = ./waybar;
   };
   xdg.portal = {
