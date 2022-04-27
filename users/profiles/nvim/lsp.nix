@@ -1,5 +1,5 @@
 { pkgs, ... }: {
-  programs.neovim.plugins = with pkgs.vimPlugins; [
+  programs.neovim.plugins = with pkgs.channels.latest.vimPlugins; [
 
     # LSP
     {
@@ -27,9 +27,9 @@
     }
     {
       plugin = (nvim-treesitter.withPlugins (plugins:
-        with pkgs.tree-sitter-grammars; [
-          tree-sitter-nix
+        with pkgs.channels.latest.tree-sitter-grammars; [
           # TODO: rust and others only on dev machines
+          tree-sitter-nix
           tree-sitter-c
           tree-sitter-comment
           tree-sitter-lua

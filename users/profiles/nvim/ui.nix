@@ -1,5 +1,5 @@
 { pkgs, ... }: {
-  programs.neovim.plugins = with pkgs.vimPlugins; [{
+  programs.neovim.plugins = with pkgs.channels.latest.vimPlugins; [{
     plugin = lualine-nvim;
     config = # vim
       ''
@@ -11,7 +11,5 @@
           }
         EOF
       '';
-  }
-
-    ];
+  }];
 }
