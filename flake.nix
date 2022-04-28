@@ -149,7 +149,7 @@
               fish
               lsd
               nvim
-              #helix
+              helix
               gnupg
               direnv
               starship
