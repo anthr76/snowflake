@@ -149,7 +149,7 @@
               fish
               lsd
               nvim
-              pazi
+              zoxide
               helix
               gnupg
               direnv
