@@ -46,8 +46,6 @@
 
     nixos-generators.url = "github:nix-community/nixos-generators";
     
-    helix.url = "github:helix-editor/helix";
-
     work.url = "path:/home/anthonyjrabbito/dev/work-flake";
   };
 
@@ -151,6 +149,7 @@
               fish
               lsd
               nvim
+              pazi
               helix
               gnupg
               direnv
