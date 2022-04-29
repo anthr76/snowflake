@@ -15,6 +15,7 @@
         "x-scheme-handler/about" = "google-chrome-unstable.desktop";
         "x-scheme-handler/unknown" = "google-chrome-unstable.desktop";
         "application/pdf" = "google-chrome-unstable.desktop";
+        "x-scheme-handler/element" = "element-desktop.desktop";
       };
     };
   };

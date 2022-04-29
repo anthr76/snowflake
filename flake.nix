@@ -45,6 +45,8 @@
     nixos-hardware.url = "github:nixos/nixos-hardware";
 
     nixos-generators.url = "github:nix-community/nixos-generators";
+    
+    helix.url = "github:helix-editor/helix";
 
     work.url = "path:/home/anthonyjrabbito/dev/work-flake";
   };
