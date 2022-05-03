@@ -475,11 +475,11 @@
     },
     "nixos": {
       "locked": {
-        "lastModified": 1651093906,
-        "narHash": "sha256-kHXSbv+Hc73eV0/JVJ5YsJGr08bA4vJ3/XZew5PgZg0=",
+        "lastModified": 1651310835,
+        "narHash": "sha256-MLk/zsLlbPhwFucxL64Fr+oIrvQC2/76Ap2F7ekbPNI=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "feea25c58657fa81d16e0e51f80e1a02ef4cbd49",
+        "rev": "fd3e33d696b81e76b30160dfad2efb7ac1f19879",
         "type": "github"
       },
       "original": {
@@ -557,11 +557,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1651273796,
-        "narHash": "sha256-kqWfHMfXUz2d9Y8KDA9D5vk03xj28Y+I2AyxzrQ14Vo=",
+        "lastModified": 1651450933,
+        "narHash": "sha256-jNdwlsdZdcWDxEMc06JOshWvMjTAfNPoZFUwhwXLjTg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3080554891b4404fcbc5f09a4fe1d4ea0334d829",
+        "rev": "43d7b5760b5a2be67818b9e28519fe263841a6ef",
         "type": "github"
       },
       "original": {
@@ -572,11 +572,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1651114127,
-        "narHash": "sha256-/lLC0wkMZkAdA5e1W76SnJzbhfOGDvync3VRHJMtAKk=",
+        "lastModified": 1651369430,
+        "narHash": "sha256-d86uUm0s11exU9zLo2K1AwtJQJDKubFpoF0Iw767uT4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "6766fb6503ae1ebebc2a9704c162b2aef351f921",
+        "rev": "b283b64580d1872333a99af2b4cef91bb84580cf",
         "type": "github"
       },
       "original": {
@@ -586,11 +586,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1651114127,
-        "narHash": "sha256-/lLC0wkMZkAdA5e1W76SnJzbhfOGDvync3VRHJMtAKk=",
+        "lastModified": 1651369430,
+        "narHash": "sha256-d86uUm0s11exU9zLo2K1AwtJQJDKubFpoF0Iw767uT4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "6766fb6503ae1ebebc2a9704c162b2aef351f921",
+        "rev": "b283b64580d1872333a99af2b4cef91bb84580cf",
         "type": "github"
       },
       "original": {
@@ -715,8 +715,7 @@
         "nixos-hardware": "nixos-hardware",
         "nur": "nur",
         "nvfetcher": "nvfetcher",
-        "work": "work",
-        "yubico-piv-tool-pr-161198": "yubico-piv-tool-pr-161198"
+        "work": "work"
       }
     },
     "utils": {
@@ -748,22 +747,6 @@
       "original": {
         "path": "/home/anthonyjrabbito/dev/work-flake",
         "type": "path"
-      }
-    },
-    "yubico-piv-tool-pr-161198": {
-      "locked": {
-        "lastModified": 1645435558,
-        "narHash": "sha256-fRlG4xTOZpP0mOoUBM/9iiNnhujLJeGJiA7oAEZcNtc=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "62eb5417e440201e434a23f05e2e485017d79d94",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "62eb5417e440201e434a23f05e2e485017d79d94",
-        "repo": "nixpkgs",
-        "type": "github"
       }
     }
   },
