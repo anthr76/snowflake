@@ -11,8 +11,6 @@
     # Track channels with commits tested and built by hydra
     nixos.url = "github:nixos/nixpkgs/nixos-21.11";
     latest.url = "github:nixos/nixpkgs/nixos-unstable";
-    yubico-piv-tool-pr-161198.url =
-      "github:nixos/nixpkgs?ref=62eb5417e440201e434a23f05e2e485017d79d94";
 
     digga.url = "github:divnix/digga";
     digga.inputs.nixpkgs.follows = "nixos";
@@ -45,7 +43,7 @@
     nixos-hardware.url = "github:nixos/nixos-hardware";
 
     nixos-generators.url = "github:nix-community/nixos-generators";
-    
+
     work.url = "path:/home/anthonyjrabbito/dev/work-flake";
   };
 

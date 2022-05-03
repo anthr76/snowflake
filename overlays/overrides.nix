@@ -6,10 +6,8 @@ channels: final: prev: {
   inherit (channels.latest)
     gh gnupg pcsclite yubikey-manager ccid cachix dhall discord rage nixpkgs-fmt
     qutebrowser signal-desktop starship deploy-rs sway-launcher-desktop
-    google-chrome-dev super-productivity kubecolor kubectl neovim
-    #element-desktop
+    google-chrome-dev super-productivity kubecolor kubectl neovim yubico-piv-tool
     ;
-  inherit (channels.yubico-piv-tool-pr-161198) yubico-piv-tool;
 
   haskellPackages = prev.haskellPackages.override (old: {
     overrides = prev.lib.composeExtensions (old.overrides or (_: _: { }))
