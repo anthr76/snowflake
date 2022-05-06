@@ -6,9 +6,8 @@ channels: final: prev: {
   inherit (channels.latest)
     gh gnupg pcsclite yubikey-manager ccid cachix dhall discord rage nixpkgs-fmt
     qutebrowser signal-desktop starship deploy-rs sway-launcher-desktop
-    google-chrome-dev super-productivity kubecolor kubectl neovim yubico-piv-tool
-    super-productivity kubecolor kubectl tdesktop
-    #element-desktop
+    google-chrome-dev neovim yubico-piv-tool
+    kubecolor kubectl tdesktop element-desktop
     ;
 
   haskellPackages = prev.haskellPackages.override (old: {
