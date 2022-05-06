@@ -10,13 +10,6 @@
   networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true;
   time.timeZone = "America/New_York";
-  #  environment.etc = {
-  #    "sway/config.d/config-mon.conf".text = ''
-  #      output "eDP-2" {
-  #      scale 1.6
-  #      }
-  #    '';
-  #  };
   networking.useDHCP = false;
   environment.systemPackages = with pkgs; [
     vim
