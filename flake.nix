@@ -61,8 +61,8 @@
           specialArgs = { inherit inputs outputs; };
           modules = [
             # > Our main nixos configuration file <
-            ./nixos/bkp1/configuration.nix,
-            ./nixos/base/configuration.nix,
+            ./nixos/bkp1/configuration.nix
+            ./nixos/base/configuration.nix
             ./nixos/server/configuration.nix
           ];
         };
