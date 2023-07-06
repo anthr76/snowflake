@@ -1,184 +1,85 @@
 {
-  description = "anthr76 structured configuration database.";
-
-  nixConfig.extra-experimental-features = "nix-command flakes";
-  nixConfig.extra-substituters =
-    "https://nrdxp.cachix.org https://nix-community.cachix.org https://snowflake.cachix.org";
-  nixConfig.extra-trusted-public-keys =
-    "nrdxp.cachix.org-1:Fc5PSqY2Jm1TrWfm88l6cvGWwz3s93c6IOifQWnhNW4= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= snowflake.cachix.org-1:p9pP30w7PFDuzkJ2v4TQ446cXLUglrnBUhN6tUzp2sA=";
+  description = "anthr76 Flakes";
 
   inputs = {
-    # Track channels with commits tested and built by hydra
-    nixos.url = "github:nixos/nixpkgs/nixos-21.11";
-    latest.url = "github:nixos/nixpkgs/nixos-unstable";
-    
-    yubico-piv-tool-pr-161198.url = "github:nixos/nixpkgs?ref=62eb5417e440201e434a23f05e2e485017d79d94";
+    # Nixpkgs
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+    # You can access packages and modules from different nixpkgs revs
+    # at the same time. Here's an working example:
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
 
-    digga.url = "github:divnix/digga";
-    digga.inputs.nixpkgs.follows = "nixos";
-    digga.inputs.nixlib.follows = "nixos";
-    digga.inputs.home-manager.follows = "home";
-    digga.inputs.deploy.follows = "deploy";
+    # Home manager
+    home-manager.url = "github:nix-community/home-manager/release-23.05";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    bud.url = "github:divnix/bud";
-    bud.inputs.nixpkgs.follows = "nixos";
-    bud.inputs.devshell.follows = "digga/devshell";
+    # TODO: Add any other flake you might need
+    # hardware.url = "github:nixos/nixos-hardware";
 
-    home.url = "github:nix-community/home-manager/release-21.11";
-    home.inputs.nixpkgs.follows = "nixos";
-
-    darwin.url = "github:LnL7/nix-darwin";
-    darwin.inputs.nixpkgs.follows = "nixos";
-
-    deploy.url = "github:serokell/deploy-rs";
-    deploy.inputs.nixpkgs.follows = "nixos";
-
-    agenix.url = "github:ryantm/agenix";
-    agenix.inputs.nixpkgs.follows = "nixos";
-
-    nvfetcher.url = "github:berberman/nvfetcher";
-    nvfetcher.inputs.nixpkgs.follows = "nixos";
-
-    naersk.url = "github:nmattia/naersk";
-    naersk.inputs.nixpkgs.follows = "nixos";
-
-    nixos-hardware.url = "github:nixos/nixos-hardware";
-
-    nixos-generators.url = "github:nix-community/nixos-generators";
-
-    work.url = "path:/home/anthonyjrabbito/dev/work-flake";
+    # Shameless plug: looking for a way to nixify your themes and make
+    # everything match nicely? Try nix-colors!
+    # nix-colors.url = "github:misterio77/nix-colors";
   };
 
-  outputs =
-    { self
-    , digga
-    , bud
-    , nixos
-    , home
-    , nixos-hardware
-    , work
-    , nur
-    , agenix
-    , nvfetcher
-    , deploy
-    , ...
-    }@inputs:
-    digga.lib.mkFlake {
-      inherit self inputs;
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" ];
-
-      channelsConfig = { allowUnfree = true; };
-
-      channels = {
-        nixos = {
-          imports = [ (digga.lib.importOverlays ./overlays) ];
-          overlays =
-            [ nur.overlay agenix.overlay nvfetcher.overlay ./pkgs/default.nix ];
-        };
-        latest = { };
-      };
-
-      lib = import ./lib { lib = digga.lib // nixos.lib; };
-
-      sharedOverlays = [
-        (final: prev: {
-          __dontExport = true;
-          lib = prev.lib.extend (lfinal: lprev: { our = self.lib; });
-        })
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+    let
+      inherit (self) outputs;
+      forAllSystems = nixpkgs.lib.genAttrs [
+        "aarch64-linux"
+        "x86_64-linux"
+        "aarch64-darwin"
       ];
+    in
+    rec {
+      # Your custom packages
+      # Acessible through 'nix build', 'nix shell', etc
+      packages = forAllSystems (system:
+        let pkgs = nixpkgs.legacyPackages.${system};
+        in import ./pkgs { inherit pkgs; }
+      );
+      # Devshell for bootstrapping
+      # Acessible through 'nix develop' or 'nix-shell' (legacy)
+      devShells = forAllSystems (system:
+        let pkgs = nixpkgs.legacyPackages.${system};
+        in import ./shell.nix { inherit pkgs; }
+      );
 
-      nixos = {
-        hostDefaults = {
-          system = "x86_64-linux";
-          channelName = "nixos";
-          imports = [ (digga.lib.importExportableModules ./modules) ];
+      # Your custom packages and modifications, exported as overlays
+      overlays = import ./overlays { inherit inputs; };
+      # Reusable nixos modules you might want to export
+      # These are usually stuff you would upstream into nixpkgs
+      nixosModules = import ./modules/nixos;
+      # Reusable home-manager modules you might want to export
+      # These are usually stuff you would upstream into home-manager
+      homeManagerModules = import ./modules/home-manager;
+
+      # NixOS configuration entrypoint
+      # Available through 'nixos-rebuild --flake .#your-hostname'
+      nixosConfigurations = {
+        # FIXME replace with your hostname
+        bkp1 = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
           modules = [
-            { lib.our = self.lib; }
-            digga.nixosModules.bootstrapIso
-            digga.nixosModules.nixConfig
-            home.nixosModules.home-manager
-            agenix.nixosModules.age
-            bud.nixosModules.bud
+            # > Our main nixos configuration file <
+            ./nixos/bkp1/configuration.nix,
+            ./nixos/base/configuration.nix,
+            ./nixos/server/configuration.nix
           ];
         };
-
-        imports = [ (digga.lib.importHosts ./hosts) ];
-        hosts = {
-          rs2 = {
-            channelName = "nixos";
-            modules = [
-              nixos-hardware.nixosModules.common-pc-laptop
-              nixos-hardware.nixosModules.common-cpu-amd
-              nixos-hardware.nixosModules.common-gpu-amd
-              work.nixosModules.vpn
-              work.nixosModules.private-ca
-            ];
-          };
-        };
-        importables = rec {
-          profiles = digga.lib.rakeLeaves ./profiles // {
-            users = digga.lib.rakeLeaves ./users;
-          };
-          suites = with profiles; rec {
-            base = [
-              core
-              yubikey
-              ssh
-              misc.gnupg
-              graphical.greetd
-              graphical.sway
-              graphical.chromium
-              graphical.chrome
-              graphical.audio
-              podman
-              users.anthonyjrabbito
-              users.root
-              tpm2
-              zram
-            ];
-          };
-        };
       };
 
-      home = {
-        imports = [ (digga.lib.importExportableModules ./users/modules) ];
-        modules = [ ];
-        importables = rec {
-          profiles = digga.lib.rakeLeaves ./users/profiles;
-          suites = with profiles; rec {
-            base = [
-              alacritty
-              fish
-              lsd
-              nvim
-              zoxide
-              helix
-              gnupg
-              direnv
-              starship
-              git-work
-              kubernetes
-              viddy
-              any-nix-shell
-              gh
-              teams
-              xdg
-              kanshi
-              gnome-keyring
-            ];
-          };
+      # Standalone home-manager configuration entrypoint
+      # Available through 'home-manager --flake .#your-username@your-hostname'
+      homeConfigurations = {
+        # FIXME replace with your username@hostname
+        "anthony@bkp1" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [
+            # > Our main home-manager configuration file <
+            ./home-manager/home.nix
+          ];
         };
-        users = {
-          anthonyjrabbito = { suites, ... }: { imports = suites.base; };
-        }; # digga.lib.importers.rakeLeaves ./users/hm;
       };
-
-      devshell = ./shell;
-
-      homeConfigurations =
-        digga.lib.mkHomeConfigurations self.nixosConfigurations;
-
-      deploy.nodes = digga.lib.mkDeployNodes self.nixosConfigurations { };
-
     };
 }
