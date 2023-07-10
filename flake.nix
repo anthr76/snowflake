@@ -14,14 +14,22 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # TODO: Add any other flake you might need
-    # hardware.url = "github:nixos/nixos-hardware";
+    hardware.url = "github:nixos/nixos-hardware";
 
+    sops-nix.url = "github:mic92/sops-nix";
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+
+    hyprland = {
+      url = "github:hyprwm/hyprland/v0.26.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Shameless plug: looking for a way to nixify your themes and make
     # everything match nicely? Try nix-colors!
     # nix-colors.url = "github:misterio77/nix-colors";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, disko, nixpkgs, home-manager, ... }@inputs:
     let
       inherit (self) outputs;
       forAllSystems = nixpkgs.lib.genAttrs [
@@ -57,29 +65,59 @@
       # Available through 'nixos-rebuild --flake .#your-hostname'
       nixosConfigurations = {
         # FIXME replace with your hostname
-        bkp1 = nixpkgs.lib.nixosSystem {
+        "bkp1.nwk2.rabbito.tech" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
             # > Our main nixos configuration file <
-            ./nixos/bkp1/configuration.nix
-            ./nixos/base/configuration.nix
-            ./nixos/server/configuration.nix
+            ./nixos/hosts/bkp1.nwk2.rabbito.tech
           ];
         };
+        "lga-test1.tenant-29c7a3-baggie.coreweave.cloud" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+          modules = [
+            # > Our main nixos configuration file <
+            ./nixos/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud
+          ];
+        };
+        # TODO: error: getting status of '/nix/store/hosts/iso': No such file or director
+        # Nix can be so weird..
+        # iso = nixpkgs.lib.nixosSystem {
+        #   specialArgs = { inherit inputs outputs; };
+        #   modules = [
+        #     # > Our main nixos configuration file <
+        #     ./nixos/image-generators
+        #   ];
+        # };
       };
 
       # Standalone home-manager configuration entrypoint
       # Available through 'home-manager --flake .#your-username@your-hostname'
       homeConfigurations = {
         # FIXME replace with your username@hostname
-        "anthony@bkp1" = home-manager.lib.homeManagerConfiguration {
+        "anthony@bkp1.nwk2.rabbito.tech" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [
             # > Our main home-manager configuration file <
-            ./home-manager/home.nix
+            ./home-manager/hosts/bkp1.nwk2.rabbito.tech.nix
           ];
         };
+        "anthony@lga-test1.tenant-29c7a3-baggie.coreweave.cloud" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [
+            # > Our main home-manager configuration file <
+            ./home-manager/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud.nix
+          ];
+        };
+        # "anthonyjrabbito@e39.nwk3.rabbito.tech" = home-manager.lib.homeManagerConfiguration {
+        #   pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        #   extraSpecialArgs = { inherit inputs outputs; };
+        #   modules = [
+        #     # > Our main home-manager configuration file <
+        #     ./home-manager/hosts/e39.nwk3.rabbito.tech.nix
+        #   ];
+        # };
       };
     };
 }

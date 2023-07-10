@@ -1,8 +1,9 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ config, inputs, lib, pkgs, modulesPath, ... }:
 
 {
   imports =
     [ (modulesPath + "/installer/scan/not-detected.nix")
+    inputs.hardware.nixosModules.common-cpu-intel
     ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
