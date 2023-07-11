@@ -11,7 +11,6 @@
     ./lsd.nix
   ];
   home.packages = with pkgs; [
-    distrobox
     ripgrep
     fd
     jq
