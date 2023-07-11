@@ -1,6 +1,6 @@
 {
   imports = [
-    ../personalities/global
+    ../users/anthony
   ];
 
 }
