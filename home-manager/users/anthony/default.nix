@@ -41,27 +41,6 @@
 
   home.file.".ssh/e39_tpm2.pub".text = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLhz2vRJ9Jaonksg5hQME2MWSQf8zriDMkPVuylZiF1eq+WTnqYMOiUABhJcG5sI45cfqmpeY3l/GarIV8tRd/Q= hello@anthonyrabbito.com";
 
-  xdg = {
-    enable = true;
-    userDirs = {
-      enable = true;
-      createDirectories = true;
-    };
-    mimeApps = {
-      enable = true;
-      defaultApplications = {
-        "text/html" = "google-chrome.desktop";
-        "x-scheme-handler/http" = "google-chrome.desktop";
-        "x-scheme-handler/https" = "google-chrome.desktop";
-        "x-www-browser" = "google-chrome.desktop";
-        "x-scheme-handler/about" = "google-chrome.desktop";
-        "x-scheme-handler/unknown" = "google-chrome.desktop";
-        "application/pdf" = "google-chrome.desktop";
-        "x-scheme-handler/element" = "element-desktop.desktop";
-      };
-    };
-  };
-
   # Add stuff for your user as you see fit:
   # home.packages = with pkgs; [ steam ];
 
