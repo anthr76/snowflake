@@ -8,6 +8,7 @@
     ./kubectl.nix
     ./starship.nix
     ./viddy.nix
+    ./lsd.nix
   ];
   home.packages = with pkgs; [
     distrobox
