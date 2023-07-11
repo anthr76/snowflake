@@ -36,6 +36,7 @@
         "aarch64-linux"
         "x86_64-linux"
         "aarch64-darwin"
+        "x86_64-darwin"
       ];
     in
     rec {
@@ -123,6 +124,14 @@
           modules = [
             # > Our main home-manager configuration file <
             ./home-manager/hosts/e39.nwk3.rabbito.tech.nix
+          ];
+        };
+        "anthonyrabbito@nicoles-mbp.nwk3.rabbito.tech" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-darwin;
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [
+            # > Our main home-manager configuration file <
+            ./home-manager/hosts/nicoles-mbp.nwk3.rabbito.tech.nix
           ];
         };
       };
