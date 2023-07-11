@@ -79,6 +79,13 @@
             ./nixos/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud
           ];
         };
+        "e39.nwk3.rabbito.tech" = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+          modules = [
+            # > Our main nixos configuration file <
+            ./nixos/hosts/e39.nwk3.rabbito.tech
+          ];
+        };
         # TODO: error: getting status of '/nix/store/hosts/iso': No such file or director
         # Nix can be so weird..
         # iso = nixpkgs.lib.nixosSystem {
@@ -110,14 +117,14 @@
             ./home-manager/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud.nix
           ];
         };
-        # "anthonyjrabbito@e39.nwk3.rabbito.tech" = home-manager.lib.homeManagerConfiguration {
-        #   pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        #   extraSpecialArgs = { inherit inputs outputs; };
-        #   modules = [
-        #     # > Our main home-manager configuration file <
-        #     ./home-manager/hosts/e39.nwk3.rabbito.tech.nix
-        #   ];
-        # };
+        "anthony@e39.nwk3.rabbito.tech" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [
+            # > Our main home-manager configuration file <
+            ./home-manager/hosts/e39.nwk3.rabbito.tech.nix
+          ];
+        };
       };
     };
 }

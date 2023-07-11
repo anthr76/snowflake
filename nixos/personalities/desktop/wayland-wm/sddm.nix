@@ -5,7 +5,7 @@
     settings = {
       general = {
         DisplayServer = "wayland";
-        GreeterEnvironment = "QT_WAYLAND_SHELL_INTEGRATION=xdg-shell";
+        GreeterEnvironment = "QT_WAYLAND_SHELL_INTEGRATION=layer-shell";
       };
       wayland = {
         CompositorCommand = "";

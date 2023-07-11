@@ -1,9 +1,11 @@
 { inputs, lib, config, pkgs, ... }: {
-  imports = [
-    inputs.hyprland.nixosModules.default
-  ];
 
-  programs.hyperland = {
+  imports = [
+    ../rofi.nix
+    ../sddm.nix
+    ../waybar.nix
+  ];
+  programs.hyprland = {
     enable = true;
   };
   qt.enable = true;
@@ -11,5 +13,7 @@
   environment.systemPackages = with pkgs; [
     dunst
     lxqt.lxqt-policykit
+    hyprpaper
+    xdg-desktop-portal-hyprland
   ];
 }
