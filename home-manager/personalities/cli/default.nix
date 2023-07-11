@@ -5,6 +5,9 @@
     ./editor
     ./git
     ./ssh.nix
+    ./kubectl.nix
+    ./starship.nix
+    ./viddy.nix
   ];
   home.packages = with pkgs; [
     distrobox

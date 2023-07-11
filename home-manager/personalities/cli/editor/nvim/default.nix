@@ -3,6 +3,8 @@
   programs.neovim = {
     enable = true;
     defaultEditor = true;
+    vimAlias = true;
+    viAlias = true;
     # https://astronvim.com/#-requirements
     extraPackages = [
       pkgs.nerdfonts
@@ -13,7 +15,7 @@
       pkgs.bottom
       pkgs.cargo
     ];
-    
+
   };
   xdg.configFile = {
     # Not Very Idempotent yet :(
