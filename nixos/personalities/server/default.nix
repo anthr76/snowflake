@@ -36,9 +36,6 @@
   };
   services.openssh.banner = "WARNING:  Unauthorized access to this system is forbidden and will be\nprosecuted by law. By accessing this system, you agree that your actions\nmay be monitored if unauthorized usage is suspected.\n";
 
-  # TODO: This is just an example, be sure to use whatever bootloader you prefer
-  boot.loader.systemd-boot.enable = true;
-
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
 
 
