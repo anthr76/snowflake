@@ -127,7 +127,7 @@
             ./home-manager/hosts/e39.nwk3.rabbito.tech.nix
           ];
         };
-        "anthonyrabbito@nicoles-mbp.nwk3.rabbito.tech" = home-manager.lib.homeManagerConfiguration {
+        "anthony@nicoles-mbp.nwk3.rabbito.tech" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-darwin;
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [
