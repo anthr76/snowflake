@@ -33,12 +33,6 @@
     };
   };
 
-  # TODO: Set your username
-  home = {
-    username = "anthony";
-    homeDirectory = "/home/anthony";
-  };
-
   home.file.".ssh/e39_tpm2.pub".text =  (builtins.readFile ./e39_tpm2.pub);
   home.file.".ssh/yubi.pub".text = (builtins.readFile ./yubi.pub);
 
