@@ -6,11 +6,10 @@
       isNormalUser = true;
       shell = pkgs.fish;
       passwordFile = config.sops.secrets.anthony-password.path;
-      openssh.authorizedKeys.keys = (builtins.filter builtins.isString
-        (builtins.split "\n" (builtins.readFile (builtins.fetchurl {
-          url = "https://github.com/anthr76.keys";
-          sha256 = "1hflxw0a11sq8p7bnmp8rhzixhh8rdigk9531z99f5i0izkf9a5a";
-        }))));
+      openssh.authorizedKeys.keys = [
+        (builtins.readFile ../../../home-manager/users/anthony/yubi.pub)
+        (builtins.readFile ../../../home-manager/users/anthony/e39_tpm2.pub)
+      ];
       extraGroups = [ "wheel" ];
     };
   };

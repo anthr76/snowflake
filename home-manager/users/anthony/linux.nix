@@ -1,3 +1,4 @@
+  {
   xdg = {
     enable = true;
     userDirs = {
@@ -18,4 +19,4 @@
       };
     };
   };
-
+}
