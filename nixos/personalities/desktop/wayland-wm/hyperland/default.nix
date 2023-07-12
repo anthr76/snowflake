@@ -4,6 +4,7 @@
     ../rofi.nix
     ../sddm.nix
     ../waybar.nix
+    ../../default.nix
   ];
   programs.hyprland = {
     enable = true;

@@ -20,6 +20,7 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
+    nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     hyprland = {
       url = "github:hyprwm/hyprland/v0.26.0";
       inputs.nixpkgs.follows = "nixpkgs";

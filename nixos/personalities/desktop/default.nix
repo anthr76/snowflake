@@ -5,8 +5,10 @@
   # You can import other NixOS modules here
   imports = [
     ../base
+    ../physical
     ./quietboot.nix
     ./audio.nix
+    ./yubikey.nix
   ];
 
   nixpkgs = {
