@@ -5,7 +5,6 @@
     userName = "Anthony Rabbito";
     userEmail = "hello@anthonyrabbito.com";
     delta.enable = true;
-    signing.signByDefault = true;
     ignores = [ ".direnv" "result" ];
     extraConfig = {
       init.defaultBranch = "main";
