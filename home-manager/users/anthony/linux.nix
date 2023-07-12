@@ -1,4 +1,8 @@
   {
+  home = {
+    username = "anthony";
+    homeDirectory = "/home/anthony";
+  };
   xdg = {
     enable = true;
     userDirs = {

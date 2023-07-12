@@ -1,6 +1,6 @@
 {
   home = {
     username = "anthony";
-    homedirectory = "/Users/anthony";
+    homeDirectory = "/Users/anthony";
   };
 }
