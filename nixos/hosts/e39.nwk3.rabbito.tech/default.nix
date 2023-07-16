@@ -18,6 +18,11 @@
     luksCreds = config.sops.secrets.e39-luks-password.path;
   };
 
+  boot.initrd.luks.devices.root = lib.mkForce
+    {
+      device = "/dev/disk/by-partlabel/crypted";
+    };
+
   fileSystems."/" = lib.mkForce
     { device = "/dev/mapper/root";
       fsType = "btrfs";
