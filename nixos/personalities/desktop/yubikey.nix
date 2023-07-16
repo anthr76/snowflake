@@ -21,5 +21,6 @@ in {
   programs.ssh.startAgent = true;
   programs.ssh.agentPKCS11Whitelist =
     "${pkgs.yubico-piv-tool}/lib/libykcs11*";
+
   services.pcscd.enable = true;
-}
+

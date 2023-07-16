@@ -7,7 +7,7 @@
     ../base
     ./quietboot.nix
     ./audio.nix
-    ./yubikey.nix
+   # ./yubikey.nix
   ];
 
   nixpkgs = {
