@@ -5,11 +5,19 @@
     (modulesPath + "/profiles/qemu-guest.nix")
     inputs.disko.nixosModules.disko
     ../../personalities/base
+    ../../personalities/physical
+    ../../personalities/desktop
     ../../personalities/desktop/wayland-wm/hyperland
   ];
 
+  sops.secrets.e39-luks-password = {
+    # TODO: poor secret name
+    sopsFile = ../../../secrets/users.yaml;
+  };
+
   disko.devices = import ./disks.nix {
-    disks = [ "/dev/vda" ];
+    disks = [ "/dev/disk/by-id/nvme-PCIe_SSD_21050610240876" ];
+    luksCreds = config.sops.secrets.e39-luks-password.path;
   };
 
   fileSystems."/" = lib.mkForce
@@ -57,5 +65,5 @@
   swapDevices = [ ];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
-  networking.hostName = "lga-test1";
+  networking.hostName = "e39-test1";
 }

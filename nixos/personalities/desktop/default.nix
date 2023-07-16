@@ -4,8 +4,8 @@
 { inputs, outputs, lib, config, pkgs, ... }: {
   # You can import other NixOS modules here
   imports = [
-    ../base
     ../physical
+    ../base
     ./quietboot.nix
     ./audio.nix
     ./yubikey.nix

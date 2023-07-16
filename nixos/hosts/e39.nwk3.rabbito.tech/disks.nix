@@ -1,4 +1,5 @@
-{ disks ? [ "/dev/vda" ], ... }: {
+{ disks ? [ "/dev/disk/by-id/nvme-PCIe_SSD_21050610240876" ], luksCreds, ... }: {
+
     disk = {
       main = {
         type = "disk";
@@ -20,21 +21,26 @@
               };
             }
             {
-              name = "root";
+              name = "crypted";
               start = "128MiB";
               end = "100%";
               content = {
-                type = "btrfs";
-                extraArgs = [ "-f" ];
-                subvolumes = {
-                  "/rootfs" = {
-                    mountpoint = "/";
-                  };
-                  "/home" = {
-                    mountOptions = [ "compress=zstd" ];
-                  };
-                  "/nix" = {
-                    mountOptions = [ "compress=zstd" "noatime" ];
+                type = "luks";
+                name = "root";
+                settings.keyFile = luksCreds;
+                content = {
+                  type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  subvolumes = {
+                    "/rootfs" = {
+                      mountpoint = "/";
+                    };
+                    "/home" = {
+                      mountOptions = [ "compress=zstd" ];
+                    };
+                    "/nix" = {
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
                   };
                 };
               };
