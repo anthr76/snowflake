@@ -18,26 +18,32 @@
     luksCreds = config.sops.secrets.e39-luks-password.path;
   };
 
+  boot.initrd.luks.devices = {
+    root = {
+      device = "/dev/disk/by-partlabel/crypted";
+    };
+  };
+
   fileSystems."/" = lib.mkForce
-    { device = "/dev/disk/by-partlabel/root";
+    { device = "/dev/mapper/root";
       fsType = "btrfs";
       options = [ "subvol=rootfs" ];
     };
 
   fileSystems."/srv" = lib.mkForce
-    { device = "/dev/disk/by-partlabel/root";
+    { device = "/dev/mapper/root";
       fsType = "btrfs";
       options = [ "subvol=rootfs/srv" ];
     };
 
   fileSystems."/var/lib/portables" = lib.mkForce
-    { device = "/dev/disk/by-partlabel/root";
+    { device = "/dev/mapper/root";
       fsType = "btrfs";
       options = [ "subvol=rootfs/var/lib/portables" ];
     };
 
   fileSystems."/var/lib/machines" = lib.mkForce
-    { device = "/dev/disk/by-partlabel/root";
+    { device = "/dev/mapper/root";
       fsType = "btrfs";
       options = [ "subvol=rootfs/var/lib/machines" ];
     };
@@ -48,13 +54,13 @@
     };
 
   fileSystems."/nix" = lib.mkForce
-    { device = "/dev/disk/by-partlabel/root";
+    { device = "/dev/mapper/root";
       fsType = "btrfs";
       options = [ "subvol=nix" ];
     };
 
   fileSystems."/home" = lib.mkForce
-    { device = "/dev/disk/by-partlabel/root";
+    { device = "/dev/mapper/root";
       fsType = "btrfs";
       options = [ "subvol=home" ];
     };
