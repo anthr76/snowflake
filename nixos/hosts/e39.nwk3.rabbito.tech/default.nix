@@ -4,9 +4,7 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     (modulesPath + "/profiles/qemu-guest.nix")
     inputs.disko.nixosModules.disko
-    ../../personalities/base
     ../../personalities/physical
-    ../../personalities/desktop
     ../../personalities/desktop/wayland-wm/hyperland
   ];
 
