@@ -15,6 +15,7 @@
       pkgs.bottom
       pkgs.cargo
       pkgs.nodejs
+      pkgs.libstdcxx5
     ];
 
   };
