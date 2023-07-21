@@ -14,6 +14,7 @@
       pkgs.gdu
       pkgs.bottom
       pkgs.cargo
+      pkgs.nodejs
     ];
 
   };
