@@ -5,7 +5,6 @@
     ../sddm.nix
     ../waybar.nix
     ../../default.nix
-    ../../../base
   ];
   programs.hyprland = {
     enable = true;
