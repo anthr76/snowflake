@@ -22,7 +22,7 @@
 
   boot.initrd.luks.devices.crypted = lib.mkForce
     {
-      fallbackToPassword = true;
+      keyFileTimeout = 1;
       device = "/dev/disk/by-partlabel/crypted";
     };
 
