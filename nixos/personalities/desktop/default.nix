@@ -5,7 +5,6 @@
   # You can import other NixOS modules here
   imports = [
     ../base
-    ./quietboot.nix
     ./audio.nix
    # ./yubikey.nix
   ];
