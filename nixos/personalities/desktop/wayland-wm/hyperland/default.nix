@@ -5,6 +5,7 @@
     ../sddm.nix
     ../waybar.nix
     ../../default.nix
+    ../../../base
   ];
   programs.hyprland = {
     enable = true;
@@ -15,5 +16,7 @@
     lxqt.lxqt-policykit
     hyprpaper
     xdg-desktop-portal-hyprland
+    # For now
+    foot
   ];
 }
