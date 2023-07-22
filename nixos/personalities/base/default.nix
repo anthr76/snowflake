@@ -10,6 +10,7 @@
     ./zram.nix
     ./polkit.nix
     ./bootloader.nix
+    ./networking.nix
   ] ++ (builtins.attrValues outputs.nixosModules);
 
 }
