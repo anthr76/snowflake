@@ -3,6 +3,7 @@
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
+    ../../personalities/base
     ../../personalities/physical
     ../../personalities/desktop/wayland-wm/hyperland
   ];
@@ -32,22 +33,10 @@
       options = [ "subvol=rootfs" ];
     };
 
-  fileSystems."/srv" = lib.mkForce
-    { device = "/dev/mapper/crypted";
-      fsType = "btrfs";
-      options = [ "subvol=rootfs/srv" ];
-    };
-
   fileSystems."/var/lib/portables" = lib.mkForce
     { device = "/dev/mapper/crypted";
       fsType = "btrfs";
       options = [ "subvol=rootfs/var/lib/portables" ];
-    };
-
-  fileSystems."/var/lib/machines" = lib.mkForce
-    { device = "/dev/mapper/crypted";
-      fsType = "btrfs";
-      options = [ "subvol=rootfs/var/lib/machines" ];
     };
 
   fileSystems."/boot" = lib.mkForce
