@@ -12,7 +12,7 @@
     sopsFile = ../../../secrets/users.yaml;
   };
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usb_storage" "sd_mod" ]
+  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usb_storage" "sd_mod" ];
   boot.kernelModules = [ "kvm-amd" ];
 
   disko.devices = import ./disks.nix {
