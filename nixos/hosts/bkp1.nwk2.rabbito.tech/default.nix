@@ -14,6 +14,7 @@
     # Import your generated (nixos-generate-config) hardware configuration
     ../../personalities/base
     ../../personalities/server
+    ./hardware-configuration.nix
   ];
   networking.hostName = "bkp1";
 }
