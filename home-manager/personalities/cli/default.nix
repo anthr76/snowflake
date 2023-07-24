@@ -5,7 +5,7 @@
     ./editor
     ./git
     ./ssh.nix
-    ./kubectl.nix
+    ./kubernetes.nix
     ./starship.nix
     ./viddy.nix
     ./lsd.nix

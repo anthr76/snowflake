@@ -1,5 +1,5 @@
 { pkgs, ... }: {
-  home.packages = with pkgs; [ kubectl kubecolor kubelogin-oidc ];
+  home.packages = with pkgs; [ kubectl kubecolor kubelogin-oidc helm ];
   programs.fish.functions = {
     k = {
       wraps = "kubectl";
