@@ -10,5 +10,4 @@
       package = pkgs.fira;
     };
   };
-  home.packages = with pkgs; [ fira-code-symbols noto-fonts noto-fonts-emoji ];
 }
