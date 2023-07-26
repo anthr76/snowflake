@@ -1,6 +1,6 @@
 return {
   {
-    "mandos/nvim-helm",
+    "towolf/vim-helm",
     event = { "BufEnter" }
   },
 }
