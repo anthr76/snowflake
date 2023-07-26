@@ -14,7 +14,7 @@ in
     vimAlias = true;
     viAlias = true;
     extraLuaConfig = ''
-    vim.opt.rtp:append("${config.xdg.configHome}/astronvim")
+    vim.opt.rtp:append("${config.xdg.configHome}/nvim/lua/user")
     '';
     # https://astronvim.com/#-requirements
     extraPackages = [
@@ -40,8 +40,11 @@ in
     userConfig = {
       onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
       recursive = true;
-      target = "nvim/lua/user";
+      target = "astronvim/lua/user";
       source = ./lua;
     };
+  };
+  home.sessionVariables = {
+    NVIM_APPNAME = "astronvim";
   };
 }
