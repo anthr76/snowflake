@@ -3,8 +3,8 @@ let
   astroNvimSource = pkgs.fetchFromGitHub {
     owner = "AstroNvim";
     repo = "AstroNvim";
-    rev = "v3.33.4";
-    sha256 = "utGG1U9p3a5ynRcQys1OuD5J0LjkIQipD0TX8zW66/4=";
+    rev = "v3.34.0";
+    sha256 = "ELEmU6fyC/QzIhV8LmXGB65uEZrmHabIW79xSQiLu6I=";
   };
 in
 {
