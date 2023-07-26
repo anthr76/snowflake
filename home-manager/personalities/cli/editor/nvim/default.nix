@@ -31,12 +31,12 @@ in
 
   };
   xdg.configFile = {
-    # userConfig = {
-    #   onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
-    #   recursive = true;
-    #   target = "nvim/lua/user";
-    #   source = ./lua;
-    # };
+    userConfig = {
+      onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
+      recursive = true;
+      target = "nvim/lua/user";
+      source = ./lua;
+    };
     astronvim = {
       onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
       recursive = true;
