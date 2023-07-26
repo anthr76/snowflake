@@ -14,7 +14,7 @@ in
     vimAlias = true;
     viAlias = true;
     extraLuaConfig = ''
-    vim.opt.rtp:append("${config.xdg.configHome}/astrovim")
+    vim.opt.rtp:append("${config.xdg.configHome}/astronvim")
     '';
     # https://astronvim.com/#-requirements
     extraPackages = [
