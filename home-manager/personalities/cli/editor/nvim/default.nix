@@ -13,9 +13,6 @@ in
     defaultEditor = true;
     vimAlias = true;
     viAlias = true;
-    extraLuaConfig = ''
-    vim.opt.rtp:append("${config.xdg.configHome}/nvim/lua/user")
-    '';
     # https://astronvim.com/#-requirements
     extraPackages = [
       pkgs.nerdfonts
