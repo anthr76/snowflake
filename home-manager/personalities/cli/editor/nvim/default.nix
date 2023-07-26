@@ -41,11 +41,11 @@ in
     astrovim = {
       onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
       recursive = true;
-      target = "nvim/astrovim";
+      target = "astrovim";
       source = astroNvimSource;
     };
   };
   home.sessionVariables = {
-    NVIM_APPNAME = "nvim/astrovim";
+    NVIM_APPNAME = "astrovim";
   };
 }
