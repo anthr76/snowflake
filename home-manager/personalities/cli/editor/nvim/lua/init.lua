@@ -1,14 +1,6 @@
 return {
-  -- colorscheme = "catppuccin",
-  --
-  -- plugins = {
-  --   {
-  --     "catppuccin/nvim",
-  --     name = "catppuccin",
-  --     config = function()
-  --       require("catppuccin").setup {}
-  --     end,
-  --   },
-  -- },
-  
+vim.cmd([[
+autocmd BufRead,BufNewFile */templates/*.yml,*/templates/*.tpl,*.gotmpl,helmfile*.yml set ft=helm
+]])
+ 
 }
