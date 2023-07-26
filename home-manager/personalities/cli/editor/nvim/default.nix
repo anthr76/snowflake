@@ -21,8 +21,9 @@
   };
   xdg.configFile = {
     # Not Very Idempotent yet :(
-    nvim = {
+    astrovim = {
       onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
+      target = "nvim/astrovim";
       source = pkgs.fetchFromGitHub {
         owner = "AstroNvim";
         repo = "AstroNvim";
@@ -30,5 +31,13 @@
         sha256 = "ELEmU6fyC/QzIhV8LmXGB65uEZrmHabIW79xSQiLu6I=";
       };
     };
+    lua = {
+      source = ./lua;
+      recursive = true;
+      target = "nvim/lua/user";
+    };
+  };
+  home.sessionVariables = {
+    NVIM_APPNAME = "nvim/astrovim";
   };
 }
