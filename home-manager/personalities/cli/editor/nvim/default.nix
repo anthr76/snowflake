@@ -13,12 +13,14 @@ in
     defaultEditor = true;
     vimAlias = true;
     viAlias = true;
+    plugins = [
+      pkgs.vimPlugins.nvim-treesitter.withAllGrammars
+    ];
     # https://astronvim.com/#-requirements
     extraPackages = [
       pkgs.nerdfonts
       pkgs.lazygit
       pkgs.tree-sitter
-      pkgs.tree-sitter.allGrammars
       pkgs.ripgrep
       pkgs.gdu
       pkgs.bottom
