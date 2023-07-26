@@ -18,6 +18,7 @@ in
       pkgs.nerdfonts
       pkgs.lazygit
       pkgs.tree-sitter
+      pkgs.tree-sitter.allGrammars
       pkgs.ripgrep
       pkgs.gdu
       pkgs.bottom
