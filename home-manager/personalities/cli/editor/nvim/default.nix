@@ -32,13 +32,11 @@ in
   };
   xdg.configFile = {
     astronvim = {
-      onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
       recursive = true;
       target = "astronvim";
       source = astroNvimSource;
     };
     userConfig = {
-      onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
       recursive = true;
       target = "astronvim/lua/user";
       source = ./lua;
