@@ -13,9 +13,9 @@ in
     defaultEditor = true;
     vimAlias = true;
     viAlias = true;
-    # extraLuaConfig = ''
-    # vim.opt.rtp:append("${config.xdg.configHome}/nvim/lua/user")
-    # '';
+    extraLuaConfig = ''
+    vim.opt.rtp:append("${config.xdg.configHome}/astrovim")
+    '';
     # https://astronvim.com/#-requirements
     extraPackages = [
       pkgs.nerdfonts
@@ -40,11 +40,8 @@ in
     userConfig = {
       onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
       recursive = true;
-      target = "nvim/astronvim/lua/user";
+      target = "nvim/lua/user";
       source = ./lua;
     };
-  };
-  home.sessionVariables = {
-    NVIM_APPNAME = "astronvim";
   };
 }
