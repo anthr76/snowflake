@@ -3,8 +3,8 @@ let
   astroNvimSource = pkgs.fetchFromGitHub {
     owner = "AstroNvim";
     repo = "AstroNvim";
-    rev = "8fe945f07aebf8dd2006e7cb3f89c200e0e4adef";
-    sha256 = "ELEmU6fyC/QzIhV8LmXGB65uEZrmHabIW79xSQiLu6I=";
+    rev = "v3.33.4";
+    sha256 = "utGG1U9p3a5ynRcQys1OuD5J0LjkIQipD0TX8zW66/4=";
   };
 in
 {
@@ -31,17 +31,17 @@ in
 
   };
   xdg.configFile = {
-    userConfig = {
-      onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
-      recursive = true;
-      target = "nvim/lua/user";
-      source = ./lua;
-    };
     astronvim = {
       onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
       recursive = true;
       target = "astronvim";
       source = astroNvimSource;
+    };
+    userConfig = {
+      onChange = "${pkgs.neovim}/bin/nvim --headless +quitall";
+      recursive = true;
+      target = "nvim/astronvim/lua/user";
+      source = ./lua;
     };
   };
   home.sessionVariables = {
