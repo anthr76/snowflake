@@ -27,8 +27,8 @@
       source = pkgs.fetchFromGitHub {
         owner = "AstroNvim";
         repo = "AstroNvim";
-        rev = "8fe945f07aebf8dd2006e7cb3f89c200e0e4adef";
-        sha256 = "ELEmU6fyC/QzIhV8LmXGB65uEZrmHabIW79xSQiLu6I=";
+        rev = "96ddbcc391b6ef5fa58c9d6ce9a8334e86b65f20";
+        sha256 = "LVaeoR34nwQEZXpNryPLh4RRVQvWuyq3tAGaW3iYHow=";
       };
     };
     lua = {
