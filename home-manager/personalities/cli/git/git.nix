@@ -18,6 +18,9 @@ in
     # signing.signByDefault = true;
     ignores = [ ".direnv" "result" ];
     extraConfig = {
+      commit.gpgsign = true;
+      tag.forceSignAnnotated = true;
+      tag.gpgsign = true;
       init.defaultBranch = "main";
       gpg.format = "ssh";
       gpg.ssh.defaultKeyCommand = "git-ssh-signingkey";
