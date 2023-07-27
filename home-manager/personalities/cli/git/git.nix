@@ -1,5 +1,13 @@
 {pkgs, ...}:
+let
+  git-ssh-signingkey = pkgs.writeShellScriptBin "git-ssh-signingkey" ''
+    echo key::$(${pkgs.openssh}/bin/ssh-add -L | ${pkgs.gnugrep}/bin/grep -m 1 -E "pkcs11|Authentication")
+  '';
+in
 {
+  home.packages = with pkgs; [
+    git-ssh-signingkey
+  ];
   # TODO: This needs to be modularized..
   programs.git = {
     enable = true;
@@ -12,7 +20,7 @@
     extraConfig = {
       init.defaultBranch = "main";
       gpg.format = "ssh";
-      gpg.ssh.defaultKeyCommand = ''sh -c "echo key::$(${pkgs.openssh}/bin/ssh-add -L | ${pkgs.coreutils-full}/bin/grep -m 1 -E "pkcs11|Authentication")"'';
+      gpg.ssh.defaultKeyCommand = "git-ssh-signingkey";
     };
   };
 }
