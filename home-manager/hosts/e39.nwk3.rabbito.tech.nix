@@ -1,8 +1,8 @@
 {
   imports = [
-    ../personalities/global
-    ../personalities/desktop
+    ../users/anthony
     ../users/anthony/linux.nix
+    ../personalities/desktop
   ];
 
 }
