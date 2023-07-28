@@ -3,7 +3,7 @@
     hyprConfig = {
       recursive = true;
       target = "hypr/hyperland.conf";
-      source = "hyprland.conf";
+      source = "./hyprland.conf";
     };
   };
 }
