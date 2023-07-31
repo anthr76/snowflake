@@ -3,6 +3,7 @@
     inputs.hyprland.homeManagerModules.default
   ];
   wayland.windowManager.hyprland = {
+    enable = true;
     settings = {
       general = {
         gaps_in = 15;
