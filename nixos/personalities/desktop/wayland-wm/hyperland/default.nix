@@ -6,6 +6,9 @@
     ../waybar.nix
     ../../default.nix
   ];
+  programs.hyprland = {
+    enable = true;
+  };
   # https://wiki.hyprland.org/Useful-Utilities/Must-have/
   environment.systemPackages = with pkgs; [
     dunst
