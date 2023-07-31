@@ -2,7 +2,7 @@
   imports = [
     inputs.hyprland.homeManagerModules.default
   ];
-  inputs.wayland.windowManager.hyprland = {
+  wayland.windowManager.hyprland = {
     settings = {
       general = {
         gaps_in = 15;
