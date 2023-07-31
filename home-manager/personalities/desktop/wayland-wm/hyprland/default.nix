@@ -1,4 +1,4 @@
-{
+{ lib,config,pkgs, ...}:{
    wayland.windowManager.hyprland = {
     settings = {
       general = {
