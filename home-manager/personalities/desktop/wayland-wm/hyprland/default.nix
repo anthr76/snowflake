@@ -1,5 +1,8 @@
-{ lib,config,pkgs, ...}:{
-   wayland.windowManager.hyprland = {
+{ lib,config,pkgs,inputs, ...}:{
+  imports = [
+    inputs.hyprland.homeManagerModules.default
+  ];
+  wayland.windowManager.hyprland = {
     settings = {
       general = {
         gaps_in = 15;

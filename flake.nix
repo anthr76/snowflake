@@ -22,7 +22,7 @@
 
     nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     hyprland = {
-      url = "github:hyprwm/hyprland/v0.26.0";
+      url = "github:hyprwm/hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Shameless plug: looking for a way to nixify your themes and make
