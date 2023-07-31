@@ -8,6 +8,7 @@
   ];
   programs.hyprland = {
     enable = true;
+    package = null;
   };
   # https://wiki.hyprland.org/Useful-Utilities/Must-have/
   environment.systemPackages = with pkgs; [

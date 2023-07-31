@@ -30,7 +30,7 @@
     # nix-colors.url = "github:misterio77/nix-colors";
   };
 
-  outputs = { self, disko, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, disko, nixpkgs, home-manager, hyprland, ... }@inputs:
     let
       inherit (self) outputs;
       forAllSystems = nixpkgs.lib.genAttrs [
