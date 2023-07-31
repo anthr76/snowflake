@@ -4,5 +4,4 @@
 {
   # List your module files here
   fonts = import ./fonts.nix;
-  hyprland = import hyprland.homeManagerModules.default;
 }
