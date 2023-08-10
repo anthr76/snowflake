@@ -9,6 +9,7 @@
     ./starship.nix
     ./viddy.nix
     ./lsd.nix
+    ./containers.nix
   ];
   home.packages = with pkgs; [
     ripgrep
