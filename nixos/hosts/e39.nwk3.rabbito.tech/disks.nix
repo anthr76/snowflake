@@ -10,14 +10,17 @@
           partitions = [
             {
               name = "ESP";
-              start = "1MiB";
-              end = "128MiB";
-              fs-type = "fat32";
+              label = "EFI";
+              size = "512M";
+              type = "EF00" ;
               bootable = true;
               content = {
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
+                mountOptions = [
+                    "defaults"
+                  ];
               };
             }
             {
@@ -37,9 +40,11 @@
                     };
                     "/home" = {
                       mountOptions = [ "compress=zstd" ];
+                      mountPoint = "/home";
                     };
                     "/nix" = {
                       mountOptions = [ "compress=zstd" "noatime" ];
+                      mountpoint = "/nix";
                     };
                   };
                 };
