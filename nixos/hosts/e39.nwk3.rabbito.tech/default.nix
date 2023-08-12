@@ -58,5 +58,5 @@
   swapDevices = [ ];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
-  networking.hostName = "e39-test1";
+  networking.hostName = "e39";
 }

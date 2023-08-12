@@ -1,4 +1,4 @@
-{ disks ? [ "/dev/disk/by-id/nvme-PCIe_SSD_21050610240876" ], luksCreds, ... }: {
+{ disks ? [ "/dev/disk/by-id/nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0RA76311 " ], luksCreds, ... }: {
 
     disk = {
       main = {
