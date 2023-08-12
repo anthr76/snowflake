@@ -1,4 +1,7 @@
 {
+  imports = [
+    ../../default.nix
+  ];
   services = {
     xserver = {
       desktopManager.gnome = {

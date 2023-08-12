@@ -4,7 +4,7 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
     ../../personalities/physical
-    ../../personalities/desktop/wayland-wm/hyperland
+    ../../personalities/desktop/wayland-wm/gnome
   ];
 
   sops.secrets.e39-luks-password = {
