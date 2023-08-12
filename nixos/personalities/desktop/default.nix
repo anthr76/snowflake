@@ -6,7 +6,8 @@
   imports = [
     ../base
     ./audio.nix
-    ./networking.nix
+   # TODO: may be redundant
+   # ./networking.nix
    # ./yubikey.nix
   ];
 
