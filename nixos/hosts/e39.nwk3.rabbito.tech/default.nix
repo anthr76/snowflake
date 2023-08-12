@@ -13,10 +13,10 @@
   };
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usb_storage" "sd_mod" ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = [ "kvm-intel" ];
 
   disko.devices = import ./disks.nix {
-    disks = [ "/dev/disk/by-id/nvme-PCIe_SSD_21050610240876" ];
+    disks = [ "/dev/disk/by-id/nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0RA76311" ];
     luksCreds = config.sops.secrets.e39-luks-password.path;
   };
 
