@@ -22,7 +22,7 @@
 
   boot.initrd.luks.devices.crypted = lib.mkForce
     {
-      device = "/dev/disk/by-partlabel/crypted";
+      device = "/dev/disk/by-partlabel/disk-main-luks";
     };
 
   fileSystems."/" = lib.mkForce
