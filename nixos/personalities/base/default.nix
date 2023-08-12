@@ -6,7 +6,6 @@
     ./users.nix
     ./openssh.nix
     ./podman.nix
-    ./systemd-initrd.nix
     ./zram.nix
     ./polkit.nix
     ./bootloader.nix
