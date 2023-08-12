@@ -4,54 +4,55 @@
       main = {
         type = "disk";
         device = builtins.elemAt disks 0;
+        type = "disk";
+        device = "/dev/vdb";
         content = {
-          type = "table";
-          format = "gpt";
-          partitions = [
-            {
-              name = "ESP";
+          type = "gpt";
+          partitions = {
+            ESP = {
               label = "EFI";
+              name = "ESP";
               size = "512M";
               type = "EF00" ;
-              bootable = true;
               content = {
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
                 mountOptions = [
-                    "defaults"
-                  ];
+                  "defaults"
+                ];
               };
-            }
-            {
-              name = "crypted";
-              start = "128MiB";
-              end = "100%";
+            };
+            luks = {
+              size = "100%";
               content = {
                 type = "luks";
-                name = "root";
+                name = "crypted";
+                extraOpenArgs = [ "--allow-discards" ];
                 settings.keyFile = luksCreds;
                 content = {
                   type = "btrfs";
                   extraArgs = [ "-f" ];
                   subvolumes = {
-                    "/rootfs" = {
+                    "/root" = {
                       mountpoint = "/";
+                      mountOptions = [ "compress=zstd" "noatime" ];
                     };
                     "/home" = {
-                      mountOptions = [ "compress=zstd" ];
-                      mountPoint = "/home";
+                      mountpoint = "/home";
+                      mountOptions = [ "compress=zstd" "noatime" ];
                     };
                     "/nix" = {
-                      mountOptions = [ "compress=zstd" "noatime" ];
                       mountpoint = "/nix";
+                      mountOptions = [ "compress=zstd" "noatime" ];
                     };
                   };
                 };
               };
-            }
-          ];
+            };
+          };
         };
       };
     };
+  };
 }
