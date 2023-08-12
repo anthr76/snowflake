@@ -6,4 +6,6 @@
   boot.loader.systemd-boot.consoleMode = "auto";
   boot.supportedFilesystems = [ "btrfs" ];
   boot.initrd.enable = true;
+
+  boot.initrd.supportedFilesystems = [ "btrfs" ];
 }
