@@ -5,7 +5,6 @@
         type = "disk";
         device = builtins.elemAt disks 0;
         type = "disk";
-        device = "/dev/vdb";
         content = {
           type = "gpt";
           partitions = {
