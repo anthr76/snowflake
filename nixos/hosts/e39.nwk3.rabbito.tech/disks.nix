@@ -4,7 +4,6 @@
       main = {
         type = "disk";
         device = builtins.elemAt disks 0;
-        type = "disk";
         content = {
           type = "gpt";
           partitions = {
