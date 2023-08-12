@@ -23,4 +23,4 @@ in {
     "${pkgs.yubico-piv-tool}/lib/libykcs11*";
 
   services.pcscd.enable = true;
-
+}

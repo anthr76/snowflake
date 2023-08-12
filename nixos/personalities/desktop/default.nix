@@ -6,6 +6,7 @@
   imports = [
     ../base
     ./audio.nix
+    ./networking.nix
    # ./yubikey.nix
   ];
 
@@ -34,10 +35,6 @@
     };
   };
 
-
-  networking.firewall = {
-    enable = true;
-  };
 
   # TODO: This is just an example, be sure to use whatever bootloader you prefer
   boot.loader.systemd-boot.enable = true;
