@@ -3,4 +3,5 @@
 
 { pkgs ? (import ../nixpkgs.nix) { } }: {
   # example = pkgs.callPackage ./example { };
+  pcoip-client = pkgs.callPackage ./pcoip-client { };
 }
