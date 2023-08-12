@@ -20,6 +20,34 @@
     luksCreds = config.sops.secrets.e39-luks-password.path;
   };
 
+  boot.initrd.luks.devices.crypted = lib.mkForce
+    {
+      device = "/dev/disk/by-partlabel/crypted";
+    };
+
+  fileSystems."/" = lib.mkForce
+    { device = "/dev/mapper/crypted";
+      fsType = "btrfs";
+      options = [ "subvol=root" ];
+    };
+
+  fileSystems."/boot" = lib.mkForce
+    { device = "/dev/disk/by-partlabel/EFI";
+      fsType = "vfat";
+    };
+
+  fileSystems."/nix" = lib.mkForce
+    { device = "/dev/mapper/crypted";
+      fsType = "btrfs";
+      options = [ "subvol=nix" ];
+    };
+
+  fileSystems."/home" = lib.mkForce
+    { device = "/dev/mapper/crypted";
+      fsType = "btrfs";
+      options = [ "subvol=home" ];
+    };
+
   swapDevices = [ ];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
