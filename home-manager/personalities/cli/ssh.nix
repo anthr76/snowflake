@@ -3,6 +3,7 @@ let
   hostnames = builtins.attrNames outputs.nixosConfigurations;
 in
 {
+  services.ssh-agent.enable = true;
   programs.ssh = {
     enable = true;
     matchBlocks = {
