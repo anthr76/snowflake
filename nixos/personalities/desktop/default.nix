@@ -6,9 +6,10 @@
   imports = [
     ../base
     ./audio.nix
+    ./yubikey.nix
+
    # TODO: may be redundant
    # ./networking.nix
-   # ./yubikey.nix
   ];
 
   nixpkgs = {
