@@ -1,0 +1,20 @@
+diff --git a/src/lib/backend.c b/src/lib/backend.c
+index ca5e2cc..8c82b96 100644
+--- a/src/lib/backend.c
++++ b/src/lib/backend.c
+@@ -53,7 +53,6 @@ CK_RV backend_init(void) {
+             LOGE(msg);
+             return rv;
+         }
+-        LOGW(msg);
+     } else {
+         fapi_init = true;
+     }
+@@ -195,7 +194,6 @@ CK_RV backend_get_tokens(token **tok, size_t *len) {
+                 token_free_list(&tmp, len);
+                 return rv;
+             } else {
+-                LOGW(msg);
+             }
+         }
+         LOGV("FAPI + Esysdb returned %zi token", *len);

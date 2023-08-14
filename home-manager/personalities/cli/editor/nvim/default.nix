@@ -27,6 +27,7 @@ in
       pkgs.cargo
       pkgs.nodejs
       pkgs.libstdcxx5
+      pkgs.gnumake
     ];
 
   };

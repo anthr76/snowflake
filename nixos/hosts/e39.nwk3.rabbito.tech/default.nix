@@ -3,7 +3,6 @@
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
-    ../../personalities/physical
     ../../personalities/desktop/wayland-wm/gnome
   ];
 

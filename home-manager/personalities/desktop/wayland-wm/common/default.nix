@@ -1,19 +1,19 @@
 { pkgs, ... }:
 {
   imports = [
-    ./hyprland-vnc.nix
+    ./gnome-keyring.nix
   ];
+  # TODO: Breakout into WM specific area
+  # home.packages = with pkgs; [
+  #   grim
+  #   imv
+  #   slurp
+  #   waypipe
+  #   wl-clipboard
+  # ];
 
-  home.packages = with pkgs; [
-    grim
-    imv
-    slurp
-    waypipe
-    wl-clipboard
-  ];
-
-  home.sessionVariables = {
-    MOZ_ENABLE_WAYLAND = 1;
-    QT_QPA_PLATFORM = "wayland";
-  };
+  # home.sessionVariables = {
+  #   MOZ_ENABLE_WAYLAND = 1;
+  #   QT_QPA_PLATFORM = "wayland";
+  # };
 }
