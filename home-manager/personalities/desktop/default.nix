@@ -12,5 +12,6 @@
     moonlight-qt
     parsec-bin
     syncthing
+    pcoip-client
   ];
 }
