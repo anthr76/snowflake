@@ -4,5 +4,6 @@
     fractal-next
     webcord-vencord
     slack
+    element-desktop
   ];
 }

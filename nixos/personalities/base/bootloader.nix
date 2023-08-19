@@ -1,9 +1,22 @@
 {
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.initrd.systemd.enable = true;
-  boot.initrd.systemd.emergencyAccess = true;
-  boot.initrd.supportedFilesystems = [ "btrfs" ];
-  boot.supportedFilesystems = [ "btrfs" ];
-  boot.initrd.enable = true;
+  # boot.loader.systemd-boot.enable = true;
+  boot = {
+    supportedFilesystems = [ "btrfs" ];
+    loader = {
+      efi = {
+        canTouchEfiVariables = true;
+      };
+      grub = {
+         efiSupport = true;
+         device = "nodev";
+         enableCryptodisk = true;
+      };
+    };
+    initrd = {
+      enable = true;
+      systemd.enable = true;
+      systemd.emergencyAccess = true;
+      supportedFilesystems = [ "btrfs" ];
+    };
+  };
 }

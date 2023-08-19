@@ -4,8 +4,6 @@
     enable = true;
     package = pkgs.unstable.wezterm;
     extraConfig = /* lua */ ''
-      local wayland_gnome = require 'wayland_gnome'
-      wayland_gnome.apply_to_config(config)
       return {
         font = wezterm.font("${config.fontProfiles.monospace.family}"),
         font_size = 12.0,
@@ -13,12 +11,6 @@
         hide_mouse_cursor_when_typing = false,
         automatically_reload_config = true,
         hide_tab_bar_if_only_one_tab = true,
-        visual_bell = {
-            fade_in_function = 'Linear',
-            fade_in_duration_ms = 40,
-            fade_out_function = 'EaseOut',
-            fade_out_duration_ms = 150,
-        },
       }
     '';
   };

@@ -15,5 +15,6 @@
     ripgrep
     fd
     jq
+    distrobox
   ];
 }
