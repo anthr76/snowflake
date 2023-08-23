@@ -27,7 +27,7 @@
         "x-scheme-handler/unknown" = "google-chrome.desktop";
         "application/pdf" = "google-chrome.desktop";
         "x-scheme-handler/element" = "element-desktop.desktop";
-        "x-scheme-handler/bs-sso-authorized" = "ubuntu-22-04-BlastShield.desktop";
+        # "x-scheme-handler/bs-sso-authorized" = "ubuntu-22-04-BlastShield.desktop";
       };
     };
   };

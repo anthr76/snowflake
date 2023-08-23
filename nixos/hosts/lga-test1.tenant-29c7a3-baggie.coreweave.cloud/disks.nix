@@ -9,8 +9,7 @@
           partitions = [
             {
               name = "ESP";
-              start = "1MiB";
-              end = "128MiB";
+              size = "512M";
               fs-type = "fat32";
               bootable = true;
               content = {
