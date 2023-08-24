@@ -4,6 +4,10 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
     ../../personalities/desktop/wayland-wm/gnome
+    inputs.hardware.nixosModules.common-cpu-intel
+    inputs.hardware.nixosModules.common-pc-laptop
+    inputs.hardware.nixosModules.common-pc-ssd
+    inputs.hardware.nixosModules.common-hidpi
   ];
 
   sops.secrets.e39-luks-password = {
@@ -14,6 +18,7 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "vmd" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.kernelParams = [ "mem_sleep_default=deep" ];
+  services.fprintd.enable = true;
 
   disko.devices = import ./disks.nix {
     disks = [ "/dev/disk/by-id/nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0RA76311" ];
