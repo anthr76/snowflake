@@ -7,7 +7,8 @@
     inputs.hardware.nixosModules.common-cpu-intel
     inputs.hardware.nixosModules.common-pc-laptop
     inputs.hardware.nixosModules.common-pc-ssd
-    inputs.hardware.nixosModules.common-hidpi
+    # TODO: Check if this breaks Luks input on startup
+    # inputs.hardware.nixosModules.common-hidpi
   ];
 
   sops.secrets.e39-luks-password = {
