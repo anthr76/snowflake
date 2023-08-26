@@ -7,4 +7,9 @@
     ./chat
     ./wayland-wm/common
   ];
+  home.packages = with pkgs; [
+    moonlight-qt
+    parsec-bin
+    syncthing
+  ];
 }
