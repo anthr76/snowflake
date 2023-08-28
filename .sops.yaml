@@ -15,3 +15,10 @@ creation_rules:
       - *bkp1
       - *lga-test1
       - *e39
+  - path_regex: (nixos)/.*\.sops\.ya?ml
+    key_groups:
+    - age:
+      - *anthony
+      - *bkp1
+      - *lga-test1
+      - *e39
