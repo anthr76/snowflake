@@ -13,8 +13,8 @@
     home-manager.url = "github:nix-community/home-manager/release-23.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # TODO: Add any other flake you might need
     hardware.url = "github:nixos/nixos-hardware";
+    impermanence.url = "github:nix-community/impermanence";
 
     sops-nix.url = "github:mic92/sops-nix";
     disko.url = "github:nix-community/disko";
