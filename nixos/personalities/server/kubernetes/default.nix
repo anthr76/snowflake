@@ -17,7 +17,7 @@
   };
   services.kubernetes = {
     easyCerts = false;
-    masterAddress = "https://cluster-0.scr1.rabbito.tech:6443";
+    masterAddress = "cluster-0.scr1.rabbito.tech";
     pki.enable = false;
     clusterCidr = "10.244.0.0/16,fddf:f7bc:9670::/48";
     caFile = config.sops.secrets.kubelet-ca.path;

@@ -43,14 +43,15 @@ in
     keyFile = config.sops.secrets.etcd-client-key.path;
     listenClientUrls = [ "https://[::]:2379" ];
     listenPeerUrls = [ "https://[::]:2380" ];
+    initialCluster = null;
     peerCertFile = config.sops.secrets.etcd-peer-cert.path;
     peerClientCertAuth = true;
     peerKeyFile = config.sops.secrets.etcd-peer-key.path;
     trustedCaFile = config.sops.secrets.etcd-trusted-ca.path;
     peerTrustedCaFile = config.sops.secrets.etcd-peer-trusted-ca.path;
     extraConf = {
-      ETCD_AUTO_TLS = "false";
-      ETCD_EXPERIMENTAL_INITIAL_CORRUPT_CHECK = "true";
+      AUTO_TLS = "false";
+      EXPERIMENTAL_INITIAL_CORRUPT_CHECK = "true";
       EXPERIMENTAL_WATCH_PROGRESS_NOTIFY_INTERVAL = "5s";
 
     };
