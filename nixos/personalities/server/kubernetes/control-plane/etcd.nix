@@ -43,7 +43,7 @@ in
     keyFile = config.sops.secrets.etcd-client-key.path;
     listenClientUrls = [ "https://[::]:2379" ];
     listenPeerUrls = [ "https://[::]:2380" ];
-    initialCluster = null;
+    initialCluster = [""];
     peerCertFile = config.sops.secrets.etcd-peer-cert.path;
     peerClientCertAuth = true;
     peerKeyFile = config.sops.secrets.etcd-peer-key.path;
