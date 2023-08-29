@@ -11,6 +11,11 @@ in
       owner = config.users.users.kubernetes.name;
       group = config.users.users.kubernetes.group;
     };
+    etcd-cert = {
+      sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
+    };
     etcd-cert-key = {
       sopsFile = ../secrets.sops.yaml;
       owner = config.users.users.kubernetes.name;
