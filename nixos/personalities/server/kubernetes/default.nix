@@ -17,6 +17,7 @@
   };
   services.kubernetes = {
     easyCerts = false;
+    flannel.enable = false;
     masterAddress = "cluster-0.scr1.rabbito.tech";
     pki.enable = false;
     clusterCidr = "10.244.0.0/16,fddf:f7bc:9670::/48";
