@@ -7,6 +7,8 @@
     inputs.disko.nixosModules.disko
   ];
   networking.hostName = "master-04";
+  # TODO: Refactor to use `networking.domain`
+  networking.domain = "tenant-29c7a3-baggie.coreweave.cloud";
   sops.secrets.e39-luks-password = {
     # TODO: poor secret name
     sopsFile = ../../../secrets/users.yaml;

@@ -6,9 +6,13 @@
   sops.secrets = {
     kubelet-ca = {
       sopsFile = ./secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     bootstrap-kubeconfig = {
       sopsFile = ./secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
   };
   services.kubernetes = {

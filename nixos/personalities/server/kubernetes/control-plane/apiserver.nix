@@ -62,8 +62,10 @@ in
       group = config.users.users.kubernetes.group;
     };
   };
-  systemd.services.kube-apiserver.serviceConfig.EnvironmentFile =
-    config.sops.secrets.kube-apiserver-environment.path;
+  systemd.services.kube-apiserver = {
+    serviceConfig.EnvironmentFile = config.sops.secrets.kube-apiserver-environment.path;
+    overrideStrategy = "asDropin";
+  };
   services.kubernetes.apiserver = {
     allowPrivileged = true;
     apiAudiences = controlPlaneEndpoint;
