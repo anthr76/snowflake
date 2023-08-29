@@ -32,7 +32,8 @@
       '';
     };
   };
-  virtualisation.containerd.enable = lib.mkForce false;
+  # https://github.com/NixOS/nixpkgs/issues/252232
+  # virtualisation.containerd.enable = lib.mkForce false;
   networking.firewall.enable = lib.mkForce false;
   virtualisation.cri-o = {
     enable = true;
