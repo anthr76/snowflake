@@ -6,33 +6,33 @@ in
   sops.secrets = {
     etcd-client-cert = {
       sopsFile = ../secrets.sops.yaml;
-      owner = config.users.users.etcd.name;
-      group = config.users.users.etcd.group;
+      owner = "etcd";
+      group = "etcd";
     };
     etcd-client-key = {
       sopsFile = ../secrets.sops.yaml;
-      owner = config.users.users.etcd.name;
-      group = config.users.users.etcd.group;
+      owner = "etcd";
+      group = "etcd";
     };
     etcd-peer-cert = {
       sopsFile = ../secrets.sops.yaml;
-      owner = config.users.users.etcd.name;
-      group = config.users.users.etcd.group;
+      owner = "etcd";
+      group = "etcd";
     };
     etcd-peer-key = {
       sopsFile = ../secrets.sops.yaml;
-      owner = config.users.users.etcd.name;
-      group = config.users.users.etcd.group;
+      owner = "etcd";
+      group = "etcd";
     };
     etcd-trusted-ca = {
       sopsFile = ../secrets.sops.yaml;
-      owner = config.users.users.etcd.name;
-      group = config.users.users.etcd.group;
+      owner = "etcd";
+      group = "etcd";
     };
     etcd-peer-trusted-ca = {
       sopsFile = ../secrets.sops.yaml;
-      owner = config.users.users.etcd.name;
-      group = config.users.users.etcd.group;
+      owner = "etcd";
+      group = "etcd";
     };
   };
   services.etcd = {
