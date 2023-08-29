@@ -1,4 +1,4 @@
-{ config }:
+{ config, ... }:
 let
   #TODO: Make this more modular for more clusters
   controlPlaneEndpoint = "https://cluster-0.scr1.rabbito.tech:6443";
@@ -39,9 +39,6 @@ in
     apiserver-tls-key = {
       sopsFile = ../secrets.sops.yaml;
     };
-    oidc-client-id = {
-      sopsFile = ../secrets.sops.yaml;
-    };
     kube-apiserver-environment = {
       sopsFile = ../secrets.sops.yaml;
     };
@@ -66,7 +63,7 @@ in
     serviceAccountSigningKeyFile = config.sops.secrets.service-account-signing-key.path;
     serviceClusterIpRange = "10.96.0.0/12,2001:559:1104:fdb::/112";
     tlsCertFile = config.sops.secrets.apiserver-tls-cert.path;
-    tls-private-key-file = config.sops.secrets.apiserver-tls-key.path;
+    tlsKeyFile = config.sops.secrets.apiserver-tls-key.path;
     extraOpts = ''
       --enable-bootstrap-token-auth=true
       --oidc-username-claim=email

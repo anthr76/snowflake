@@ -3,7 +3,9 @@
 
 { inputs, outputs, lib, config, pkgs, ... }: {
   # You can import other NixOS modules here
-
+  imports = [
+    ../base
+  ];
   nixpkgs = {
     # You can add overlays here
     overlays = [

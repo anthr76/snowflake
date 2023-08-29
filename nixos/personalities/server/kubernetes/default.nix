@@ -1,8 +1,4 @@
-{ pkgs,lib, config }:
-# let
-#   #TODO: Make this more modular for more clusters
-#   controlPlaneEndpoint = "https://cluster-0.scr1.rabbito.tech:6443";
-# in
+{ pkgs,lib, config, ... }:
 {
   imports = [
     ../default.nix
@@ -16,7 +12,8 @@
     };
   };
   services.kubernetes = {
-    enable = true;
+    easyCerts = false;
+    masterAddress = "https://cluster-0.scr1.rabbito.tech:6443";
     pki.enable = false;
     clusterCidr = "10.244.0.0/16,fddf:f7bc:9670::/48";
     caFile = config.sops.secrets.kubelet-ca.path;
@@ -26,11 +23,12 @@
       containerRuntimeEndpoint = "unix:///run/crio/crio.sock";
       extraOpts = ''
         --bootstrap-kubeconfig=${config.sops.secrets.bootstrap-kubeconfig.path}
+        --rotate-certificates=true
+        --rotate-server-certificates=true
       '';
     };
   };
   virtualisation.containerd.enable = lib.mkForce false;
-  # TODO: Enable this
   networking.firewall.enable = lib.mkForce false;
   virtualisation.cri-o = {
     enable = true;
@@ -39,4 +37,6 @@
     ];
     storageDriver = "btrfs";
   };
+  # https://github.com/NixOS/nixpkgs/issues/130804
+  environment.etc."cni/net.d".enable = false;
 }

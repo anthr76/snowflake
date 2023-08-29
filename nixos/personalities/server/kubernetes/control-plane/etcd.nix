@@ -1,4 +1,4 @@
-{ config }:
+{ config, ... }:
 {
   sops.secrets = {
     etcd-client-cert = {
@@ -22,7 +22,7 @@
     certFile = config.sops.secrets.etcd-client-cert.path;
     clientCertAuth = true;
     keyFile = config.sops.secrets.etcd-client-key.path;
-    listenPeerUrls = "https://[::]:2380";
+    listenPeerUrls = [ "https://[::]:2380" ];
     peerCertFile = config.sops.secrets.etcd-peer-cert.path;
     peerClientCertAuth = true;
     peerKeyFile = config.sops.secrets.etcd-peer-key.path;

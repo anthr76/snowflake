@@ -1,4 +1,4 @@
-{ disks ? [ "/dev/disk/by-id/nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0RA76311" ], ... }: {
+{ disks ? [ "/dev/disk/vda" ], ... }: {
 
   disk = {
     main = {

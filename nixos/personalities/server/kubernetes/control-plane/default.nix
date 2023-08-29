@@ -6,5 +6,4 @@
     ./scheduler.nix
     ../default.nix
   ];
-  services.kubernetes.roles = ["master"];
 }

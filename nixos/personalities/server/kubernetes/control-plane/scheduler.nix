@@ -1,6 +1,6 @@
 {
   services.kubernetes.scheduler = {
     enable = true;
-    address = 0.0.0.0;
+    address = "0.0.0.0";
   };
 }

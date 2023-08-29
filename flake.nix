@@ -74,11 +74,11 @@
             ./nixos/hosts/bkp1.nwk2.rabbito.tech
           ];
         };
-        "lga-test1.tenant-29c7a3-baggie.coreweave.cloud" = nixpkgs.lib.nixosSystem {
+        "master-04.tenant-29c7a3-baggie.coreweave.cloud" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
             # > Our main nixos configuration file <
-            ./nixos/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud
+            ./nixos/hosts/master-04.tenant-29c7a3-baggie.coreweave.cloud
           ];
         };
         "e39.nwk3.rabbito.tech" = nixpkgs.lib.nixosSystem {
