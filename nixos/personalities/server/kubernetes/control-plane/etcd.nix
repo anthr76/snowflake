@@ -29,6 +29,11 @@ in
       owner = config.users.users.etcd.name;
       group = config.users.users.etcd.group;
     };
+    etcd-peer-trusted-ca = {
+      sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.etcd.name;
+      group = config.users.users.etcd.group;
+    };
   };
   services.etcd = {
     enable = true;
