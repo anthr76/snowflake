@@ -8,39 +8,63 @@ in
   sops.secrets = {
     etcd-client-ca = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     etcd-client-cert = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     etcd-cert-key = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     kubelet-client-cert = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     kubelet-client-key = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     proxy-client-cert = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     proxy-client-key = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     service-account-key = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     service-account-signing-key = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     apiserver-tls-cert = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     apiserver-tls-key = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
     kube-apiserver-environment = {
       sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
     };
   };
   systemd.services.kube-apiserver.serviceConfig.EnvironmentFile =
