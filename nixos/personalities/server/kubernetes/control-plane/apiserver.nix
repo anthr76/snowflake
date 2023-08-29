@@ -67,6 +67,7 @@ in
     overrideStrategy = "asDropin";
   };
   services.kubernetes.apiserver = {
+    enable = true;
     allowPrivileged = true;
     apiAudiences = controlPlaneEndpoint;
     etcd = {
