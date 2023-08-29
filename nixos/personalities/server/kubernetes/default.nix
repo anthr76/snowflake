@@ -26,8 +26,8 @@
       clusterDns = "10.96.0.10";
       containerRuntimeEndpoint = "unix:///run/crio/crio.sock";
       extraOpts = ''
-        --bootstrap-kubeconfig=${config.sops.secrets.bootstrap-kubeconfig.path}
-        --rotate-certificates=true
+        --bootstrap-kubeconfig=${config.sops.secrets.bootstrap-kubeconfig.path} \
+        --rotate-certificates=true \
         --rotate-server-certificates=true
       '';
     };
