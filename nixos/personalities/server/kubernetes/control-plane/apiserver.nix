@@ -67,10 +67,10 @@ in
       group = config.users.users.kubernetes.group;
     };
   };
-  systemd.services.kube-apiserver = {
-    serviceConfig.EnvironmentFile = config.sops.secrets.kube-apiserver-environment.path;
-    overrideStrategy = "asDropin";
-  };
+  # systemd.services.kube-apiserver = {
+  #   serviceConfig.EnvironmentFile = config.sops.secrets.kube-apiserver-environment.path;
+  #   overrideStrategy = "asDropin";
+  # };
   services.kubernetes.apiserver = {
     enable = true;
     allowPrivileged = true;
@@ -98,7 +98,7 @@ in
       --oidc-groups-prefix=oidc:
       --oidc-issuer-url=https://kutara-dev.us.auth0.com/
       --oidc-groups-claim=https://kutara/groups
-      --oidc-client-id=''${KUTARA_OIDC_CLIENT_ID}
+      --oidc-client-id-file=${config.sops.secrets.oidc-client-id.path}
       '';
   };
 }
