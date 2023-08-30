@@ -1,4 +1,4 @@
-{ inputs, outputs, lib, config, pkgs, ... }: {
+{ outputs, ... }: {
   imports = [
     ./sops.nix
     ./fish.nix
@@ -11,5 +11,22 @@
     ./bootloader.nix
     ./networking.nix
   ] ++ (builtins.attrValues outputs.nixosModules);
+
+  hardware.enableRedistributableFirmware = true;
+  environment.enableAllTerminfo = true;
+  security.pam.loginLimits = [
+    {
+      domain = "@wheel";
+      item = "nofile";
+      type = "soft";
+      value = "524288";
+    }
+    {
+      domain = "@wheel";
+      item = "nofile";
+      type = "hard";
+      value = "1048576";
+    }
+  ];
 
 }

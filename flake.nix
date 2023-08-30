@@ -111,12 +111,12 @@
             ./home-manager/hosts/bkp1.nwk2.rabbito.tech.nix
           ];
         };
-        "anthony@lga-test1.tenant-29c7a3-baggie.coreweave.cloud" = home-manager.lib.homeManagerConfiguration {
+        "anthony@master-04.tenant-29c7a3-baggie.coreweave.cloud" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [
             # > Our main home-manager configuration file <
-            ./home-manager/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud.nix
+            ./home-manager/hosts/master-04.tenant-29c7a3-baggie.coreweave.cloud.nix
           ];
         };
         "anthony@e39.nwk3.rabbito.tech" = home-manager.lib.homeManagerConfiguration {

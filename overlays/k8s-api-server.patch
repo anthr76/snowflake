@@ -1,0 +1,121 @@
+diff --git a/pkg/kubeapiserver/authenticator/config.go b/pkg/kubeapiserver/authenticator/config.go
+index a08d0ee38ca..8cc2ae8457c 100644
+--- a/pkg/kubeapiserver/authenticator/config.go
++++ b/pkg/kubeapiserver/authenticator/config.go
+@@ -54,9 +54,11 @@ type Config struct {
+ 	Anonymous      bool
+ 	BootstrapToken bool
+
+-	TokenAuthFile               string
+-	OIDCIssuerURL               string
+-	OIDCClientID                string
++	TokenAuthFile string
++	OIDCIssuerURL string
++	OIDCClientID  string
++	// If this value is nil then clientID is used.
++	OIDCClientIDFile            string
+ 	OIDCCAFile                  string
+ 	OIDCUsernameClaim           string
+ 	OIDCUsernamePrefix          string
+@@ -154,33 +156,47 @@ func (config Config) New() (authenticator.Request, *spec.SecurityDefinitions, er
+ 	// cache misses for all requests using the other. While the service account plugin
+ 	// simply returns an error, the OpenID Connect plugin may query the provider to
+ 	// update the keys, causing performance hits.
+-	if len(config.OIDCIssuerURL) > 0 && len(config.OIDCClientID) > 0 {
+-		// TODO(enj): wire up the Notifier and ControllerRunner bits when OIDC supports CA reload
+-		var oidcCAContent oidc.CAContentProvider
+-		if len(config.OIDCCAFile) != 0 {
+-			var oidcCAErr error
+-			oidcCAContent, oidcCAErr = staticCAContentProviderFromFile("oidc-authenticator", config.OIDCCAFile)
+-			if oidcCAErr != nil {
+-				return nil, nil, oidcCAErr
++	if len(config.OIDCClientID) > 0 || len(config.OIDCClientIDFile) > 0 {
++		// Client ID is present make sure a issuer URL is as well..
++		if len(config.OIDCIssuerURL) > 0 {
++			// TODO(enj): wire up the Notifier and ControllerRunner bits when OIDC supports CA reload
++			var oidcCAContent oidc.CAContentProvider
++			var oidcClientIDContent string
++			if len(config.OIDCCAFile) != 0 {
++				var oidcCAErr error
++				oidcCAContent, oidcCAErr = staticCAContentProviderFromFile("oidc-authenticator", config.OIDCCAFile)
++				if oidcCAErr != nil {
++					return nil, nil, oidcCAErr
++				}
++			}
++			if len(config.OIDCClientIDFile) != 0 {
++				oidcClientIDFileContent, oidcClientIDFileErr := os.ReadFile(config.OIDCClientIDFile)
++				if oidcClientIDFileErr != nil {
++					return nil, nil, oidcClientIDFileErr
++				}
++				oidcClientIDContent = string(oidcClientIDFileContent)
++			} else {
++				oidcClientIDContent = config.OIDCClientID
+ 			}
+-		}
+
+-		oidcAuth, err := newAuthenticatorFromOIDCIssuerURL(oidc.Options{
+-			IssuerURL:            config.OIDCIssuerURL,
+-			ClientID:             config.OIDCClientID,
+-			CAContentProvider:    oidcCAContent,
+-			UsernameClaim:        config.OIDCUsernameClaim,
+-			UsernamePrefix:       config.OIDCUsernamePrefix,
+-			GroupsClaim:          config.OIDCGroupsClaim,
+-			GroupsPrefix:         config.OIDCGroupsPrefix,
+-			SupportedSigningAlgs: config.OIDCSigningAlgs,
+-			RequiredClaims:       config.OIDCRequiredClaims,
+-		})
+-		if err != nil {
+-			return nil, nil, err
++			oidcAuth, err := newAuthenticatorFromOIDCIssuerURL(oidc.Options{
++				IssuerURL:            config.OIDCIssuerURL,
++				ClientID:             oidcClientIDContent,
++				CAContentProvider:    oidcCAContent,
++				UsernameClaim:        config.OIDCUsernameClaim,
++				UsernamePrefix:       config.OIDCUsernamePrefix,
++				GroupsClaim:          config.OIDCGroupsClaim,
++				GroupsPrefix:         config.OIDCGroupsPrefix,
++				SupportedSigningAlgs: config.OIDCSigningAlgs,
++				RequiredClaims:       config.OIDCRequiredClaims,
++			})
++			if err != nil {
++				return nil, nil, err
++			}
++			tokenAuthenticators = append(tokenAuthenticators, authenticator.WrapAudienceAgnosticToken(config.APIAudiences, oidcAuth))
+ 		}
+-		tokenAuthenticators = append(tokenAuthenticators, authenticator.WrapAudienceAgnosticToken(config.APIAudiences, oidcAuth))
+ 	}
++
+ 	if len(config.WebhookTokenAuthnConfigFile) > 0 {
+ 		webhookTokenAuth, err := newWebhookTokenAuthenticator(config)
+ 		if err != nil {
+diff --git a/pkg/kubeapiserver/options/authentication.go b/pkg/kubeapiserver/options/authentication.go
+index bcb1898d210..b53a1202306 100644
+--- a/pkg/kubeapiserver/options/authentication.go
++++ b/pkg/kubeapiserver/options/authentication.go
+@@ -73,6 +73,7 @@ type BootstrapTokenAuthenticationOptions struct {
+ type OIDCAuthenticationOptions struct {
+ 	CAFile         string
+ 	ClientID       string
++	ClientIDFile   string
+ 	IssuerURL      string
+ 	UsernameClaim  string
+ 	UsernamePrefix string
+@@ -277,6 +278,9 @@ func (o *BuiltInAuthenticationOptions) AddFlags(fs *pflag.FlagSet) {
+ 		fs.StringVar(&o.OIDC.ClientID, "oidc-client-id", o.OIDC.ClientID,
+ 			"The client ID for the OpenID Connect client, must be set if oidc-issuer-url is set.")
+
++		fs.StringVar(&o.OIDC.ClientIDFile, "oidc-client-id-file", o.OIDC.ClientIDFile, ""+
++			"The client ID as a file for the OpenID Connect client, must be set if oidc-issuer-url is set.")
++
+ 		fs.StringVar(&o.OIDC.CAFile, "oidc-ca-file", o.OIDC.CAFile, ""+
+ 			"If set, the OpenID server's certificate will be verified by one of the authorities "+
+ 			"in the oidc-ca-file, otherwise the host's root CA set will be used.")
+@@ -399,6 +403,7 @@ func (o *BuiltInAuthenticationOptions) ToAuthenticationConfig() (kubeauthenticat
+
+ 	if o.OIDC != nil {
+ 		ret.OIDCCAFile = o.OIDC.CAFile
++		ret.OIDCClientIDFile = o.OIDC.ClientIDFile
+ 		ret.OIDCClientID = o.OIDC.ClientID
+ 		ret.OIDCGroupsClaim = o.OIDC.GroupsClaim
+ 		ret.OIDCGroupsPrefix = o.OIDC.GroupsPrefix
+

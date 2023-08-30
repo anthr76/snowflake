@@ -30,6 +30,11 @@
           --replace "/usr/share/dbus-1/system.d" "${placeholder "out"}/share/dbus-1/system.d" \
       '';
       buildInputs = oldAttrs.buildInputs ++ [final.glib];
+      });
+    kubernetes = prev.kubernetes.overrideAttrs (f: p: {
+      patches = p.patches ++ [
+        ./k8s-api-server.patch
+      ];
     });
   };
 
