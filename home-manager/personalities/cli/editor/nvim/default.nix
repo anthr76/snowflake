@@ -30,6 +30,7 @@ in
       pkgs.libstdcxx5
       pkgs.gnumake
       pkgs.gcc
+      pkgs.go
     ];
 
   };
