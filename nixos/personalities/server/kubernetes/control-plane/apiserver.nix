@@ -98,12 +98,12 @@ in
     tlsKeyFile = config.sops.secrets.apiserver-tls-key.path;
     extraOpts = ''
       --enable-bootstrap-token-auth=true
+      --oidc-client-id-file=${config.sops.secrets.oidc-client-id.path}
       --oidc-username-claim=email
       --oidc-username-prefix=oidc:
       --oidc-groups-prefix=oidc:
       --oidc-issuer-url=https://kutara-dev.us.auth0.com/
       --oidc-groups-claim=https://kutara/groups
-      --oidc-client-id-file=${config.sops.secrets.oidc-client-id.path}
       '';
   };
 }
