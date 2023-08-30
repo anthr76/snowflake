@@ -66,6 +66,11 @@ in
       owner = config.users.users.kubernetes.name;
       group = config.users.users.kubernetes.group;
     };
+    oidc-client-id = {
+      sopsFile = ../secrets.sops.yaml;
+      owner = config.users.users.kubernetes.name;
+      group = config.users.users.kubernetes.group;
+    };
   };
   # systemd.services.kube-apiserver = {
   #   serviceConfig.EnvironmentFile = config.sops.secrets.kube-apiserver-environment.path;
