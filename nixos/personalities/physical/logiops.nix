@@ -1,10 +1,11 @@
 {pkgs, config, ...}:
 {
-  environment.systemPackages = with pkgs; [ unstable.logiops ];
+  environment.systemPackages = with pkgs; [ logiops ];
   systemd.services.logiops = {
     description = "An unofficial userspace driver for HID++ Logitech devices";
     enable = true;
     restartTriggers = [ config.environment.etc."logid.cfg".source ];
+    wantedBy = ["multi-user.target"];
     serviceConfig = {
       Type = "simple";
       ExecStart = "${pkgs.logiops}/bin/logid";
@@ -42,7 +43,7 @@
                                 action =
                                 {
                                     type: "Keypress";
-                                    keys: ["KEY_LEFTMETA", "KEY_LEFTSHIFT", "KEY_UP"];
+                                    keys: ["KEY_LEFTMETA"];
                                 };
                             },
                             {

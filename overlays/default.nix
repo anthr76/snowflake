@@ -17,6 +17,20 @@
         ./0002-remove-fapi-message.patch
       ];
     });
+    logiops = prev.logiops.overrideAttrs (oldAttrs: {
+      version = "v0.3.3";
+      src = final.fetchgit {
+        url = "https://github.com/PixlOne/logiops.git";
+        fetchSubmodules = true;
+        rev = "94f6dbab5390c1c7375836dd9314c0c2488e48a3";
+        sha256 = "9nFTud5szQN8jpG0e/Bkp+I9ELldfo66SdfVCUTuekg=";
+      };
+      preConfigure = ''
+        substituteInPlace src/logid/CMakeLists.txt \
+          --replace "/usr/share/dbus-1/system.d" "${placeholder "out"}/share/dbus-1/system.d" \
+      '';
+      buildInputs = oldAttrs.buildInputs ++ [final.glib];
+    });
   };
 
   # When applied, the unstable nixpkgs set (declared in the flake inputs) will
