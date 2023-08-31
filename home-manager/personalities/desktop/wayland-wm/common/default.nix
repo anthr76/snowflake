@@ -2,6 +2,7 @@
 {
   imports = [
     ./gnome-keyring.nix
+    ./easyeffects.nix
   ];
   # TODO: Breakout into WM specific area
   # home.packages = with pkgs; [

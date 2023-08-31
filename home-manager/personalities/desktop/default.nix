@@ -1,10 +1,11 @@
-{ pkgs, lib, outputs, ... }: {
+{ pkgs, ... }: {
   imports = [
     ./fonts.nix
     ./wezterm.nix
     ./chromium.nix
     ./email.nix
     ./chat
+    ./flameshot.nix
     ./wayland-wm/common
   ];
   home.packages = with pkgs; [

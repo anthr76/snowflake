@@ -1,0 +1,5 @@
+{
+  services.flameshot = {
+    enable = true;
+  };
+}
