@@ -24,11 +24,21 @@
             };
             hiresscroll:
             {
-                hires: true;
+                hires: false;
                 invert: false;
                 target: false;
+                up: {
+                    mode: "Axis";
+                    axis: "REL_WHEEL";
+                    axis_multiplier: 1.0;
+                },
+                down: {
+                    mode: "Axis";
+                    axis: "REL_WHEEL";
+                    axis_multiplier: -1.0;
+                },
             };
-            dpi: 2000;
+            dpi: 1500;
 
             buttons: (
                 {
