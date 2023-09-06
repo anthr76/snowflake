@@ -74,11 +74,11 @@
             ./nixos/hosts/bkp1.nwk2.rabbito.tech
           ];
         };
-        "master-04.tenant-29c7a3-baggie.coreweave.cloud" = nixpkgs.lib.nixosSystem {
+        "master-04.mole-bowfin.ts.net" = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
             # > Our main nixos configuration file <
-            ./nixos/hosts/master-04.tenant-29c7a3-baggie.coreweave.cloud
+            ./nixos/hosts/master-04.mole-bowfin.ts.net
           ];
         };
         "e39.nwk3.rabbito.tech" = nixpkgs.lib.nixosSystem {
@@ -111,7 +111,7 @@
             ./home-manager/hosts/bkp1.nwk2.rabbito.tech.nix
           ];
         };
-        "anthony@master-04.tenant-29c7a3-baggie.coreweave.cloud" = home-manager.lib.homeManagerConfiguration {
+        "anthony@master-04.mole-bowfin.ts.net" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [

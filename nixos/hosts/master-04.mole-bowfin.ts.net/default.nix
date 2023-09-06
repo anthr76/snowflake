@@ -3,12 +3,15 @@
 
   imports = [
     ../../personalities/server/kubernetes/control-plane
+    ../../personalities/server/tailscale.nix
     (modulesPath + "/profiles/qemu-guest.nix")
     inputs.disko.nixosModules.disko
   ];
-  networking.hostName = "master-04";
   # TODO: Refactor to use `networking.domain`
-  networking.domain = "tenant-29c7a3-baggie.coreweave.cloud";
+  networking = {
+    hostName = "master-04";
+    domain = "mole-bowfin.ts.net";
+  };
   sops.secrets.e39-luks-password = {
     # TODO: poor secret name
     sopsFile = ../../../secrets/users.yaml;
