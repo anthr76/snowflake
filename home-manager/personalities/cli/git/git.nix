@@ -7,6 +7,7 @@ in
 {
   home.packages = with pkgs; [
     git-ssh-signingkey
+    pre-commit
   ];
   # TODO: This needs to be modularized..
   programs.git = {
