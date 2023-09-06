@@ -1,4 +1,6 @@
+{ pkgs, ... }:
 {
+  home.packages = with pkgs; [ skopeo ];
   xdg.configFile = {
     registries = {
       target = "containers/registries.conf.d/001-home-manager.conf";
