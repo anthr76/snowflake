@@ -4,7 +4,7 @@ keys:
   - &anthony age12t69fa3kqmnxdx4sca7ecv6lfu3wrfwm95zuuhujcfk3ukcn8dzsk40u6x
   # Hosts
   - &bkp1 age1uvm732gdzuq2v2m97tw5gxerztw6ad3452xrpq5y9ggvg62x7fqse4pzly
-  - &master-04 age12qt3u4vwnms6gy5ax99z5jf07gwhw7h45zswuwup07nhh4lvxc2qxdxr44
+  - &master-04 age1yl0mtt4dy7lvgrweyef83ndhu7h3dyw6xtvk88lgrpm2cdh5p5wsgn8hur
   - &e39 age1a4uumamqg8248ntjjl088ppq7m75p6zyhu5r8yyaqjvvk5yjpuksqspeea
 
 creation_rules:
