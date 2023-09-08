@@ -6,7 +6,7 @@ This repository is home to the nix code that builds my systems (mostly linux rar
 In the future a script should be written to take care of this but but in the meantime:
 
 ```fish
-set temp $(mktemp -d
+set temp $(mktemp -d)
 install -d -m755 "$temp/etc/ssh"
 ssh-keygen -t ed25519 -C "root@master-04" -f $temp/etc/ssh/ssh_host_ed25519_key
 ssh-keygen -C "root@master-04" -f $temp/etc/ssh/ssh_host_rsa_key
@@ -14,8 +14,11 @@ chmod 600 "$temp/etc/ssh/ssh_host_ed25519_key"
 chmod 644 "$temp/etc/ssh/ssh_host_ed25519_key.pub"
 chmod 600 "$temp/etc/ssh/ssh_host_rsa_key"
 chmod 644 "$temp/etc/ssh/ssh_host_rsa_key.pub"
+cp "$temp/etc/ssh/ssh_host_ed25519_key.pub" nixos/hosts/master-04.mole-bowfin.ts.net/ssh_host_ed25519_key.pub
 nix-shell -p ssh-to-age --run "cat $temp/etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age"
 # Add to .sops.yaml rekey secrets
+sops updatekeys secrets/users.yaml
+sops updatekeys nixos/personalities/server/kubernetes/secrets.sops.yaml
 # nix run github:numtide/nixos-anywhere -- --extra-files "$temp" --flake ".#${MACHINE}" "root@${IP}" --no-reboot
 nix run github:numtide/nixos-anywhere -- --extra-files "$temp" --flake ".$MACHINE" "root@$IP"
 ```
