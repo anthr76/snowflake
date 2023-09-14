@@ -17,8 +17,11 @@
     impermanence.url = "github:nix-community/impermanence";
 
     sops-nix.url = "github:mic92/sops-nix";
-    disko.url = "github:nix-community/disko";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
+    # nixos-anywhere.inputs.disko.follows = "disko";
+    # disko = {
+    #   url = "github:nix-community/disko";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     hyprland = {
