@@ -6,6 +6,7 @@
   imports = [
     ../base
     ./audio.nix
+    ./print.nix
     ../physical
 
    # TODO: may be redundant
