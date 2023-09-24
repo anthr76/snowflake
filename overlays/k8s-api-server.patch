@@ -89,7 +89,7 @@ index a08d0ee38ca..8cc2ae8457c 100644
  		webhookTokenAuth, err := newWebhookTokenAuthenticator(config)
  		if err != nil {
 diff --git a/pkg/kubeapiserver/options/authentication.go b/pkg/kubeapiserver/options/authentication.go
-index bcb1898d210..98d02835ae1 100644
+index bcb1898d210..311b8cbb745 100644
 --- a/pkg/kubeapiserver/options/authentication.go
 +++ b/pkg/kubeapiserver/options/authentication.go
 @@ -73,6 +73,7 @@ type BootstrapTokenAuthenticationOptions struct {
@@ -100,16 +100,20 @@ index bcb1898d210..98d02835ae1 100644
  	IssuerURL      string
  	UsernameClaim  string
  	UsernamePrefix string
-@@ -188,6 +189,8 @@ func (o *BuiltInAuthenticationOptions) Validate() []error {
- 
- 	if o.OIDC != nil && (len(o.OIDC.IssuerURL) > 0) != (len(o.OIDC.ClientID) > 0) {
- 		allErrors = append(allErrors, fmt.Errorf("oidc-issuer-url and oidc-client-id should be specified together"))
-+	} else if o.OIDC != nil && (len(o.OIDC.IssuerURL) > 0) != (len(o.OIDC.ClientIDFile) > 0) {
-+		allErrors = append(allErrors, fmt.Errorf("oidc-issuer-url and oidc-client-id-file should be specified together"))
+@@ -185,9 +186,9 @@ func (o *BuiltInAuthenticationOptions) WithWebHook() *BuiltInAuthenticationOptio
+ // Validate checks invalid config combination
+ func (o *BuiltInAuthenticationOptions) Validate() []error {
+ 	var allErrors []error
+-
+-	if o.OIDC != nil && (len(o.OIDC.IssuerURL) > 0) != (len(o.OIDC.ClientID) > 0) {
+-		allErrors = append(allErrors, fmt.Errorf("oidc-issuer-url and oidc-client-id should be specified together"))
++	oidcLen := len(o.OIDC.ClientID) + len(o.OIDC.ClientIDFile)
++	if o.OIDC != nil && (len(o.OIDC.IssuerURL) > 0) != (oidcLen > 0) {
++		allErrors = append(allErrors, fmt.Errorf("oidc-issuer-url and oidc-client-id or oidc-client-file should be specified together"))
  	}
  
  	if o.ServiceAccounts != nil && len(o.ServiceAccounts.Issuers) > 0 {
-@@ -277,6 +280,9 @@ func (o *BuiltInAuthenticationOptions) AddFlags(fs *pflag.FlagSet) {
+@@ -277,6 +278,9 @@ func (o *BuiltInAuthenticationOptions) AddFlags(fs *pflag.FlagSet) {
  		fs.StringVar(&o.OIDC.ClientID, "oidc-client-id", o.OIDC.ClientID,
  			"The client ID for the OpenID Connect client, must be set if oidc-issuer-url is set.")
  
@@ -119,7 +123,7 @@ index bcb1898d210..98d02835ae1 100644
  		fs.StringVar(&o.OIDC.CAFile, "oidc-ca-file", o.OIDC.CAFile, ""+
  			"If set, the OpenID server's certificate will be verified by one of the authorities "+
  			"in the oidc-ca-file, otherwise the host's root CA set will be used.")
-@@ -399,6 +405,7 @@ func (o *BuiltInAuthenticationOptions) ToAuthenticationConfig() (kubeauthenticat
+@@ -399,6 +403,7 @@ func (o *BuiltInAuthenticationOptions) ToAuthenticationConfig() (kubeauthenticat
  
  	if o.OIDC != nil {
  		ret.OIDCCAFile = o.OIDC.CAFile
