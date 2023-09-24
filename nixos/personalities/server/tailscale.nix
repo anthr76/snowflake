@@ -19,7 +19,7 @@ in
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
   services.tailscale = {
     package = pkgs.unstable.tailscale;
-    useRoutingFeatures = "both";
+    useRoutingFeatures = "server";
     enable = true;
     port = tailScalePort;
     authKeyFile = config.sops.secrets.tailscale-auth-key.path;
