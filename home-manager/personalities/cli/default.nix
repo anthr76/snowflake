@@ -16,5 +16,8 @@
     fd
     jq
     distrobox
+    openssl
+    cfssl
+    sops
   ];
 }
