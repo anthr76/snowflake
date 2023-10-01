@@ -15,6 +15,7 @@
       "--ignore-gpu-blocklist"
       "--enable-logging=stderr"
       "--disable-features=WaylandFractionalScaleV1"
+      "--enable-features=TouchpadOverscrollHistoryNavigation"
     ];
   };
 }
