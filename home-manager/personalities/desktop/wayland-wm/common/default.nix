@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 {
   imports = [
     ./gnome-keyring.nix
@@ -13,8 +13,8 @@
   #   wl-clipboard
   # ];
 
-  # home.sessionVariables = {
-  #   MOZ_ENABLE_WAYLAND = 1;
-  #   QT_QPA_PLATFORM = "wayland";
-  # };
+  home.sessionVariables = {
+    MOZ_ENABLE_WAYLAND = 1;
+    QT_QPA_PLATFORM = "wayland";
+  };
 }
