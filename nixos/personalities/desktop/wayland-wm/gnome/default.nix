@@ -5,6 +5,7 @@
   ];
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   gtk.iconCache.enable = true;
+  virtualisation.waydroid.enable = true;
   # TODO: Enable keyring without ssh by overlay
   # https://github.com/NixOS/nixpkgs/issues/166887
   services.gnome.gnome-keyring.enable = lib.mkForce false;
