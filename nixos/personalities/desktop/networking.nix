@@ -6,9 +6,12 @@
     networking.firewall = {
       enable = true;
     };
-    systemd.services.tailscaled.requires = ["tailscale-ondemand-dispatch.target"];
-    systemd.targets.tailscale-ondemand-dispatch = {
+    systemd.services.tailscaled.requires = ["tailscaled-ondemand-dispatch.target"];
+    systemd.targets.tailscaled-ondemand-dispatch = {
         description = "Ensure's tailscale runs only when it needs to.";
+        before = ["tailscaled.service"];
+        after = ["network-pre.target" "NetworkManager.service" "systemd-resolved.service"];
+        wants = ["network-pre.target"];
     };
     networking.networkmanager = {
         enable = true;
@@ -19,14 +22,14 @@
             interface=$1 status=$2
             case $status in
               up)
-                logger "allow dhcp to settle"
+                echo -n "allow dhcp to settle"
                 sleep 15
                 if [[ "$IP4_DOMAINS" == *"rabbito.tech"* ]]; then
-                  echo -n " IP4_DOMAINS ( $IP4_DOMAINS ) rabbito.tech stopping tailscale"
-                  systemctl stop tailscale-ondemand-dispatch.target
+                  echo -n " IP4_DOMAINS ( $IP4_DOMAINS ) has rabbito.tech stopping tailscale"
+                  systemctl stop tailscaled-ondemand-dispatch.target
                 else
                   echo -n "IP4_DOMAINS ( $IP4_DOMAINS ) not rabbito.tech starting tailscale"
-                  systemctl start tailscale-ondemand-dispatch.target
+                  systemctl start tailscaled-ondemand-dispatch.target
                 fi
                 ;;
               down)

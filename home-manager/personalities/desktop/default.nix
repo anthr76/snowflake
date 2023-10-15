@@ -5,7 +5,6 @@
     ./chromium.nix
     ./email.nix
     ./chat
-    ./flameshot.nix
     ./wayland-wm/common
   ];
   home.packages = with pkgs; [
