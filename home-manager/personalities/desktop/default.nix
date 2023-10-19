@@ -11,5 +11,6 @@
     moonlight-qt
     parsec-bin
     syncthing
+    zoom-us
   ];
 }
