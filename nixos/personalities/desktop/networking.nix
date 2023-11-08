@@ -22,18 +22,18 @@
             interface=$1 status=$2
             case $status in
               up)
-                echo -n "allow dhcp to settle"
+                logger "allow dhcp to settle"
                 sleep 15
                 if [[ "$IP4_DOMAINS" == *"rabbito.tech"* ]]; then
-                  echo -n " IP4_DOMAINS ( $IP4_DOMAINS ) has rabbito.tech stopping tailscale"
+                  logger " IP4_DOMAINS ( $IP4_DOMAINS ) has rabbito.tech stopping tailscale"
                   systemctl stop tailscaled-ondemand-dispatch.target
                 else
-                  echo -n "IP4_DOMAINS ( $IP4_DOMAINS ) not rabbito.tech starting tailscale"
+                  logger "IP4_DOMAINS ( $IP4_DOMAINS ) not rabbito.tech starting tailscale"
                   systemctl start tailscaled-ondemand-dispatch.target
                 fi
                 ;;
               down)
-                  echo -n "connection down doing nothing"
+                  logger "connection down doing nothing"
                 ;;
             esac
             '';

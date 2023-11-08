@@ -2,7 +2,7 @@
   home.packages = with pkgs; [
     telegram-desktop
     fractal-next
-    webcord-vencord
+    unstable.webcord-vencord
     slack
     element-desktop
   ];
