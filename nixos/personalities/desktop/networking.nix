@@ -6,6 +6,7 @@
     networking.firewall = {
       enable = true;
     };
+    networking.wireless.iwd.enable = true;
     systemd.services.tailscaled.requires = ["tailscaled-ondemand-dispatch.target"];
     systemd.targets.tailscaled-ondemand-dispatch = {
         description = "Ensure's tailscale runs only when it needs to.";
@@ -15,6 +16,7 @@
     };
     networking.networkmanager = {
         enable = true;
+        wifi.backend = "iwd";
         dispatcherScripts = [
           {
             source = pkgs.writeText "hook" ''
