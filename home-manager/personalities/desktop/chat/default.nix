@@ -1,6 +1,6 @@
 { pkgs, ... }: {
   home.packages = with pkgs; [
-    telegram-desktop
+    unstable.telegram-desktop
     fractal-next
     unstable.webcord-vencord
     slack
