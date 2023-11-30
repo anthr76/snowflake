@@ -5,4 +5,5 @@
     tctiEnvironment.enable = true;
     applyUdevRules = true;
   };
+  environment.variables.TSS2_LOG = "fapi+NONE";
 }

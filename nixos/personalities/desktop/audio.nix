@@ -13,4 +13,5 @@
     pavucontrol
     pulseaudio
   ];
+  programs.noisetorch.enable = true;
 }

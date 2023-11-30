@@ -1,7 +1,7 @@
-{ pkgs, lib, ... }: {
+{ ... }: {
   programs.gh = {
     enable = true;
-    enableGitCredentialHelper = false;
+    gitCredentialHelper.enable = false;
     settings = { aliases = { pv = "pr view"; }; };
   };
 }

@@ -13,7 +13,7 @@ in
         "tss"
         "networkmanager"
       ];
-      passwordFile = config.sops.secrets.anthony-password.path;
+      hashedPasswordFile = config.sops.secrets.anthony-password.path;
       openssh.authorizedKeys.keys = [
         (builtins.readFile ../../../home-manager/users/anthony/yubi.pub)
         (builtins.readFile ../../../home-manager/users/anthony/e39_tpm2.pub)

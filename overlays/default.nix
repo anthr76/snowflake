@@ -11,12 +11,6 @@
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
-    tpm2-pkcs11 = prev.tpm2-pkcs11.overrideAttrs (f: p: {
-      configureFlags = [ "--disable-fapi" ];
-      patches = p.patches ++ [
-        ./0002-remove-fapi-message.patch
-      ];
-    });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
       version = "v0.3.3";
       src = final.fetchgit {

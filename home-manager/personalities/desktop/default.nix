@@ -12,5 +12,6 @@
     parsec-bin
     syncthing
     zoom-us
+    bottles
   ];
 }
