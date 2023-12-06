@@ -25,6 +25,10 @@
       '';
       buildInputs = oldAttrs.buildInputs ++ [final.glib];
     });
+    discord = prev.discord.overrideAttrs (oldAttrs: {
+      withOpenASAR = true;
+      withVencord = true;
+    });
   };
 
   # When applied, the unstable nixpkgs set (declared in the flake inputs) will
