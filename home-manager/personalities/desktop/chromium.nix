@@ -18,7 +18,7 @@
       "--enable-features=TouchpadOverscrollHistoryNavigation"
       # TODO: Work around Mesa issue @ d7ba0b445a025e6d105515527a78f1738e7e91be
       # https://github.com/NixOS/nixpkgs/issues/244742
-      # "--disable-gpu-shader-disk-cache"
+      "--disable-gpu-shader-disk-cache"
       # fd -0 cache | xargs --null rm -rf $0
     ];
   };
