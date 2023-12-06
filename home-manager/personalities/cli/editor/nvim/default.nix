@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 let
   astroNvimSource = pkgs.fetchFromGitHub {
     owner = "AstroNvim";
