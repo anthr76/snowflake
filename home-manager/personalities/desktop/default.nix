@@ -13,5 +13,6 @@
     syncthing
     zoom-us
     bottles
+    system76-keyboard-configurator
   ];
 }
