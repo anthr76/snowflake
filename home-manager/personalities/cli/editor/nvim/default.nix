@@ -28,9 +28,11 @@ in
       pkgs.unstable.rustc
       pkgs.nodejs
       pkgs.libstdcxx5
+      pkgs.libstdcxx6
       pkgs.gnumake
       pkgs.gcc
       pkgs.go
+      pkgs.vimPlugins.nvim-treesitter.withAllGrammars
     ];
 
   };
