@@ -3,7 +3,7 @@ let
   astroNvimSource = pkgs.fetchFromGitHub {
     owner = "AstroNvim";
     repo = "AstroNvim";
-    rev = "v3.38.0";
+    rev = "v3.40.2";
     sha256 = "cxzs52iIkCWkzLk5uoYunbyiher+6ZTyACUT7vxQN6Y=";
   };
   parsers = pkgs.tree-sitter.withPlugins (_: pkgs.tree-sitter.allGrammars);
