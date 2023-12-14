@@ -14,5 +14,6 @@
     zoom-us
     bottles
     system76-keyboard-configurator
+    podman-desktop
   ];
 }
