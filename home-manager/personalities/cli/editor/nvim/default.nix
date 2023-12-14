@@ -49,10 +49,10 @@ in
       target = "astronvim/lua/user";
       source = ./lua;
     };
+  };
   xdg.configFile."astronvim/lua/user/parsers.lua".text = /* lua */ ''
     vim.opt.runtimepath:append("${parsers}")
   '';
-  };
   home.sessionVariables = {
     NVIM_APPNAME = "astronvim";
   };
