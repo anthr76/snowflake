@@ -44,11 +44,6 @@ in
       target = "astronvim";
       source = astroNvimSource;
     };
-    userConfig = {
-      recursive = true;
-      target = "astronvim/lua/user";
-      source = ./lua;
-    };
     init = {
       recursive = false;
       target = "astronvim/lua/user/init.lua";
