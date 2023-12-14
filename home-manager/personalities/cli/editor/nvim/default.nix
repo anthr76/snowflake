@@ -6,6 +6,7 @@ let
     rev = "v3.38.0";
     sha256 = "cxzs52iIkCWkzLk5uoYunbyiher+6ZTyACUT7vxQN6Y=";
   };
+  parsers = pkgs.tree-sitter.withPlugins (_: pkgs.tree-sitter.allGrammars);
 in
 {
   programs.neovim = {
@@ -48,6 +49,9 @@ in
       target = "astronvim/lua/user";
       source = ./lua;
     };
+  xdg.configFile."astronvim/lua/user/parsers.lua".text = /* lua */ ''
+    vim.opt.runtimepath:append("${parsers}")
+  '';
   };
   home.sessionVariables = {
     NVIM_APPNAME = "astronvim";
