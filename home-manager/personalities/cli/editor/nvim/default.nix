@@ -14,6 +14,7 @@ in
     vimAlias = true;
     viAlias = true;
     plugins = [
+      pkgs.vimPlugins.nvim-treesitter
       pkgs.vimPlugins.nvim-treesitter.withAllGrammars
     ];
     # https://astronvim.com/#-requirements
