@@ -55,7 +55,7 @@ in
       text = /* lua */ ''
         vim.opt.runtimepath:append("${parsers}")
       '';
-    }
+    };
   };
   home.sessionVariables = {
     NVIM_APPNAME = "astronvim";
