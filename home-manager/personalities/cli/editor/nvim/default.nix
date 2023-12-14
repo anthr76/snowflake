@@ -49,11 +49,53 @@ in
       target = "astronvim/lua/user";
       source = ./lua;
     };
-    parsers = {
+    init = {
       recursive = false;
-      target = "astronvim/lua/user/parsers/init.lua";
+      target = "astronvim/lua/user/init.lua";
       text = /* lua */ ''
         vim.opt.runtimepath:append("${parsers}")
+        vim.cmd([[
+          autocmd BufRead,BufNewFile */templates/*.yml,*/templates/*.tpl,*.gotmpl,helmfile*.yml set ft=helm
+          autocmd BufRead,BufNewFile */templates/*.yml,*/templates/*.tpl,*.gotmpl,helmfile*.yml LspStop yammls
+        ]])
+      '';
+    };
+    plugins = {
+      recursive = false;
+      target = "astronvim/lua/user/plugins/init.lua";
+      text = /* lua */ ''
+        return {
+          {
+            "towolf/vim-helm",
+            event = "VeryLazy",
+          },
+          {
+            "folke/todo-comments.nvim",
+            event = "BufReadPost",
+            dependencies = { "nvim-lua/plenary.nvim" },
+            opts = {
+              -- your configuration comes here
+              -- or leave it empty to use the default settings
+              -- refer to the configuration section below
+            }
+          },
+          {
+            "andweeb/presence.nvim",
+            event = "VeryLazy",
+            opts = {
+            }
+          },
+
+          {
+            "zbirenbaum/copilot.lua",
+            cmd = "Copilot",
+            event = "InsertEnter",
+            config = function()
+              require("copilot").setup({})
+            end
+          },
+        }
+
       '';
     };
   };
