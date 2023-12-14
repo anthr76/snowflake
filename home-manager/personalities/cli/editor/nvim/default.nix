@@ -1,65 +1,22 @@
 { pkgs, ... }:
-let
-  astroNvimSource = pkgs.fetchFromGitHub {
-    owner = "AstroNvim";
-    repo = "AstroNvim";
-    rev = "v3.40.2";
-    sha256 = "cxzs52iIkCWkzLk5uoYunbyiher+6ZTyACUT7vxQN6Y=";
-  };
-  parsers = pkgs.tree-sitter.withPlugins (_: pkgs.tree-sitter.allGrammars);
-in
 {
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    vimAlias = true;
-    viAlias = true;
-    plugins = [
-      pkgs.vimPlugins.nvim-treesitter
-      pkgs.vimPlugins.nvim-treesitter.withAllGrammars
-    ];
-    # https://astronvim.com/#-requirements
-    extraPackages = [
-      pkgs.nerdfonts
-      pkgs.lazygit
-      pkgs.tree-sitter
-      pkgs.ripgrep
-      pkgs.gdu
-      pkgs.bottom
-      pkgs.cargo
-      pkgs.unstable.rustc
-      pkgs.nodejs
-      pkgs.libstdcxx5
-      pkgs.gnumake
-      pkgs.gcc
-      pkgs.go
-      pkgs.clangStdenv
-      pkgs.gccStdenv
-    ];
-
+  home.sessionVariables.EDITOR = "lvim";
+  home.packages = with pkgs; [ lunarvim ];
+  home.shellAliases = {
+    "nvim" = "lvim";
+    "vim" = "lvim";
+    "vi" = "lvim";
   };
   xdg.configFile = {
-    astronvim = {
-      recursive = true;
-      target = "astronvim";
-      source = astroNvimSource;
-    };
     init = {
       recursive = false;
-      target = "astronvim/lua/user/init.lua";
+      target = "lvim/config.lua";
       text = /* lua */ ''
-        vim.opt.runtimepath:append("${parsers}")
         vim.cmd([[
           autocmd BufRead,BufNewFile */templates/*.yml,*/templates/*.tpl,*.gotmpl,helmfile*.yml set ft=helm
           autocmd BufRead,BufNewFile */templates/*.yml,*/templates/*.tpl,*.gotmpl,helmfile*.yml LspStop yammls
         ]])
-      '';
-    };
-    plugins = {
-      recursive = false;
-      target = "astronvim/lua/user/plugins/init.lua";
-      text = /* lua */ ''
-        return {
+        lvim.plugins = {
           {
             "towolf/vim-helm",
             event = "VeryLazy",
@@ -80,7 +37,6 @@ in
             opts = {
             }
           },
-
           {
             "zbirenbaum/copilot.lua",
             cmd = "Copilot",
@@ -90,11 +46,7 @@ in
             end
           },
         }
-
       '';
     };
-  };
-  home.sessionVariables = {
-    NVIM_APPNAME = "astronvim";
   };
 }
