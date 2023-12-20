@@ -1,6 +1,8 @@
 { pkgs, ... }:
 {
-  home.sessionVariables.EDITOR = "lvim";
+  home.sessionVariables = {
+    EDITOR = "lvim";
+  };
   home.packages = with pkgs; [ lunarvim ];
   home.shellAliases = {
     "nvim" = "lvim";
