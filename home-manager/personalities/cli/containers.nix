@@ -10,7 +10,7 @@
       '';
     };
     containers = {
-      target = "containers/containerd.conf.d/001-home-manager.conf";
+      target = "containers/containers.conf.d/001-home-manager.conf";
       text = ''
         # Managed with Home Manager
         [containers]
