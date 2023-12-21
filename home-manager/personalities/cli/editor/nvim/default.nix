@@ -48,7 +48,7 @@
     };
     helm = {
       recursive = false;
-      target = "lvim/helm.lua";
+      target = "lvim/lsp/helm.lua";
       text = /* lua */ ''
         vim.cmd([[
           autocmd BufRead,BufNewFile */templates/*.yml,*/templates/*.tpl,*.gotmpl,helmfile*.yml set ft=helm
