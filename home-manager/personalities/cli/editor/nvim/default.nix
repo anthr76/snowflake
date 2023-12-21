@@ -14,6 +14,9 @@
       recursive = false;
       target = "lvim/config.lua";
       text = /* lua */ ''
+        lvim.lsp.installer.setup.ensure_installed = {
+            "helm_ls",
+        }
         lvim.plugins = {
           {
             "towolf/vim-helm",
