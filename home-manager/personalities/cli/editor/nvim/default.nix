@@ -15,8 +15,8 @@
       target = "lvim/config.lua";
       text = /* lua */ ''
         vim.cmd([[
-          autocmd BufRead,BufNewFile */templates/*.yml,*/templates/*.tpl,*.gotmpl,helmfile*.yml set ft=helm
-          autocmd BufRead,BufNewFile */templates/*.yml,*/templates/*.tpl,*.gotmpl,helmfile*.yml LspStop yammls
+          autocmd BufRead,BufNewFile */templates/*.y*ml,*/templates/*.tpl,*.gotmpl,helmfile*.yml set ft=helm
+          autocmd BufRead,BufNewFile */templates/*.y*ml,*/templates/*.tpl,*.gotmpl,helmfile*.yml LspStop yammls
         ]])
         local configs = require('lspconfig.configs')
         local lspconfig = require('lspconfig')
