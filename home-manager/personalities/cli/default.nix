@@ -10,6 +10,7 @@
     ./viddy.nix
     ./lsd.nix
     ./containers.nix
+    ./bat.nix
   ];
   home.packages = with pkgs; [
     ripgrep

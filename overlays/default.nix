@@ -11,6 +11,11 @@
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
+    lunarvim = prev.lunarvim.overrideAttrs (oldAttrs: {
+      runtimeDeps = oldAttrs.runtimeDeps ++ [
+        final.gopls
+      ];
+    });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
       version = "v0.3.3";
       src = final.fetchgit {

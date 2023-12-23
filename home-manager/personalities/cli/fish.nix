@@ -1,5 +1,5 @@
-{ pkgs, lib, ... }: {
-home.packages = with pkgs; [ fzf fd bat ];
+{ pkgs, ... }: {
+home.packages = with pkgs; [ fzf fd ];
 programs.fish = {
   enable = true;
   shellAliases = {

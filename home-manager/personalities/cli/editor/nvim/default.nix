@@ -41,11 +41,6 @@
         vim.cmd([[
           autocmd FileType yaml if getline(1) =~# '^#.*helm' | LspStop | endif
         ]])
-        -- Configure LSP with your custom on_attach
-        lspconfig.your_lsp_server.setup({
-            on_attach = custom_on_attach,
-            -- Other configuration options
-        })
         lvim.plugins = {
           {
             "towolf/vim-helm",
