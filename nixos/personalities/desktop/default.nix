@@ -9,6 +9,7 @@
     ./networking.nix
     ./print.nix
     ../physical
+    ./gaming.nix
 
    # TODO: may be redundant
    # ./networking.nix

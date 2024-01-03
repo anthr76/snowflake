@@ -14,4 +14,9 @@
     pulseaudio
   ];
   programs.noisetorch.enable = true;
+  # Mumble for LAN use
+  networking.firewall = {
+    allowedTCPPorts = [ 64738 ];
+    allowedUDPPorts = [ 64738 ];
+  };
 }

@@ -3,4 +3,5 @@
 
 { pkgs ? (import ../nixpkgs.nix) { } }: {
   # example = pkgs.callPackage ./example { };
+  wayland-push-to-talk-fix = pkgs.callPackage ./wayland-push-to-talk-fix { };
 }

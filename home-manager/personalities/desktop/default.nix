@@ -15,5 +15,7 @@
     bottles
     system76-keyboard-configurator
     podman-desktop
+    mumble
+    murmur
   ];
 }

@@ -5,5 +5,7 @@
     slack
     element-desktop
     discord
+    # For Discord
+    wayland-push-to-talk-fix
   ];
 }
