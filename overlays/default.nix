@@ -14,7 +14,30 @@
     lunarvim = prev.lunarvim.overrideAttrs (oldAttrs: {
       runtimeDeps = oldAttrs.runtimeDeps ++ [
         final.gopls
+        final.clang-tools
       ];
+    });
+    libplacebo = prev.libplacebo.overrideAttrs (oldAttrs: {
+      version = "6.338.1";
+      src = final.fetchFromGitLab {
+        domain = "code.videolan.org";
+        owner = "videolan";
+        repo = "libplacebo";
+        rev = "v6.338.1";
+        hash = "sha256-NZmwR3+lIC2PF+k+kqCjoMYkMM/PKOJmDwAq7t6YONY=";
+      };
+      nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [final.xxHash];
+    });
+    moonlight-qt = prev.moonlight-qt.overrideAttrs (oldAttrs: {
+      version = "v0.3.3-e20d560";
+      src = final.fetchFromGitHub {
+        owner = "moonlight-stream";
+        repo = "moonlight-qt";
+        rev = "e20d56041ea73a543511385583c580f4c09b21f3";
+        sha256 = "GgZQoPA9Cgu8zKBgy7zTXVbumS0esBttPFVGNyI84Fc=";
+        fetchSubmodules = true;
+      };
+      buildInputs = oldAttrs.buildInputs ++ [final.libplacebo final.vulkan-headers];
     });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
       version = "v0.3.3";
