@@ -11,6 +11,29 @@
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
+  wezterm = prev.wezterm.override {
+    rustPlatform = prev.rustPlatform // {
+      buildRustPackage = args:
+        prev.rustPlatform.buildRustPackage (args // rec {
+          src = final.fetchFromGitHub {
+            owner = "wez";
+            repo = "wezterm";
+            rev = "4921f139d35590ab35415021221a2a6f5cf10ab3";
+            fetchSubmodules = true;
+            hash = "sha256-WXOsP2rjbT4unc7lXbxbRbCcrc89SfyVdErzFndBF9o=";
+          };
+          cargoLock = {
+            lockFile = "${src}/Cargo.lock";
+            outputHashes = {
+              "xcb-1.2.1" =
+                "sha256-zkuW5ATix3WXBAj2hzum1MJ5JTX3+uVQ01R1vL6F1rY=";
+              "xcb-imdkit-0.2.0" =
+                "sha256-L+NKD0rsCk9bFABQF4FZi9YoqBHr4VAZeKAWgsaAegw=";
+            };
+          };
+        });
+    };
+  };
     lunarvim = prev.lunarvim.overrideAttrs (oldAttrs: {
       runtimeDeps = oldAttrs.runtimeDeps ++ [
         final.gopls
@@ -33,8 +56,8 @@
       src = final.fetchFromGitHub {
         owner = "moonlight-stream";
         repo = "moonlight-qt";
-        rev = "e20d56041ea73a543511385583c580f4c09b21f3";
-        sha256 = "GgZQoPA9Cgu8zKBgy7zTXVbumS0esBttPFVGNyI84Fc=";
+        rev = "c3e886fbcc4664b7afb5f0062c1558eda02b9001";
+        sha256 = "sha256-G2cu3wrfayN9g2UidHzrufCQk1jyX5CmJx1+969Zi40=";
         fetchSubmodules = true;
       };
       buildInputs = oldAttrs.buildInputs ++ [final.libplacebo final.vulkan-headers];

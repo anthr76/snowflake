@@ -46,4 +46,7 @@
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "23.11";
+  hardware.opengl.enable = true;
+  hardware.opengl.driSupport = true;
+  services.hardware.bolt.enable = true;
 }

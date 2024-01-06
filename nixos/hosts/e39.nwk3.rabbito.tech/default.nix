@@ -3,8 +3,10 @@
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
-    ../../personalities/desktop/wayland-wm/gnome
+    # ../../personalities/desktop/wayland-wm/gnome
+    ../../personalities/desktop/wayland-wm/kde
     inputs.hardware.nixosModules.common-cpu-intel
+    inputs.hardware.nixosModules.common-gpu-intel
     inputs.hardware.nixosModules.common-pc-laptop
     inputs.hardware.nixosModules.common-pc-ssd
     # TODO: Check if this breaks Luks input on startup

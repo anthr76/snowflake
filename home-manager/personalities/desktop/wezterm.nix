@@ -2,13 +2,14 @@
 {
   programs.wezterm = {
     enable = true;
-    package = pkgs.unstable.wezterm;
+    package = pkgs.wezterm;
     extraConfig = /* lua */ ''
       return {
         font = wezterm.font("${config.fontProfiles.monospace.family}"),
         font_size = 12.0,
         window_close_confirmation = "NeverPrompt",
         hide_mouse_cursor_when_typing = false,
+        xcursor_theme = "Adwaita",
         automatically_reload_config = true,
         hide_tab_bar_if_only_one_tab = true,
       }

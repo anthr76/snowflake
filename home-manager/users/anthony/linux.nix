@@ -2,13 +2,13 @@
   home = {
     username = "anthony";
     homeDirectory = "/home/anthony";
-    pointerCursor = {
-      name = "Vanilla-DMZ";
-      package = pkgs.vanilla-dmz;
-      size = 128;
-      x11.enable = true;
-      gtk.enable = true;
-    };
+    # pointerCursor = {
+    #   name = "Vanilla-DMZ";
+    #   package = pkgs.vanilla-dmz;
+    #   size = 128;
+    #   x11.enable = true;
+    #   gtk.enable = true;
+    # };
   };
   xdg = {
     enable = true;

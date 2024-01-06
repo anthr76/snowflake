@@ -11,6 +11,7 @@
   services.gnome.gnome-keyring.enable = lib.mkForce false;
   environment.systemPackages = with pkgs; [
     wl-clipboard
+    gnomeExtensions.tray-icons-reloaded
   ];
   services = {
     xserver = {
