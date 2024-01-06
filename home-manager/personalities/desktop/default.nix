@@ -6,6 +6,7 @@
     ./email.nix
     ./chat
     ./wayland-wm/common
+    ./wayland-wm/kde
   ];
   home.packages = with pkgs; [
     moonlight-qt
