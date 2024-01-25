@@ -1,7 +1,7 @@
 # This is your system's configuration file.
 # Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
 
-{ outputs, ... }: {
+{ pkgs, outputs, inputs, ... }: {
   # You can import other NixOS modules here
   imports = [
     ../base
@@ -10,6 +10,7 @@
     ./print.nix
     ../physical
     ./gaming.nix
+    ./geoclue.nix
 
    # TODO: may be redundant
    # ./networking.nix
@@ -44,9 +45,9 @@
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
 
 
-  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "23.11";
-  hardware.opengl.enable = true;
+  hardware.opengl = {
+    enable = true;
+  };
   hardware.opengl.driSupport = true;
   services.hardware.bolt.enable = true;
 }

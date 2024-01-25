@@ -39,6 +39,4 @@
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
 
 
-  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "23.11";
 }

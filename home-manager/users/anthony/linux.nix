@@ -18,14 +18,17 @@
     };
     mimeApps = {
       enable = true;
+      associations.added = {
+        "x-scheme-handler/tg" = "org.telegram.desktop.desktop";
+      };
       defaultApplications = {
-        "text/html" = "google-chrome.desktop";
-        "x-scheme-handler/http" = "google-chrome.desktop";
-        "x-scheme-handler/https" = "google-chrome.desktop";
-        "x-www-browser" = "google-chrome.desktop";
-        "x-scheme-handler/about" = "google-chrome.desktop";
-        "x-scheme-handler/unknown" = "google-chrome.desktop";
-        "application/pdf" = "google-chrome.desktop";
+        "text/html" = "choromium-browser.desktop";
+        "x-scheme-handler/http" = "choromium-browser.desktop";
+        "x-scheme-handler/https" = "choromium-browser.desktop";
+        "x-www-browser" = "choromium-browser.desktop";
+        "x-scheme-handler/about" = "choromium-browser.desktop";
+        "x-scheme-handler/unknown" = "choromium-browser.desktop";
+        "application/pdf" = "choromium-browser.desktop";
         "x-scheme-handler/element" = "element-desktop.desktop";
         # "x-scheme-handler/bs-sso-authorized" = "ubuntu-22-04-BlastShield.desktop";
       };

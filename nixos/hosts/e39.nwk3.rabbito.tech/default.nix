@@ -1,4 +1,4 @@
-{ config, inputs, lib, modulesPath, ... }:
+{ config, inputs, lib, modulesPath, pkgs, ... }:
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
@@ -33,4 +33,6 @@
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "e39";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  system.stateVersion = "23.05";
 }

@@ -17,4 +17,5 @@
     ../../personalities/server
   ];
   networking.hostName = "bkp1";
+  system.stateVersion = "23.05";
 }

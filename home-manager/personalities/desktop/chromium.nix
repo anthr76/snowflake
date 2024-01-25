@@ -16,6 +16,7 @@
       "--enable-logging=stderr"
       "--disable-features=WaylandFractionalScaleV1"
       "--enable-features=TouchpadOverscrollHistoryNavigation"
+      "--ignore-gpu-blocklist"
       # TODO: Work around Mesa issue @ d7ba0b445a025e6d105515527a78f1738e7e91be
       # https://github.com/NixOS/nixpkgs/issues/244742
       "--disable-gpu-shader-disk-cache"

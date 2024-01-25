@@ -58,4 +58,5 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "lga-test1";
+  system.stateVersion = "23.05";
 }
