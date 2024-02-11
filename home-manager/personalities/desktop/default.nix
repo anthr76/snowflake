@@ -18,5 +18,11 @@
     podman-desktop
     mumble
     murmur
+    (wineWowPackages.waylandFull.override {
+     wineRelease = "staging";
+     mingwSupport = true;
+    })
+    dxvk
+    winetricks
   ];
 }

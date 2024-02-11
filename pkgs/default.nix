@@ -5,4 +5,5 @@
   # example = pkgs.callPackage ./example { };
   wayland-push-to-talk-fix = pkgs.callPackage ./wayland-push-to-talk-fix { };
   vulkan-hdr-layer = pkgs.callPackage ./vulkan-hdr-layer { };
+  discover-overlay = pkgs.python3Packages.callPackage ./discover-overlay { };
 }

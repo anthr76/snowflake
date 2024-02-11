@@ -1,8 +1,7 @@
-{pkgs, inputs, ...}:
+{pkgs, ...}:
 {
   imports = [
     ../../default.nix
-    inputs.kde2nix.nixosModules.default
   ];
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   environment.systemPackages = with pkgs; [
@@ -15,14 +14,23 @@
   services = {
     xserver = {
       enable = true;
-      desktopManager.plasma6 = {
+      desktopManager.plasma5 = {
         enable = true;
       };
+      # Currently broken with fish shell
       displayManager.sddm = {
-        enable = true;
-        wayland.enable = true;
+        enable = false;
+        wayland.enable = false;
+      };
+    };
+    greetd = {
+      enable = true;
+      settings = {
+        default_session = {
+          command = "${pkgs.greetd.greetd}/bin/agreety --cmd startplasma-wayland";
+          user = "greeter";
+        };
       };
     };
   };
-  security.pam.services.sddm.enableKwallet = true;
 }

@@ -7,5 +7,6 @@
     discord
     # For Discord
     wayland-push-to-talk-fix
+    discover-overlay
   ];
 }

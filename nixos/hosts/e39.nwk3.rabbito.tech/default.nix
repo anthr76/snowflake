@@ -35,4 +35,6 @@
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   boot.kernelPackages = pkgs.linuxPackages_latest;
   system.stateVersion = "23.05";
+  environment.variables.LIBVA_DRIVER_NAME = "iHD";
+  services.asusd.enable = true;
 }
