@@ -32,6 +32,9 @@
       runtimeDeps = oldAttrs.runtimeDeps ++ [
         final.gopls
         final.clang-tools
+        final.wget
+        final.libgcc
+        final.vimPlugins.nvim-treesitter.withAllGrammars
       ];
     });
     # nixpkgs-pr-269415
