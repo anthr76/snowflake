@@ -17,7 +17,7 @@
         vim.cmd([[
           autocmd BufRead,BufNewFile */templates/*.y*ml,*/templates/*.tpl,*.gotmpl,helmfile*.yml set ft=helm
           autocmd BufRead,BufNewFile */templates/*.y*ml,*/templates/*.tpl,*.gotmpl,helmfile*.yml LspStop yammls
-          vim.opt.runtimepath = vim.opt.runtimepath + ${pkgs.vimPlugins.nvim-treesitter.withAllGrammars}
+          vim.opt.runtimepath = vim.opt.runtimepath + ${pkgs.vimPlugins.nvim-treesitter.withAllGrammars}/lua
         ]])
         local configs = require('lspconfig.configs')
         local lspconfig = require('lspconfig')
