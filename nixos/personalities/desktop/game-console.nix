@@ -9,10 +9,10 @@
     ../../personalities/base/sops.nix
     ../../personalities/base/openssh.nix
     ../../personalities/base/nix.nix
+    ./sunshine.nix
     # inputs.jovian-nixos.nixosModules.default
   ];
   services.xserver.desktopManager.plasma5.enable = true;
-  services.xserver.enable = true;
   nixpkgs = {
     overlays = [
       outputs.overlays.additions
@@ -25,15 +25,30 @@
   };
   environment.systemPackages = [
     inputs.jovian-nixos.legacyPackages.${pkgs.system}.steam
-    inputs.jovian-nixos.legacyPackages.${pkgs.system}.mangohud
+    pkgs.xwayland-run
+    # pkgs.gamescope-nvidia
+    # inputs.jovian-nixos.legacyPackages.${pkgs.system}.mangohud
   ];
-  boot.plymouth = {
-    enable = true;
-    theme = "steamos";
-    themePackages = [
-      inputs.jovian-nixos.legacyPackages.${pkgs.system}.steamdeck-hw-theme
-    ];
-  };
+  # boot = {
+  #   plymouth = {
+  #     enable = true;
+  #     theme = "steamos";
+  #     themePackages = [
+  #       inputs.jovian-nixos.legacyPackages.${pkgs.system}.steamdeck-hw-theme
+  #     ];
+  #   };
+  #   loader.timeout = 0;
+  #   kernelParams = [
+  #     "quiet"
+  #     "loglevel=3"
+  #     "systemd.show_status=auto"
+  #     "udev.log_level=3"
+  #     "rd.udev.log_level=3"
+  #     "vt.global_cursor_default=0"
+  #   ];
+  #   consoleLogLevel = 0;
+  #   initrd.verbose = false;
+  # };
   users.users = {
       steam = {
       isNormalUser = true;
@@ -55,7 +70,7 @@
     };
     wireless = {
       iwd = {
-      enable = true;
+        enable = true;
       };
     };
     networkmanager = {
@@ -64,7 +79,7 @@
     };
   };
   jovian = {
-    decky-loader.enable = true;
+    decky-loader.enable = false;
     devices.steamdeck.enableKernelPatches = true;
     steam = {
       enable = true;

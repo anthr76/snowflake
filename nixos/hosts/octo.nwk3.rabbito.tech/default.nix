@@ -14,7 +14,6 @@
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
-  boot.kernelParams = ["quiet"];
 
   swapDevices = [ ];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
@@ -22,6 +21,7 @@
   networking.hostName = "octo";
   system.stateVersion = "23.11";
   services.xserver.videoDrivers = ["nvidia"];
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;

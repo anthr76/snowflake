@@ -24,16 +24,54 @@
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
-  # libplacebo =  prev.libplacebo.overrideAttrs (oldAttrs: {
-  #   inherit (inputs.nixpkgs-pr-269415.legacyPackages.${prev.system})
-  #     libplacebo;
-  # });
+    # libplacebo =  prev.libplacebo.overrideAttrs (oldAttrs: {
+    #   inherit (inputs.nixpkgs-pr-269415.legacyPackages.${prev.system})
+    #     libplacebo;
+    # });
     lunarvim = prev.lunarvim.overrideAttrs (oldAttrs: {
       runtimeDeps = oldAttrs.runtimeDeps ++ [
         final.gopls
         final.clang-tools
       ];
     });
+    xwayland-run = prev.xwayland-run.overrideAttrs (oldAttrs: {
+      version = "0.0.2-c5846bed";
+      src = final.fetchFromGitLab {
+        domain = "gitlab.freedesktop.org";
+        owner = "ofourdan";
+        repo = "xwayland-run";
+        rev = "c5846bed1d01497c75f8347e4d5dd1077cf171e9";
+        hash = "sha256-/i5+S/UPoNZk3pUVXf6F4NY32Gy70U6A8bOX8PJiCRo=";
+      };
+    });
+    sunshine = prev.sunshine.overrideAttrs (oldAttrs: {
+      version = "0.21.0-69a3edd";
+      src = final.fetchFromGitHub {
+        owner = "LizardByte";
+        repo = "Sunshine";
+        rev = "69a3edd9b01c76aa44fd5c2a29de1c3b3722cb41";
+        sha256 = "sha256-4W+/mIRSkNj7hl3m5b2DJHt2euwAGcr753RHRBM5a9A=";
+        fetchSubmodules = true;
+      };
+      buildInputs = oldAttrs.buildInputs ++ [
+        final.miniupnpc
+        # TODO: Figure out if these are needed.
+        # Appeasing Cmake a bit here but may not be needed
+        final.libgudev
+        final.systemdLibs
+        final.nodejs
+      ];
+    });
+    # gamescope-nvidia = prev.gamescope.overrideAttrs (oldAttrs: {
+    #   version = "4.8-nvidia";
+    #   src = final.fetchFromGitHub {
+    #     owner = "sharkautarch";
+    #     repo = "gamescope";
+    #     rev = "1a5a707cd3efbf5372ef46ab4c96dcc0696eab63";
+    #     fetchSubmodules = true;
+    #     hash = "sha256-Kf6Wq4pTUkt4VITMWApzEQ5Mh6mdXFL1jv7JOAseMMg=";
+    #   };
+    # });
     # nixpkgs-pr-269415
     # libplacebo = prev.libplacebo.overrideAttrs (oldAttrs: {
     #   version = "6.338.1";
