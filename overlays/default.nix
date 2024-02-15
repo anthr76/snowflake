@@ -35,6 +35,7 @@
         final.wget
         final.libgcc
         final.vimPlugins.nvim-treesitter.withAllGrammars
+        final.lazygit
       ];
     });
     xwayland-run = prev.xwayland-run.overrideAttrs (oldAttrs: {
