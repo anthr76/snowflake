@@ -3,7 +3,7 @@
   home.sessionVariables = {
     EDITOR = "lvim";
   };
-  home.packages = [ unstable.lunarvim ];
+  home.packages = [ pkgs.unstable.lunarvim ];
   home.shellAliases = {
     "nvim" = "lvim";
     "vim" = "lvim";
