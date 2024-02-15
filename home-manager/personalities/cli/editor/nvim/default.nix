@@ -47,12 +47,6 @@
             event = "VeryLazy",
           },
           {
-            "nvim-treesitter/nvim-treesitter",
-            config = function()
-              require('nvim-treesitter.install').compilers = { 'gcc' }
-            end
-          },
-          {
             "folke/todo-comments.nvim",
             event = "BufReadPost",
             dependencies = { "nvim-lua/plenary.nvim" },
