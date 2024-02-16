@@ -21,7 +21,7 @@
         local configs = require('lspconfig.configs')
         local lspconfig = require('lspconfig')
         local util = require('lspconfig.util')
-        lvim.builtin.treesitter.compilers = { "gcc" }
+        require "nvim-treesitter.install".compilers = { "gcc" }
 
         if not configs.helm_ls then
           configs.helm_ls = {
