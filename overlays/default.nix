@@ -47,24 +47,25 @@
         hash = "sha256-/i5+S/UPoNZk3pUVXf6F4NY32Gy70U6A8bOX8PJiCRo=";
       };
     });
-    sunshine = prev.sunshine.overrideAttrs (oldAttrs: {
-      version = "0.21.0-69a3edd";
-      src = final.fetchFromGitHub {
-        owner = "LizardByte";
-        repo = "Sunshine";
-        rev = "69a3edd9b01c76aa44fd5c2a29de1c3b3722cb41";
-        sha256 = "sha256-4W+/mIRSkNj7hl3m5b2DJHt2euwAGcr753RHRBM5a9A=";
-        fetchSubmodules = true;
-      };
-      buildInputs = oldAttrs.buildInputs ++ [
-        final.miniupnpc
-        # TODO: Figure out if these are needed.
-        # Appeasing Cmake a bit here but may not be needed
-        final.libgudev
-        final.systemdLibs
-        final.nodejs
-      ];
-    });
+    # sunshine = prev.sunshine.overrideAttrs (oldAttrs: {
+    #   cudaSupport = true;
+    #   version = "0.21.0-69a3edd";
+    #   src = final.fetchFromGitHub {
+    #     owner = "LizardByte";
+    #     repo = "Sunshine";
+    #     rev = "69a3edd9b01c76aa44fd5c2a29de1c3b3722cb41";
+    #     sha256 = "sha256-4W+/mIRSkNj7hl3m5b2DJHt2euwAGcr753RHRBM5a9A=";
+    #     fetchSubmodules = true;
+    #   };
+    #   buildInputs = oldAttrs.buildInputs ++ [
+    #     final.miniupnpc
+    #     # TODO: Figure out if these are needed.
+    #     # Appeasing Cmake a bit here but may not be needed
+    #     final.libgudev
+    #     final.systemdLibs
+    #     final.nodejs
+    #   ];
+    # });
     # gamescope-nvidia = prev.gamescope.overrideAttrs (oldAttrs: {
     #   version = "4.8-nvidia";
     #   src = final.fetchFromGitHub {
@@ -112,6 +113,13 @@
           --replace "/usr/share/dbus-1/system.d" "${placeholder "out"}/share/dbus-1/system.d" \
       '';
       buildInputs = oldAttrs.buildInputs ++ [final.glib];
+    });
+    # mesa = prev.mesa.overrideAttrs (oldAttrs: {
+    #   enablePatentEncumberedCodecs = true;
+    # });
+    sunshine = prev.sunshine.overrideAttrs (oldAttrs: {
+      cudaSupport = true;
+      stdenv = final.cudaPackages.backendStdenv;
     });
     discord = prev.discord.overrideAttrs (oldAttrs: {
       withOpenASAR = true;

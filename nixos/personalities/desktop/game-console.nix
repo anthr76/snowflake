@@ -10,7 +10,6 @@
     ../../personalities/base/openssh.nix
     ../../personalities/base/nix.nix
     ./sunshine.nix
-    # inputs.jovian-nixos.nixosModules.default
   ];
   services.xserver.desktopManager.plasma5.enable = true;
   nixpkgs = {
@@ -25,9 +24,7 @@
   };
   environment.systemPackages = [
     inputs.jovian-nixos.legacyPackages.${pkgs.system}.steam
-    pkgs.xwayland-run
-    # pkgs.gamescope-nvidia
-    # inputs.jovian-nixos.legacyPackages.${pkgs.system}.mangohud
+    pkgs.vim
   ];
   # boot = {
   #   plymouth = {
@@ -78,9 +75,11 @@
       wifi.backend = "iwd";
     };
   };
+  hardware.bluetooth.enable = true;
   jovian = {
     decky-loader.enable = false;
     devices.steamdeck.enableKernelPatches = true;
+    devices.steamdeck.enableSoundSupport = true;
     steam = {
       enable = true;
       autoStart = true;

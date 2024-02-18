@@ -14,7 +14,7 @@
     nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     # TODO: Document this PR
     nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
-    jovian-nixos.url = "github:anthr76/jovian-NixOS-nvidia";
+    jovian-nixos.url = "github:anthr76/Jovian-NixOS-nvidia";
   };
 
   outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:

@@ -21,12 +21,18 @@
   networking.hostName = "octo";
   system.stateVersion = "23.11";
   services.xserver.videoDrivers = ["nvidia"];
-  # boot.kernelPackages = pkgs.linuxPackages_latest;
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.vulkan_beta;
+  };
+  nixpkgs = {
+    config = {
+      cudaSupport = true;
+      cudaEnableForwardCompat = false;
+      cudaCapabilities = [ "8.6" ];
+    };
   };
 }
