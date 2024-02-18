@@ -3,7 +3,7 @@
   home.sessionVariables = {
     EDITOR = "lvim";
   };
-  home.packages = with pkgs; [ lunarvim ];
+  home.packages = [ pkgs.unstable.lunarvim ];
   home.shellAliases = {
     "nvim" = "lvim";
     "vim" = "lvim";
@@ -21,6 +21,7 @@
         local configs = require('lspconfig.configs')
         local lspconfig = require('lspconfig')
         local util = require('lspconfig.util')
+        require "nvim-treesitter.install".compilers = { "gcc" }
 
         if not configs.helm_ls then
           configs.helm_ls = {
@@ -45,23 +46,6 @@
           {
             "towolf/vim-helm",
             event = "VeryLazy",
-          },
-          {
-            'nvim-treesitter/nvim-treesitter',
-            build = ':TSUpdate',
-            config = function()
-              -- Set compiler to get grammar installation working in Nix for Darwin. See
-              -- https://github.com/nvim-treesitter/nvim-treesitter/issues/1449
-              require('nvim-treesitter.install').compilers = { 'gcc' }
-              require('nvim-treesitter.configs').setup {
-                ignore_install = { 't32' }, -- t32 is failing to download for me
-                highlight = {
-                  enable = true,          -- false will disable the whole extension
-                  disable = {},           -- list of languages that will be disabled
-                },
-                indent = { enable = true },
-              }
-            end,
           },
           {
             "folke/todo-comments.nvim",

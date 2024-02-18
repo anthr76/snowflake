@@ -29,12 +29,21 @@
     #     libplacebo;
     # });
     lunarvim = prev.lunarvim.overrideAttrs (oldAttrs: {
+      src = final.fetchFromGitHub {
+        owner = "LunarVim";
+        repo = "LunarVim";
+        rev = "9ee3b7b8846d7ed2fa79f03d67083f8b95c897f2";
+        sha256 = "sha256-grCEaLJrcPMdM9ODWSExcNsc+G+QmEmZ7EBfBeEVeGU";
+        fetchSubmodules = true;
+      };
       runtimeDeps = oldAttrs.runtimeDeps ++ [
         final.gopls
         final.clang-tools
         final.wget
         final.libgcc
         final.vimPlugins.nvim-treesitter.withAllGrammars
+        final.lazygit
+        final.clang
       ];
     });
     xwayland-run = prev.xwayland-run.overrideAttrs (oldAttrs: {
