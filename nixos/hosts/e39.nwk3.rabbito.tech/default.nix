@@ -21,6 +21,8 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "vmd" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.kernelParams = [ "mem_sleep_default=deep" ];
+  boot.blacklistedKernelModules = [ "asus_wmi_sensors" ];
+  hardware.enableAllFirmware = true;
   services.fprintd.enable = true;
 
   disko.devices = import ./disks.nix {
@@ -36,5 +38,5 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   system.stateVersion = "23.05";
   environment.variables.LIBVA_DRIVER_NAME = "iHD";
-  services.asusd.enable = true;
+
 }

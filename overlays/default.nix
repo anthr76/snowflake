@@ -24,10 +24,6 @@
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
-    # libplacebo =  prev.libplacebo.overrideAttrs (oldAttrs: {
-    #   inherit (inputs.nixpkgs-pr-269415.legacyPackages.${prev.system})
-    #     libplacebo;
-    # });
     lunarvim = prev.lunarvim.overrideAttrs (oldAttrs: {
       src = final.fetchFromGitHub {
         owner = "LunarVim";
@@ -56,59 +52,18 @@
         hash = "sha256-/i5+S/UPoNZk3pUVXf6F4NY32Gy70U6A8bOX8PJiCRo=";
       };
     });
-    # sunshine = prev.sunshine.overrideAttrs (oldAttrs: {
-    #   cudaSupport = true;
-    #   version = "0.21.0-69a3edd";
-    #   src = final.fetchFromGitHub {
-    #     owner = "LizardByte";
-    #     repo = "Sunshine";
-    #     rev = "69a3edd9b01c76aa44fd5c2a29de1c3b3722cb41";
-    #     sha256 = "sha256-4W+/mIRSkNj7hl3m5b2DJHt2euwAGcr753RHRBM5a9A=";
-    #     fetchSubmodules = true;
-    #   };
-    #   buildInputs = oldAttrs.buildInputs ++ [
-    #     final.miniupnpc
-    #     # TODO: Figure out if these are needed.
-    #     # Appeasing Cmake a bit here but may not be needed
-    #     final.libgudev
-    #     final.systemdLibs
-    #     final.nodejs
-    #   ];
-    # });
-    # gamescope-nvidia = prev.gamescope.overrideAttrs (oldAttrs: {
-    #   version = "4.8-nvidia";
-    #   src = final.fetchFromGitHub {
-    #     owner = "sharkautarch";
-    #     repo = "gamescope";
-    #     rev = "1a5a707cd3efbf5372ef46ab4c96dcc0696eab63";
-    #     fetchSubmodules = true;
-    #     hash = "sha256-Kf6Wq4pTUkt4VITMWApzEQ5Mh6mdXFL1jv7JOAseMMg=";
-    #   };
-    # });
-    # nixpkgs-pr-269415
-    # libplacebo = prev.libplacebo.overrideAttrs (oldAttrs: {
-    #   version = "6.338.1";
-    #   src = final.fetchFromGitLab {
-    #     domain = "code.videolan.org";
-    #     owner = "videolan";
-    #     repo = "libplacebo";
-    #     rev = "v6.338.1";
-    #     hash = "sha256-NZmwR3+lIC2PF+k+kqCjoMYkMM/PKOJmDwAq7t6YONY=";
-    #   };
-    #   nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [final.xxHash];
-    #   patches = [ ./libplacebo-0001-Vulkan-Don-t-try-to-reuse-old-swapchain.patch ];
-    # });
-    # moonlight-qt = prev.moonlight-qt.overrideAttrs (oldAttrs: {
-    #   version = "v0.3.3-e20d560";
-    #   src = final.fetchFromGitHub {
-    #     owner = "moonlight-stream";
-    #     repo = "moonlight-qt";
-    #     rev = "b01a83ff3949c9ae42d75a1ad5c80c4fb9a529f8";
-    #     sha256 = "GgZQoPA9Cgu8zKBgy7zTXVbumS0esBttPFVgNyI84Fc=";
-    #     fetchSubmodules = true;
-    #   };
-    #   buildInputs = oldAttrs.buildInputs ++ [final.libplacebo final.vulkan-headers];
-    # });
+    gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
+      patches = oldAttrs.patches ++ [ ./gamescope-native-res.patch ];
+      # version = "3.14.2-nvidia";
+
+      # src = final.fetchFromGitHub {
+      #   owner = "sharkautarch";
+      #   repo = "gamescope";
+      #   rev = "4b9927e106c4e561e46ebd8c998c27e99b580919";
+      #   fetchSubmodules = true;
+      #   hash = "sha256-puDqIg+w6tDu6uXKl1+KUFTDYrgA5zwFCRJy9ZXRhfA=";
+      # };
+    });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
       version = "v0.3.3";
       src = final.fetchgit {
@@ -123,12 +78,50 @@
       '';
       buildInputs = oldAttrs.buildInputs ++ [final.glib];
     });
-    # mesa = prev.mesa.overrideAttrs (oldAttrs: {
-    #   enablePatentEncumberedCodecs = true;
-    # });
     sunshine = prev.sunshine.overrideAttrs (oldAttrs: {
-      cudaSupport = true;
-      stdenv = final.cudaPackages.backendStdenv;
+      patches = [ ./sunshine-disable-webui.patch ];
+      version = "git.e430f51";
+      # stdenv = final.cudaPackages.backendStdenv;
+      buildInputs = oldAttrs.buildInputs ++ [
+        final.miniupnpc
+        final.cudaPackages.cuda_nvcc
+      ];
+      src = final.fetchFromGitHub {
+        owner = "LizardByte";
+        repo = "Sunshine";
+        rev = "e430f51e2fd981ed91aed79adbbacfcaa427c2a6";
+        sha256 = "sha256-OdlxvRAd/ZuZpyGLqE1MqmtZCV3K3EVAR838+FWYF9c=";
+        fetchSubmodules = true;
+      };
+      cmakeFlags = oldAttrs.cmakeFlags ++ [
+        "-DSUNSHINE_ENABLE_TRAY=OFF"
+        "-DSUNSHINE_REQUIRE_TRAY=OFF"
+        "-DSUNSHINE_BUILD_WEB_UI=OFF"
+        "-DSUNSHINE_BUILD_FLATPAK=ON"
+        "-DSUNSHINE_ENABLE_CUDA=ON"
+        "-DCMAKE_CUDA_COMPILER:PATH=${final.cudaPackages.cuda_nvcc}/bin/nvcc"
+      ];
+      preBuild = ''
+        mkdir -p ../node_modules
+        mkdir -p ../build
+        cp -r ${final.sunshine.ui}/node_modules/* ../node_modules
+        cp -r ${final.sunshine.ui}/build/* ../build
+      '';
+      ui = final.buildNpmPackage {
+        pname = "sunshine-ui";
+        src = final.sunshine.src;
+        version = final.sunshine.version;
+        npmDepsHash = "sha256-3Mi8um6H77pigtbOYX+WeOoFJBdgHnXSlPWKWaoj9YY=";
+        postPatch = ''
+          cp ${./sunshine-package-lock.json} ./package-lock.json
+        '';
+        installPhase = ''
+          npm run build
+          mkdir -p $out
+          cp -r node_modules $out/
+          cp -r build $out/
+        '';
+      };
     });
     discord = prev.discord.overrideAttrs (oldAttrs: {
       withOpenASAR = true;

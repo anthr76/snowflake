@@ -10,29 +10,23 @@
     ../../personalities/desktop/game-console.nix
   ];
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.availableKernelModules = [ "amdgpu" "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ "kvm-amd" ];
+  hardware.enableAllFirmware = true;
+  boot.loader.grub.gfxmodeEfi = "3840x2160";
+  services.xserver.videoDrivers = [ "amdgpu" ];
   boot.extraModulePackages = [ ];
+  time.timeZone = "America/New_York";
 
   swapDevices = [ ];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "octo";
   system.stateVersion = "23.11";
-  services.xserver.videoDrivers = ["nvidia"];
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = true;
-    open = false;
-    nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.vulkan_beta;
-  };
-  nixpkgs = {
-    config = {
-      cudaSupport = true;
-      cudaEnableForwardCompat = false;
-      cudaCapabilities = [ "8.6" ];
-    };
-  };
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
+  # nixpkgs = {
+  #   config = {
+  #   };
+  # };
 }

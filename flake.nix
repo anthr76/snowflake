@@ -2,7 +2,7 @@
   description = "anthr76 Flakes";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -14,10 +14,11 @@
     nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     # TODO: Document this PR
     nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
-    jovian-nixos.url = "github:anthr76/Jovian-NixOS-nvidia";
+    jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
   };
 
-  outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:
+  outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic, ... }@inputs:
     let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;
@@ -53,15 +54,10 @@
             ./nixos/hosts/e39.nwk3.rabbito.tech
           ];
         };
-        "octo.nwk3.rabbito.tech" = nixpkgs-unstable.lib.nixosSystem {
+        "octo.nwk3.rabbito.tech" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
-            # {
-            #   nixpkgs.config.pkgs = import nixpkgs-unstable;
-            # }
-            {
-              nixpkgs.config.pkgs = import nixpkgs-unstable;
-            }
+            chaotic.nixosModules.default
             ./nixos/hosts/octo.nwk3.rabbito.tech
           ];
         };
