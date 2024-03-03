@@ -14,7 +14,7 @@
   boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ "kvm-amd" ];
   hardware.enableAllFirmware = true;
-  boot.loader.grub.gfxmodeEfi = "3840x2160";
+  # boot.loader.grub.gfxmodeEfi = "3840x2160";
   services.xserver.videoDrivers = [ "amdgpu" ];
   boot.extraModulePackages = [ ];
   time.timeZone = "America/New_York";
