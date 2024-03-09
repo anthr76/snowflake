@@ -5,6 +5,7 @@
 
   imports = [
     ../../personalities/desktop/steam.nix
+    ./linux.nix
   ];
   nixpkgs = {
     overlays = [
