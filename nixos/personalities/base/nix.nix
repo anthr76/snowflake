@@ -25,6 +25,7 @@
         "chaotic-nyx.cachix.org-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="
       ];
       trusted-users = [ "root" "@wheel" ];
+      builders-use-substitutes = true;
       auto-optimise-store = lib.mkDefault true;
       experimental-features = [ "nix-command" "flakes" "repl-flake" ];
       warn-dirty = false;

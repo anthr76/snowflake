@@ -4,6 +4,7 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
     inputs.hardware.nixosModules.common-cpu-amd
+    inputs.hardware.nixosModules.common-gpu-amd
     inputs.hardware.nixosModules.common-cpu-amd-pstate
     inputs.hardware.nixosModules.common-pc-ssd
     ./disks.nix
@@ -14,7 +15,6 @@
   boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ "kvm-amd" ];
   hardware.enableAllFirmware = true;
-  # boot.loader.grub.gfxmodeEfi = "3840x2160";
   services.xserver.videoDrivers = [ "amdgpu" ];
   boot.extraModulePackages = [ ];
   time.timeZone = "America/New_York";
@@ -24,7 +24,7 @@
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "octo";
   system.stateVersion = "23.11";
-  # boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_testing;
   # nixpkgs = {
   #   config = {
   #   };

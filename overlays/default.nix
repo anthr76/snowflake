@@ -54,15 +54,6 @@
     });
     gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
       patches = oldAttrs.patches ++ [ ./gamescope-native-res.patch ];
-      # version = "3.14.2-nvidia";
-
-      # src = final.fetchFromGitHub {
-      #   owner = "sharkautarch";
-      #   repo = "gamescope";
-      #   rev = "4b9927e106c4e561e46ebd8c998c27e99b580919";
-      #   fetchSubmodules = true;
-      #   hash = "sha256-puDqIg+w6tDu6uXKl1+KUFTDYrgA5zwFCRJy9ZXRhfA=";
-      # };
     });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
       version = "v0.3.3";
@@ -79,49 +70,10 @@
       buildInputs = oldAttrs.buildInputs ++ [final.glib];
     });
     sunshine = prev.sunshine.overrideAttrs (oldAttrs: {
-      patches = [ ./sunshine-disable-webui.patch ];
-      version = "git.e430f51";
-      # stdenv = final.cudaPackages.backendStdenv;
-      buildInputs = oldAttrs.buildInputs ++ [
-        final.miniupnpc
-        final.cudaPackages.cuda_nvcc
-      ];
-      src = final.fetchFromGitHub {
-        owner = "LizardByte";
-        repo = "Sunshine";
-        rev = "e430f51e2fd981ed91aed79adbbacfcaa427c2a6";
-        sha256 = "sha256-OdlxvRAd/ZuZpyGLqE1MqmtZCV3K3EVAR838+FWYF9c=";
-        fetchSubmodules = true;
-      };
       cmakeFlags = oldAttrs.cmakeFlags ++ [
         "-DSUNSHINE_ENABLE_TRAY=OFF"
         "-DSUNSHINE_REQUIRE_TRAY=OFF"
-        "-DSUNSHINE_BUILD_WEB_UI=OFF"
-        "-DSUNSHINE_BUILD_FLATPAK=ON"
-        "-DSUNSHINE_ENABLE_CUDA=ON"
-        "-DCMAKE_CUDA_COMPILER:PATH=${final.cudaPackages.cuda_nvcc}/bin/nvcc"
       ];
-      preBuild = ''
-        mkdir -p ../node_modules
-        mkdir -p ../build
-        cp -r ${final.sunshine.ui}/node_modules/* ../node_modules
-        cp -r ${final.sunshine.ui}/build/* ../build
-      '';
-      ui = final.buildNpmPackage {
-        pname = "sunshine-ui";
-        src = final.sunshine.src;
-        version = final.sunshine.version;
-        npmDepsHash = "sha256-3Mi8um6H77pigtbOYX+WeOoFJBdgHnXSlPWKWaoj9YY=";
-        postPatch = ''
-          cp ${./sunshine-package-lock.json} ./package-lock.json
-        '';
-        installPhase = ''
-          npm run build
-          mkdir -p $out
-          cp -r node_modules $out/
-          cp -r build $out/
-        '';
-      };
     });
     discord = prev.discord.overrideAttrs (oldAttrs: {
       withOpenASAR = true;
@@ -138,6 +90,18 @@
           --add-flags "--enable-gpu-rasterization " \
           --add-flags "--enable-zero-copy"
         '';
+    });
+    moonlight-qt = prev.moonlight-qt.overrideAttrs (oldAttrs: {
+      version = "v0.3.3-89a628a";
+      patches = [];
+      src = final.fetchFromGitHub {
+        owner = "moonlight-stream";
+        repo = "moonlight-qt";
+        rev = "89a628a0dde50264fd2170125588c15d8dd80a2c";
+        sha256 = "sha256-6KJTYYbrIPt3zNaK63fcFBb9W8reItpeqylugj0CwjU=";
+        fetchSubmodules = true;
+      };
+      buildInputs = oldAttrs.buildInputs ++ [final.libplacebo final.vulkan-headers];
     });
   };
 

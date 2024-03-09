@@ -9,14 +9,17 @@
     ../../personalities/base/sops.nix
     ../../personalities/base/openssh.nix
     ../../personalities/base/nix.nix
-    ../../personalities/base/podman.nix
-    # ./sunshine.nix
+    # ./no-rgb.nix
+    ./sunshine.nix
     # ./wolf.nix
     # ./audio.nix
   ];
   services.xserver.desktopManager.plasma6.enable = true;
   services.flatpak.enable = true;
   xdg.portal.enable = true;
+  services.packagekit.enable = true;
+  fonts.enableDefaultPackages = true;
+  hardware.xpadneo.enable = true;
   nixpkgs = {
     overlays = [
       outputs.overlays.additions
@@ -32,6 +35,8 @@
     pkgs.mangohud
     pkgs.vim
     pkgs.vulkan-tools
+    pkgs.kdePackages.discover
+    pkgs.amdgpu_top
   ];
   boot = {
     plymouth = {
@@ -53,6 +58,7 @@
     consoleLogLevel = 0;
     initrd.verbose = false;
   };
+  boot.kernelModules = ["uinput"];
   users.users = {
       steam = {
       isNormalUser = true;
@@ -60,6 +66,8 @@
       extraGroups = [
         "wheel"
         "networkmanager"
+        "input"
+        "wheel"
       ];
       openssh.authorizedKeys.keys = [
         (builtins.readFile ../../../home-manager/users/anthony/yubi.pub)
@@ -83,12 +91,14 @@
     };
   };
   hardware.bluetooth.enable = true;
+  hardware.steam-hardware.enable = true;
   jovian = {
     hardware.has.amd.gpu = true;
     hardware.amd.gpu.enableBacklightControl = false;
-    decky-loader.enable = true;
+    decky-loader.enable = false;
     devices.steamdeck.enableKernelPatches = true;
     devices.steamdeck.enableSoundSupport = true;
+    devices.steamdeck.enableControllerUdevRules = true;
     steam = {
       enable = true;
       autoStart = true;
@@ -97,6 +107,7 @@
     };
     steamos = {
       useSteamOSConfig = true;
+      enableBluetoothConfig = false;
     };
   };
 }

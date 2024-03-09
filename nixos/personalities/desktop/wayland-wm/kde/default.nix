@@ -6,15 +6,15 @@
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   environment.systemPackages = with pkgs; [
     wl-clipboard
-    plasma5Packages.plasma-thunderbolt
+    kdePackages.plasma-thunderbolt
+    kdePackages.kcalc
+    kdePackages.kdenlive
     vulkan-hdr-layer
-    libsForQt5.kcalc
-    libsForQt5.kdenlive
   ];
   services = {
     xserver = {
       enable = true;
-      desktopManager.plasma5 = {
+      desktopManager.plasma6 = {
         enable = true;
       };
       # Currently broken with fish shell
