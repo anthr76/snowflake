@@ -29,7 +29,6 @@
                     mountpoint = "/";
                   };
                   "/home" = {
-                    mountOptions = [ "compress=zstd" ];
                     mountpoint = "/home";
                   };
                   "/nix" = {
@@ -56,7 +55,6 @@
                 extraArgs = [ "-f" ];
                 subvolumes = {
                   "/data" = {
-                    mountOptions = [ "compress=zstd" ];
                     mountpoint = "/data";
                   };
                 };

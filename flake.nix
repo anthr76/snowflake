@@ -14,10 +14,10 @@
     nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     # TODO: Document this PR
     nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
-    # Sunshine 0.22.0
-    nixpkgs-pr-293938.url = "github:devusb/nixpkgs?ref=sunshine";
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    # proton-ge-custom: init at 9-1
+    nixpkgs-pr-294532.url = "github:NotAShelf/nixpkgs?ref=proton-ge";
   };
 
   outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic, ... }@inputs:

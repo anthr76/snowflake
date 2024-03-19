@@ -52,8 +52,26 @@
         hash = "sha256-/i5+S/UPoNZk3pUVXf6F4NY32Gy70U6A8bOX8PJiCRo=";
       };
     });
+    xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
+      version = "git.74dd867";
+      src = final.fetchFromGitHub {
+        owner = "atar-axis";
+        repo = "xpadneo";
+        rev = "74dd867e9e4fa4f6b2bb73df5434d8c8972152e8";
+        sha256 = "sha256-fi5+S/UPoNZk3pUVXf6F4NY32Gy70U6A8bOX8PJizRo=";
+        fetchSubmodules = true;
+      };
+    });
     gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
       patches = oldAttrs.patches ++ [ ./gamescope-native-res.patch ];
+      # src = final.fetchFromGitHub {
+      #   owner = "ValveSoftware";
+      #   repo = "gamescope";
+      #   rev = "793dde773b8a8cbd82767a9d4a5f2a64dc9121df";
+      #   sha256 = "sha256-yVEO3kQGQoGCe/OQlzivsX9YuUSC+qhO+WhDoAzNSgw=";
+      #   fetchSubmodules = true;
+      # };
+      # buildInputs = oldAttrs.buildInputs ++ [final.libdecor];
     });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
       version = "v0.3.3";

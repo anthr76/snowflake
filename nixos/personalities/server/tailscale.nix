@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, ... }:
 let
   tailScalePort = 41641;
 in
@@ -11,10 +11,11 @@ in
   networking.firewall.allowedUDPPorts = [ tailScalePort ];
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
   services.tailscale = {
-    package = pkgs.unstable.tailscale;
+    # package = pkgs.unstable.tailscale;
     # useRoutingFeatures = "server";
     extraUpFlags = [
       "--accept-routes"
+      "--reset"
     ];
     enable = true;
     port = tailScalePort;

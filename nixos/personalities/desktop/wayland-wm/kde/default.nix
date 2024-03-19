@@ -4,11 +4,13 @@
     ../../default.nix
   ];
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  hardware.sane.enable = true;
   environment.systemPackages = with pkgs; [
     wl-clipboard
     kdePackages.plasma-thunderbolt
     kdePackages.kcalc
     kdePackages.kdenlive
+    kdePackages.skanlite
     vulkan-hdr-layer
   ];
   services = {

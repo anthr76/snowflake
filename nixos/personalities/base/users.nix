@@ -12,6 +12,8 @@ in
       ] ++ ifTheyExist [
         "tss"
         "networkmanager"
+        "scanner"
+        "lp"
       ];
       hashedPasswordFile = config.sops.secrets.anthony-password.path;
       openssh.authorizedKeys.keys = [

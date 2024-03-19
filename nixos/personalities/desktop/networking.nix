@@ -7,12 +7,17 @@
       enable = true;
     };
     networking.wireless.iwd.enable = true;
-    systemd.services.tailscaled = lib.mkForce {
-      requires = ["tailscaled-ondemand-dispatch.target"];
-      wants = ["tailscaled-ondemand-dispatch.target"];
-      after = ["tailscaled-ondemand-dispatch.target"];
-      # This is broken and it hurts :(
-      wantedBy = ["tailscaled-ondemand-dispatch.target"];
+    # systemd.services.tailscaled = lib.mkForce {
+    #   requires = ["tailscaled-ondemand-dispatch.target"];
+    #   after = ["tailscaled-ondemand-dispatch.target"];
+    #   # This is broken and it hurts :(
+    #   wantedBy = ["tailscaled-ondemand-dispatch.target"];
+    # };
+    system.activationScripts = {
+      tailscale.text =
+        ''
+          ${pkgs.systemd}/bin/systemctl restart NetworkManager-dispatcher.service
+        '';
     };
     systemd.targets.tailscaled-ondemand-dispatch = {
         description = "Ensure's tailscale runs only when it needs to.";
@@ -27,7 +32,7 @@
           {
             source = pkgs.writeText "hook" ''
             #!/bin/sh
-            systemctl stop tailscaled.service
+            ${pkgs.systemd}/bin/systemctl stop tailscaled.service
             interface=$1 status=$2
             case $status in
               up)

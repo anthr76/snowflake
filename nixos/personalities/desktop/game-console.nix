@@ -4,7 +4,6 @@
 {
   imports = [
     inputs.jovian-nixos.nixosModules.jovian
-    ../../personalities/base/zram.nix
     ../../personalities/base/bootloader.nix
     ../../personalities/base/sops.nix
     ../../personalities/base/openssh.nix
@@ -20,6 +19,7 @@
   services.packagekit.enable = true;
   fonts.enableDefaultPackages = true;
   hardware.xpadneo.enable = true;
+  services.fwupd.enable = true;
   nixpkgs = {
     overlays = [
       outputs.overlays.additions
@@ -37,6 +37,9 @@
     pkgs.vulkan-tools
     pkgs.kdePackages.discover
     pkgs.amdgpu_top
+  ];
+  programs.steam.extraCompatPackages = [
+    inputs.nixpkgs-pr-294532.legacyPackages.${pkgs.system}.proton-ge-custom
   ];
   boot = {
     plymouth = {
@@ -68,6 +71,8 @@
         "networkmanager"
         "input"
         "wheel"
+        # test
+        "video"
       ];
       openssh.authorizedKeys.keys = [
         (builtins.readFile ../../../home-manager/users/anthony/yubi.pub)
@@ -91,10 +96,17 @@
     };
   };
   hardware.bluetooth.enable = true;
+  hardware.bluetooth.input = {
+    General = {
+      UserspaceHID = true;
+      ClassicBondedOnly = false;
+      LEAutoSecurity = false;
+    };
+  };
   hardware.steam-hardware.enable = true;
   jovian = {
     hardware.has.amd.gpu = true;
-    hardware.amd.gpu.enableBacklightControl = false;
+    # hardware.amd.gpu.enableBacklightControl = true;
     decky-loader.enable = false;
     devices.steamdeck.enableKernelPatches = true;
     devices.steamdeck.enableSoundSupport = true;
@@ -110,4 +122,11 @@
       enableBluetoothConfig = false;
     };
   };
+  services.udev.extraRules = ''
+    # If a GPU crash is caused by a specific process, kill the PID
+    ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{PID}!="0", RUN+="${pkgs.util-linux}/bin/kill -9 %E{PID}"
+
+    # Kill greetd and Gamescope if the GPU crashes and VRAM is lost
+    ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{FLAGS}=="1", RUN+="${pkgs.systemd}/bin/systemctl restart greetd"
+  '';
 }
