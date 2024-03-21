@@ -63,6 +63,13 @@
             ./nixos/hosts/octo.nwk3.rabbito.tech
           ];
         };
+        "f80.nwk3.rabbito.tech" = lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+          modules = [
+            chaotic.nixosModules.default
+            ./nixos/hosts/f80.nwk3.rabbito.tech
+          ];
+        };
         # TODO: error: getting status of '/nix/store/hosts/iso': No such file or director
         # Nix can be so weird..
         # iso = nixpkgs.lib.nixosSystem {
@@ -107,6 +114,13 @@
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [
             ./home-manager/hosts/octo.nwk3.rabbito.tech.nix
+          ];
+        };
+        "anthony@f80.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
+          pkgs = pkgsFor.x86_64-linux;
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [
+            ./home-manager/hosts/f80.nwk3.rabbito.tech.nix
           ];
         };
       };
