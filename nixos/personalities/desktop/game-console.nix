@@ -1,18 +1,27 @@
 # This is a steamOS steam console like setup.
 # Lots of duplication here between we defined things, but since this is a console things need to be insecure and different.
-{pkgs, outputs, inputs, ...}:
+{pkgs, outputs, inputs, config, lib, ...}:
 {
   imports = [
-    inputs.jovian-nixos.nixosModules.jovian
     ../../personalities/base/bootloader.nix
     ../../personalities/base/sops.nix
     ../../personalities/base/openssh.nix
     ../../personalities/base/nix.nix
-    # ./no-rgb.nix
     ./sunshine.nix
-    # ./wolf.nix
-    # ./audio.nix
-  ];
+    ./audio.nix
+  ] ++ (builtins.attrValues outputs.nixosModules);
+  nixpkgs = {
+    overlays = [
+      outputs.overlays.additions
+      outputs.overlays.modifications
+      outputs.overlays.unstable-packages
+      outputs.overlays.flake-inputs
+    ];
+    config = {
+      allowUnfree = true;
+    };
+  };
+  gaming-kernel.enable = true;
   services.xserver.desktopManager.plasma6.enable = true;
   services.flatpak.enable = true;
   xdg.portal.enable = true;
@@ -20,27 +29,28 @@
   fonts.enableDefaultPackages = true;
   hardware.xpadneo.enable = true;
   services.fwupd.enable = true;
-  nixpkgs = {
-    overlays = [
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
-    ];
-    config = {
-      allowUnfree = true;
-    };
-  };
   environment.systemPackages = [
-    inputs.jovian-nixos.legacyPackages.${pkgs.system}.steam
     pkgs.mangohud
     pkgs.vim
     pkgs.vulkan-tools
     pkgs.kdePackages.discover
     pkgs.amdgpu_top
   ];
-  programs.steam.extraCompatPackages = [
-    inputs.nixpkgs-pr-294532.legacyPackages.${pkgs.system}.proton-ge-custom
-  ];
+  programs.steam = {
+    enable = true;
+    package = inputs.jovian-nixos.legacyPackages.${pkgs.system}.steam.override {
+      extraPkgs = pkgs:
+        with pkgs; [
+          liberation_ttf
+          wqy_zenhei
+        ];
+    };
+    extest.enable = true;
+    extraCompatPackages = with pkgs; [
+      proton-ge-bin
+    ];
+  };
+
   boot = {
     plymouth = {
       enable = true;
@@ -106,11 +116,8 @@
   hardware.steam-hardware.enable = true;
   jovian = {
     hardware.has.amd.gpu = true;
-    # hardware.amd.gpu.enableBacklightControl = true;
     decky-loader.enable = false;
-    devices.steamdeck.enableKernelPatches = true;
-    devices.steamdeck.enableSoundSupport = true;
-    devices.steamdeck.enableControllerUdevRules = true;
+    devices.steamdeck.enable = false;
     steam = {
       enable = true;
       autoStart = true;

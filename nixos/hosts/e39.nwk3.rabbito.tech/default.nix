@@ -39,36 +39,4 @@
   system.stateVersion = "23.05";
   environment.variables.LIBVA_DRIVER_NAME = "iHD";
 
-  # Temp Nix Since Fans Don't Work lol
-
-  programs.ssh.extraConfig = ''
-    Host eu.nixbuild.net
-      PubkeyAcceptedKeyTypes ssh-ed25519
-      ServerAliveInterval 60
-      IPQoS throughput
-      IdentityFile ${config.sops.secrets.nixbuild-ssh-key.path}
-  '';
-
-  programs.ssh.knownHosts = {
-    nixbuild = {
-      hostNames = [ "eu.nixbuild.net" ];
-      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
-    };
-  };
-  sops.secrets.nixbuild-ssh-key = {
-    sopsFile = ../../../secrets/users.yaml;
-    mode = "0600";
-  };
-  nix = {
-    distributedBuilds = true;
-    buildMachines = [
-      { hostName = "eu.nixbuild.net";
-        system = "x86_64-linux";
-        maxJobs = 100;
-        supportedFeatures = [ "benchmark" "big-parallel" ];
-      }
-    ];
-  };
-
-
 }

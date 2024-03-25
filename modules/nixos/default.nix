@@ -4,4 +4,5 @@
 {
   # List your module files here
   # my-module = import ./my-module.nix;
+  gaming-kernel = import ./gaming-kernel.nix;
 }

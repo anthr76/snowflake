@@ -16,11 +16,9 @@
     nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-    # proton-ge-custom: init at 9-1
-    nixpkgs-pr-294532.url = "github:NotAShelf/nixpkgs?ref=proton-ge";
   };
 
-  outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic, ... }@inputs:
+  outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic, jovian-nixos, ... }@inputs:
     let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;
@@ -60,6 +58,7 @@
           specialArgs = { inherit inputs outputs; };
           modules = [
             chaotic.nixosModules.default
+            jovian-nixos.nixosModules.jovian
             ./nixos/hosts/octo.nwk3.rabbito.tech
           ];
         };
@@ -70,15 +69,6 @@
             ./nixos/hosts/f80.nwk3.rabbito.tech
           ];
         };
-        # TODO: error: getting status of '/nix/store/hosts/iso': No such file or director
-        # Nix can be so weird..
-        # iso = nixpkgs.lib.nixosSystem {
-        #   specialArgs = { inherit inputs outputs; };
-        #   modules = [
-        #     # > Our main nixos configuration file <
-        #     ./nixos/image-generators
-        #   ];
-        # };
       };
       homeConfigurations = {
         "anthony@bkp1.nwk2.rabbito.tech" = lib.homeManagerConfiguration {

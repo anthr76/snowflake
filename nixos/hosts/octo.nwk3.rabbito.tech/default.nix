@@ -4,7 +4,6 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
     inputs.hardware.nixosModules.common-cpu-amd
-    # inputs.hardware.nixosModules.common-gpu-amd
     inputs.hardware.nixosModules.common-cpu-amd-pstate
     inputs.hardware.nixosModules.common-pc-ssd
     ./disks.nix
@@ -24,9 +23,5 @@
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "octo";
   system.stateVersion = "23.11";
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  # nixpkgs = {
-  #   config = {
-  #   };
-  # };
+  # boot.kernelPackages = pkgs.linuxPackages_testing;
 }

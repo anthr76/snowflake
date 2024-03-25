@@ -24,6 +24,24 @@
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
+    # kdePackages = prev.kdePackages // {
+    #   kwin = prev.kdePackages.kwin.overrideAttrs (old: {
+    #     src = final.fetchFromGitLab {
+    #       domain = "invent.kde.org";
+    #       owner = "plasma";
+    #       repo = "kwin";
+    #       rev = "0fef229587d642e6175f39abc45fc839baffe1f1";
+    #       hash = "sha256-obRUX6D00SNneHxqBmxIEdNA+VG9EFZn4c2mqybX14M=";
+    #     };
+    #     patches = (old.patches or []) ++ [
+    #       (final.fetchpatch {
+    #         url =
+    #           "https://invent.kde.org/plasma/kwin/-/merge_requests/4800.patch";
+    #         sha256 = "sha256-O7i2j2aElv5tUZSyMXGrPs3A0PYdYzfXHgrjIgKvVgE=";
+    #       })
+    #     ];
+    #   });
+    # };
     lunarvim = prev.lunarvim.overrideAttrs (oldAttrs: {
       src = final.fetchFromGitHub {
         owner = "LunarVim";
@@ -63,15 +81,23 @@
       };
     });
     gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
-      patches = oldAttrs.patches ++ [ ./gamescope-native-res.patch ];
-      # src = final.fetchFromGitHub {
-      #   owner = "ValveSoftware";
-      #   repo = "gamescope";
-      #   rev = "793dde773b8a8cbd82767a9d4a5f2a64dc9121df";
-      #   sha256 = "sha256-yVEO3kQGQoGCe/OQlzivsX9YuUSC+qhO+WhDoAzNSgw=";
-      #   fetchSubmodules = true;
-      # };
-      # buildInputs = oldAttrs.buildInputs ++ [final.libdecor];
+      patches = oldAttrs.patches ++ [
+        ./gamescope-native-res.patch
+        # ./gamescope-color-management.patch
+        ./gamescope-hdr-casting.patch
+        # ./gamescope-explicit-sync.patch
+      ];
+      version = "3.14.2";
+      src = final.fetchFromGitHub {
+        owner = "ValveSoftware";
+        repo = "gamescope";
+        rev = "3.14.2";
+        fetchSubmodules = true;
+        hash = "sha256-Ym1kl9naAm1MGlxCk32ssvfiOlstHiZPy7Ga8EZegus";
+      };
+      buildInputs = oldAttrs.buildInputs ++ [
+        final.libdecor #final.seatd final.xwayland final.xorg.xcbutilwm final.xorg.xcbutilerrors
+      ];
     });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
       version = "v0.3.3";

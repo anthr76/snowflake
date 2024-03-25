@@ -14,6 +14,7 @@ in
         "networkmanager"
         "scanner"
         "lp"
+        "gamemode"
       ];
       hashedPasswordFile = config.sops.secrets.anthony-password.path;
       openssh.authorizedKeys.keys = [

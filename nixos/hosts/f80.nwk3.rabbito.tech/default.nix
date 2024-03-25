@@ -31,37 +31,9 @@
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "f80";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  boot.kernelPackages = pkgs.linuxPackages_testing;
+  # boot.kernelPackages = pkgs.linuxPackages_testing;
   system.stateVersion = "23.05";
-
-  programs.ssh.extraConfig = ''
-    Host eu.nixbuild.net
-      PubkeyAcceptedKeyTypes ssh-ed25519
-      ServerAliveInterval 60
-      IPQoS throughput
-      IdentityFile ${config.sops.secrets.nixbuild-ssh-key.path}
-  '';
-
-  programs.ssh.knownHosts = {
-    nixbuild = {
-      hostNames = [ "eu.nixbuild.net" ];
-      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
-    };
-  };
-  sops.secrets.nixbuild-ssh-key = {
-    sopsFile = ../../../secrets/users.yaml;
-    mode = "0600";
-  };
-  nix = {
-    distributedBuilds = true;
-    buildMachines = [
-      { hostName = "eu.nixbuild.net";
-        system = "x86_64-linux";
-        maxJobs = 100;
-        supportedFeatures = [ "benchmark" "big-parallel" ];
-      }
-    ];
-  };
-
+  environment.variables.DXVK_FILTER_DEVICE_NAME = "AMD Radeon RX 7900 XTX (RADV NAVI31)";
+  # environment.variables.DRI_PRIME = "1";
 
 }
