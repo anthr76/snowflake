@@ -1,5 +1,11 @@
 {inputs, pkgs, lib, ...}:
 {
+  disabledModules = [
+    "${inputs.nixpkgs}/nixos/modules/programs/steam.nix"
+  ];
+  imports = [
+    "${inputs.nixpkgs-pr-299036}/nixos/modules/programs/steam.nix"
+  ];
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
@@ -31,12 +37,15 @@
     enable = true;
     settings = {
       general = {
-        softrealtime = "auto";
+        softrealtime = "off";
+        igpu_desiredgov = "performance";
+        igpu_power_threshold = "-1";
       };
-      # custom = {
-      #   start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
-      #   end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
-      # };
+      gpu = {
+        apply_gpu_optimisations = "accept-responsibility";
+        gpu_device = "0";
+        amd_performance_level = "high";
+      };
     };
   };
   gaming-kernel.enable = true;

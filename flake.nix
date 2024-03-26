@@ -16,6 +16,7 @@
     nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    nixpkgs-pr-299036.url = "github:Shawn8901/nixpkgs?ref=fix-extest-extraenv";
   };
 
   outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic, jovian-nixos, ... }@inputs:
