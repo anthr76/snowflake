@@ -19,19 +19,9 @@
       desktopManager.plasma6 = {
         enable = true;
       };
-      # Currently broken with fish shell
       displayManager.sddm = {
-        enable = false;
-        wayland.enable = false;
-      };
-    };
-    greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${pkgs.greetd.greetd}/bin/agreety --cmd startplasma-wayland";
-          user = "greeter";
-        };
+        enable = true;
+        wayland.enable = true;
       };
     };
   };
