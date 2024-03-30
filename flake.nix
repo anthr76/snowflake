@@ -17,9 +17,11 @@
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     nixpkgs-pr-299036.url = "github:Shawn8901/nixpkgs?ref=fix-extest-extraenv";
+    nix-github-actions.url = "github:nix-community/nix-github-actions";
+    nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic, jovian-nixos, ... }@inputs:
+  outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic, jovian-nixos, nix-github-actions, ... }@inputs:
     let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;
@@ -31,6 +33,7 @@
       });
     in
     {
+      githubActions = nix-github-actions.lib.mkGithubMatrix { inherit (self) checks; };
       packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
       devShells = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
       overlays = import ./overlays { inherit inputs outputs; };
