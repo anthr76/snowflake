@@ -30,6 +30,15 @@ jobs:
       fail-fast: false # let it build all the targets
       matrix: ${{fromJSON(needs.nix-matrix.outputs.matrix)}}
     steps:
+      # Make space for large NixOS closures
+      - name: Free disk space
+        run: |
+          sudo rm -rf \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /usr/local/.ghcup \
+            "$AGENT_TOOLSDIRECTORY" \
+            || true
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v24
       - run: nix build -L ".#githubActions.checks.${{ matrix.attr }}"
