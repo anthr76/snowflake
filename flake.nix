@@ -132,6 +132,12 @@
           (lib.mapAttrs (_: x: x.config.system.build.toplevel)
             (lib.filterAttrs (_: x: x.pkgs.system == pkgs.system)
               self.nixosConfigurations)))
+        # add the Home Manager configurations with the same system
+        //
+        (withPrefix "home-"
+          (lib.mapAttrs (_: x: x.activation-script)
+            (lib.filterAttrs (_: x: x.pkgs.system == pkgs.system)
+              self.homeConfigurations)))
       );
 
     };
