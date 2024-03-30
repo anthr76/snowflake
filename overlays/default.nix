@@ -60,16 +60,26 @@
         final.clang
       ];
     });
-    xwayland-run = prev.xwayland-run.overrideAttrs (oldAttrs: {
-      version = "0.0.2-c5846bed";
-      src = final.fetchFromGitLab {
-        domain = "gitlab.freedesktop.org";
-        owner = "ofourdan";
-        repo = "xwayland-run";
-        rev = "c5846bed1d01497c75f8347e4d5dd1077cf171e9";
-        hash = "sha256-/i5+S/UPoNZk3pUVXf6F4NY32Gy70U6A8bOX8PJiCRo=";
-      };
-    });
+    # CVE-2024-3094
+    # xz = prev.xz.overrideAttrs (oldAttrs: {
+    #   version = "5.4.6";
+
+    #   src = final.fetchurl {
+    #     url = "https://github.com/tukaani-project/xz/releases/download/v5.4.6/xz-5.4.6.tar.bz2";
+    #     sha256 = "sha256-kThRsnTo4dMXgeyUnxwj6NvPDs9uc6JDbcIXad0+b0k=";
+    #   };
+    # });
+    # mesa = prev.mesa.overrideAttrs (oldAttrs: {
+    #   mesonFlags = final.lib.remove "-Db_ndebug=true" oldAttrs.mesonFlags ++ [
+    #     "-Dc_args=-fno-omit-frame-pointer"
+    #     "-Dc_link_args=-fno-omit-frame-pointer"
+    #     "-Dcpp_args=-fno-omit-frame-pointer"
+    #     "-Dcpp_link_args=-fno-omit-frame-pointer"
+    #     "--buildtype=debugoptimized"
+    #     # "--strip=false"
+    #     "-Db_sanitize=${builtins.concatStringsSep "," ["address" "undefined"]}"
+    #   ];
+    # });
     xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
       version = "git.74dd867";
       src = final.fetchFromGitHub {
@@ -81,8 +91,17 @@
       };
     });
     gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
+      preConfigure = ''
+        CFLAGS="-g -fno-omit-frame-pointer"
+        CXXFLAGS="-g -fno-omit-frame-pointer"
+      '';
+      # mesonFlags = oldAttrs.mesonFlags ++ [
+      #   "-Dc_args=${builtins.concatStringsSep "," ["-g" "-fno-omit-frame-pointer"]}"
+      #   "-Dcpp_args=${builtins.concatStringsSep "," ["-g" "-fno-omit-frame-pointer"]}"
+      # ];
       patches = oldAttrs.patches ++ [
         ./gamescope-native-res.patch
+        ./0001-allow-gamescope-to-set-ctx-priority.patch
         # ./gamescope-color-management.patch
         ./gamescope-hdr-casting.patch
         # ./gamescope-explicit-sync.patch

@@ -1,0 +1,86 @@
+From 7b8617ae59b0e994bcaf37d639710ab08c30c085 Mon Sep 17 00:00:00 2001
+From: Anthony Rabbito <hello@anthonyrabbito.com>
+Date: Wed, 27 Mar 2024 12:32:55 -0400
+Subject: [PATCH] fix: allow gamescope to set ctx priority regardless of CAPS
+
+To workaround a bubblewrap issue with the steam package in NixOS and
+steamVR
+
+Signed-off-by: Anthony Rabbito <hello@anthonyrabbito.com>
+---
+ src/main.cpp | 50 +++++++++++++-------------------------------------
+ 1 file changed, 13 insertions(+), 37 deletions(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index bbc3649..616691c 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -676,52 +676,28 @@ int main(int argc, char **argv)
+ 		}
+ 	}
+ 
+-#if defined(__linux__) && HAVE_LIBCAP
+-	cap_t caps = cap_get_proc();
+-	if ( caps != nullptr )
++#if defined(__linux__)
+ 	{
+-		cap_flag_value_t nicecapvalue = CAP_CLEAR;
+-		cap_get_flag( caps, CAP_SYS_NICE, CAP_EFFECTIVE, &nicecapvalue );
+-
+-		if ( nicecapvalue == CAP_SET )
++		g_bNiceCap = true;
++		fprintf(stdout, "WARNING: This version of gamescope is patched to assume a patched kernel to not require CAP_SYS_NICE for priority queues\n");
++		if ( g_bRt )
+ 		{
+-			g_bNiceCap = true;
++			struct sched_param sched;
++			sched_getparam(0, &sched);
++			sched.sched_priority = sched_get_priority_min(SCHED_RR);
+ 
+-			errno = 0;
+-			int nOldNice = nice( 0 );
+-			if ( nOldNice != -1 && errno == 0 )
+-			{
+-				g_nOldNice = nOldNice;
+-			}
+-
+-			errno = 0;
+-			int nNewNice = nice( -20 );
+-			if ( nNewNice != -1 && errno == 0 )
+-			{
+-				g_nNewNice = nNewNice;
+-			}
+-			if ( g_bRt )
+-			{
+-				struct sched_param sched;
+-				sched_getparam(0, &sched);
+-				sched.sched_priority = sched_get_priority_min(SCHED_RR);
+-
+-				if (pthread_getschedparam(pthread_self(), &g_nOldPolicy, &g_schedOldParam)) {
+-					fprintf(stderr, "Failed to get old scheduling parameters: %s", strerror(errno));
+-					exit(1);
+-				}
+-				if (sched_setscheduler(0, SCHED_RR, &sched))
+-					fprintf(stderr, "Failed to set realtime: %s", strerror(errno));
++			if (pthread_getschedparam(pthread_self(), &g_nOldPolicy, &g_schedOldParam)) {
++				fprintf(stderr, "Failed to get old scheduling parameters: %s", strerror(errno));
++				exit(1);
+ 			}
++			if (sched_setscheduler(0, SCHED_RR, &sched))
++				fprintf(stderr, "Failed to set realtime: %s", strerror(errno));
+ 		}
+ 	}
+ 
+-	if ( g_bNiceCap == false )
+-	{
+-		fprintf( stderr, "No CAP_SYS_NICE, falling back to regular-priority compute and threads.\nPerformance will be affected.\n" );
+-	}
+ #endif
+ 
++
+ 	setenv( "XWAYLAND_FORCE_ENABLE_EXTRA_MODES", "1", 1 );
+ 
+ 	if ( g_nCursorScaleHeight > 0 )
+-- 
+2.44.0
+

@@ -1,16 +1,12 @@
 {inputs, pkgs, lib, ...}:
 {
-  disabledModules = [
-    "${inputs.nixpkgs}/nixos/modules/programs/steam.nix"
-  ];
-  imports = [
-    "${inputs.nixpkgs-pr-299036}/nixos/modules/programs/steam.nix"
-  ];
+  # chaotic.mesa-git.enable = true;
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
     extest.enable = true;
     package = pkgs.steam.override {
+      privateTmp = false;
       extraEnv = {
         STEAM_FORCE_DESKTOPUI_SCALING = "1.5";
       };
@@ -18,6 +14,17 @@
         with pkgs; [
           liberation_ttf
           wqy_zenhei
+          # Gamescope
+          xorg.libXcursor
+          xorg.libXi
+          xorg.libXinerama
+          xorg.libXScrnSaver
+          libpng
+          libpulseaudio
+          libvorbis
+          stdenv.cc.cc.lib
+          libkrb5
+          keyutils
         ];
     };
     extraCompatPackages = with pkgs; [
@@ -26,7 +33,7 @@
   };
   programs.gamescope = {
     enable = true;
-    capSysNice = true;
+    capSysNice = false;
   };
   environment.systemPackages = [
     pkgs.vim

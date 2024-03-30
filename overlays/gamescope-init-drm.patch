@@ -1,0 +1,52 @@
+From b7e6a8801b3d2d89e7b763b2eee19b0e08cc796c Mon Sep 17 00:00:00 2001
+From: David <gw.chip.gw@gmail.com>
+Date: Sat, 30 Dec 2023 09:14:47 -0600
+Subject: [PATCH] Fix DRM device selection when `--prefer-vk-device` is used.
+ Since Vulkan was initialized after the output, `init_drm` would never
+ actually know what Vulkan device would be used.
+
+---
+ src/main.cpp | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index 5be060bf0..aea810c94 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -766,14 +766,14 @@ int main(int argc, char **argv)
+ 	}
+ #endif
+
+-	if ( !initOutput( g_nPreferredOutputWidth, g_nPreferredOutputHeight, g_nNestedRefresh ) )
+-	{
+-		fprintf( stderr, "Failed to initialize output\n" );
+-		return 1;
+-	}
+-
+ 	if ( BIsSDLSession() )
+ 	{
++		if ( !initOutput( g_nPreferredOutputWidth, g_nPreferredOutputHeight, g_nNestedRefresh ) )
++		{
++			fprintf( stderr, "Failed to initialize output\n" );
++			return 1;
++		}
++
+ 		if ( !SDL_Vulkan_CreateSurface( g_SDLWindow, instance, &surface ) )
+ 		{
+ 			fprintf(stderr, "SDL_Vulkan_CreateSurface failed: %s", SDL_GetError() );
+@@ -788,6 +788,15 @@ int main(int argc, char **argv)
+ 		fprintf( stderr, "Failed to initialize Vulkan\n" );
+ 		return 1;
+ 	}
++
++	if ( !BIsSDLSession() )
++	{
++		if ( !initOutput( g_nPreferredOutputWidth, g_nPreferredOutputHeight, g_nNestedRefresh ) )
++		{
++			fprintf( stderr, "Failed to initialize output\n" );
++			return 1;
++		}
++	}
+
+ 	if ( !vulkan_init_formats() )
+ 	{

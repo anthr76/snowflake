@@ -19,6 +19,7 @@
 
   boot.initrd.availableKernelModules = [ "nvme" "thunderbolt" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "amdgpu"];
   boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelParams = [ "initcall_blacklist=simpledrm_platform_driver_init" ];
   hardware.enableAllFirmware = true;
 
   disko.devices = import ./disks.nix {
@@ -34,6 +35,9 @@
   # boot.kernelPackages = pkgs.linuxPackages_testing;
   system.stateVersion = "23.05";
   environment.variables.DXVK_FILTER_DEVICE_NAME = "AMD Radeon RX 7900 XTX (RADV NAVI31)";
+  # Debugging Gamescope
+  environment.enableDebugInfo = true;
+  environment.systemPackages = [ pkgs.gdb ];
   # environment.variables.DRI_PRIME = "1";
 
 }
