@@ -39,7 +39,7 @@ jobs:
             /usr/local/.ghcup \
             "$AGENT_TOOLSDIRECTORY" \
             || true
-            sudo apt-get remove --purge $(dpkg -l | grep '^ii' | awk '{print $2}')
+            sudo apt-get remove --purge --allow-remove-essential -y $(dpkg -l | grep '^ii' | awk '{print $2}')
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v26
       - uses: DeterminateSystems/magic-nix-cache-action@main
