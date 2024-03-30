@@ -61,14 +61,14 @@
       ];
     });
     # CVE-2024-3094
-    # xz = prev.xz.overrideAttrs (oldAttrs: {
-    #   version = "5.4.6";
+    xz = prev.xz.overrideAttrs (oldAttrs: rec {
+      version = "5.2.9";
 
-    #   src = final.fetchurl {
-    #     url = "https://github.com/tukaani-project/xz/releases/download/v5.4.6/xz-5.4.6.tar.bz2";
-    #     sha256 = "sha256-kThRsnTo4dMXgeyUnxwj6NvPDs9uc6JDbcIXad0+b0k=";
-    #   };
-    # });
+      src = final.fetchurl {
+        url = "https://tukaani.org/xz/xz-${version}.tar.bz2";
+        sha256 = "sZRQf7o6Rip1PFUxSczaoWgze8t97v3dBnuph8g9/OY=";
+      };
+    });
     # mesa = prev.mesa.overrideAttrs (oldAttrs: {
     #   mesonFlags = final.lib.remove "-Db_ndebug=true" oldAttrs.mesonFlags ++ [
     #     "-Dc_args=-fno-omit-frame-pointer"
