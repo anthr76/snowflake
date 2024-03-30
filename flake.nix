@@ -31,6 +31,7 @@
         inherit system;
         config.allowUnfree = true;
       });
+      withPrefix = prefix: lib.mapAttrs' (name: value: { name = "${prefix}${name}"; inherit value; });
     in
     {
       githubActions = nix-github-actions.lib.mkGithubMatrix { inherit (self) checks; };
@@ -119,5 +120,12 @@
           ];
         };
       };
+
+      # Run `nix flake check`
+      checks = forEachSystem (pkgs:
+        # add all the packages to checks
+        (withPrefix "pkgs-" self.packages.${pkgs.system})
+      );
+
     };
 }
