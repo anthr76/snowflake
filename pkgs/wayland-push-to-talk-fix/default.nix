@@ -35,6 +35,6 @@ stdenv.mkDerivation {
     description = "This fixes the inability to use push to talk in Discord when running Wayland";
     homepage = "https://github.com/Rush/wayland-push-to-talk-fix";
     license = licenses.mit;
-    platforms = platforms.all;
+    platforms = platforms.linux;
   };
 }
