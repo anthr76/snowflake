@@ -125,6 +125,12 @@
       checks = forEachSystem (pkgs:
         # add all the packages to checks
         (withPrefix "pkgs-" self.packages.${pkgs.system})
+        # add the NixOS configurations with the same system
+        //
+        (withPrefix "nixos-"
+          (lib.mapAttrs (_: x: x.config.system.build.toplevel)
+            (lib.filterAttrs (_: x: x.pkgs.system == pkgs.system)
+              self.nixosConfigurations)))
       );
 
     };
