@@ -31,7 +31,11 @@
         inherit system;
         config.allowUnfree = true;
       });
-      withPrefix = prefix: lib.mapAttrs' (name: value: { name = "${prefix}${name}"; inherit value; });
+      withPrefix = prefix: lib.mapAttrs' (name: value: {
+        # Also remove special characters
+        name = lib.replaceStrings ["." "@"] ["_" "_"] "${prefix}${name}";
+        inherit value;
+      });
     in
     {
       githubActions = nix-github-actions.lib.mkGithubMatrix {
