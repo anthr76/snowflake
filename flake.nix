@@ -46,12 +46,13 @@
             ./nixos/hosts/bkp1.nwk2.rabbito.tech
           ];
         };
-        "lga-test1.tenant-29c7a3-baggie.coreweave.cloud" = lib.nixosSystem {
-          specialArgs = { inherit inputs outputs; };
-          modules = [
-            ./nixos/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud
-          ];
-        };
+        # FIXME: eval issue
+        # "lga-test1.tenant-29c7a3-baggie.coreweave.cloud" = lib.nixosSystem {
+        #   specialArgs = { inherit inputs outputs; };
+        #   modules = [
+        #     ./nixos/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud
+        #   ];
+        # };
         "e39.nwk3.rabbito.tech" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
