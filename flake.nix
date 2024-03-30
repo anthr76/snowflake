@@ -34,7 +34,10 @@
       withPrefix = prefix: lib.mapAttrs' (name: value: { name = "${prefix}${name}"; inherit value; });
     in
     {
-      githubActions = nix-github-actions.lib.mkGithubMatrix { inherit (self) checks; };
+      githubActions = nix-github-actions.lib.mkGithubMatrix {
+        # aarch64-linux is not supported by GitHub
+        checks = nixpkgs.lib.getAttrs [ "x86_64-linux" "x86_64-darwin" ] self.checks;
+      };
       packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
       devShells = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
       overlays = import ./overlays { inherit inputs outputs; };
