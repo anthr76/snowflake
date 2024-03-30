@@ -132,8 +132,10 @@
 
       # Run `nix flake check`
       checks = forEachSystem (pkgs:
-        # add all the packages to checks
-        (withPrefix "pkgs-" self.packages.${pkgs.system})
+        # add all the supported packages to checks
+        (withPrefix "pkgs-"
+          (lib.filterAttrs (_: x: lib.elem pkgs.system x.meta.platforms)
+            self.packages.${pkgs.system}))
         # add the NixOS configurations with the same system
         //
         (withPrefix "nixos-"
