@@ -98,13 +98,14 @@
             ./home-manager/hosts/e39.nwk3.rabbito.tech.nix
           ];
         };
-        "anthony@nicoles-mbp.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
-          pkgs = pkgsFor.x86_64-darwin;
-          extraSpecialArgs = { inherit inputs outputs; };
-          modules = [
-            ./home-manager/hosts/nicoles-mbp.nwk3.rabbito.tech.nix
-          ];
-        };
+        # FIXME: depends on packages that don't build on that system
+        # "anthony@nicoles-mbp.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
+        #   pkgs = pkgsFor.x86_64-darwin;
+        #   extraSpecialArgs = { inherit inputs outputs; };
+        #   modules = [
+        #     ./home-manager/hosts/nicoles-mbp.nwk3.rabbito.tech.nix
+        #   ];
+        # };
         "steam@octo.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
