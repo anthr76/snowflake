@@ -43,6 +43,7 @@ jobs:
         with:
           extra_nix_config: |
             auto-optimise-store = true
+            system-features = nixos-test benchmark big-parallel kvm
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
             experimental-features = nix-command flakes
             substituters = https://cache.nixos.org/ https://nix-community.cachix.org https://nyx.chaotic.cx https://snowflake.cachix.org
