@@ -1,6 +1,6 @@
 { inputs, lib, config, ... }:
 {
-  systemd.services.nix-daemon.serviceConfig.LimitNOFILE = lib.mkForce 40960000;
+  systemd.services.nix-daemon.serviceConfig.LimitNOFILE = lib.mkForce 4096000000;
   nix = {
     # This will additionally add your inputs to the system's legacy channels
     # Making legacy nix commands consistent as well, awesome!
