@@ -35,6 +35,8 @@
     pkgs.vulkan-tools
     pkgs.kdePackages.discover
     pkgs.amdgpu_top
+    pkgs.dolphin-emu
+    pkgs.steam-rom-manager
   ];
   programs.steam = {
     enable = true;
@@ -135,5 +137,9 @@
 
     # Kill greetd and Gamescope if the GPU crashes and VRAM is lost
     ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{FLAGS}=="1", RUN+="${pkgs.systemd}/bin/systemctl restart greetd"
+  '';
+   services.logind.extraConfig = ''
+    # don’t shutdown when power button is short-pressed
+    HandlePowerKey=suspend
   '';
 }
