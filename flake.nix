@@ -18,6 +18,8 @@
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
+    # FIXME: wait until #300028 is merged into nixos-unstable
+    nixpkgs-staging-next.url = "github:NixOS/nixpkgs/staging-next";
   };
 
   outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic, jovian-nixos, nix-github-actions, ... }@inputs:
@@ -52,6 +54,8 @@
           specialArgs = { inherit inputs outputs; };
           modules = [
             ./nixos/hosts/bkp1.nwk2.rabbito.tech
+            # FIXME: wait until #300028 is merged into nixos-unstable
+            ./xz-downgrade.nix
           ];
         };
         # FIXME: eval issue
@@ -65,6 +69,8 @@
           specialArgs = { inherit inputs outputs; };
           modules = [
             ./nixos/hosts/e39.nwk3.rabbito.tech
+            # FIXME: wait until #300028 is merged into nixos-unstable
+            ./xz-downgrade.nix
           ];
         };
         "octo.nwk3.rabbito.tech" = lib.nixosSystem {
@@ -73,6 +79,8 @@
             chaotic.nixosModules.default
             jovian-nixos.nixosModules.jovian
             ./nixos/hosts/octo.nwk3.rabbito.tech
+            # FIXME: wait until #300028 is merged into nixos-unstable
+            ./xz-downgrade.nix
           ];
         };
         "f80.nwk3.rabbito.tech" = lib.nixosSystem {
@@ -80,6 +88,8 @@
           modules = [
             chaotic.nixosModules.default
             ./nixos/hosts/f80.nwk3.rabbito.tech
+            # FIXME: wait until #300028 is merged into nixos-unstable
+            ./xz-downgrade.nix
           ];
         };
       };
