@@ -60,15 +60,6 @@
         final.clang
       ];
     });
-    # CVE-2024-3094
-    xz = prev.xz.overrideAttrs (oldAttrs: rec {
-      version = "5.2.9";
-
-      src = final.fetchurl {
-        url = "https://tukaani.org/xz/xz-${version}.tar.bz2";
-        sha256 = "sZRQf7o6Rip1PFUxSczaoWgze8t97v3dBnuph8g9/OY=";
-      };
-    });
     # mesa = prev.mesa.overrideAttrs (oldAttrs: {
     #   mesonFlags = final.lib.remove "-Db_ndebug=true" oldAttrs.mesonFlags ++ [
     #     "-Dc_args=-fno-omit-frame-pointer"
