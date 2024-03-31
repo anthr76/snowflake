@@ -55,13 +55,5 @@ jobs:
         with:
           nixbuild_token: ${{ secrets.NIXBUILD_AUTH_TOKEN }}
           generate_summary_for: 'workflow'
-      - run: |
-          nix build \
-            --print-build-logs \
-            # --builders "" \
-            # --max-jobs 2 \
-            # --eval-store auto \
-            # --store ssh-ng://eu.nixbuild.net \
-            ".#githubActions.checks.${{ matrix.attr }}"
-
+      - run: nix build -L ".#githubActions.checks.${{ matrix.attr }}"
 
