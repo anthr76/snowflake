@@ -2,7 +2,8 @@
   description = "anthr76 Flakes";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # FIXME: Testing for CVE
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable-small";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
