@@ -60,17 +60,16 @@
         final.clang
       ];
     });
-    # mesa = prev.mesa.overrideAttrs (oldAttrs: {
-    #   mesonFlags = final.lib.remove "-Db_ndebug=true" oldAttrs.mesonFlags ++ [
-    #     "-Dc_args=-fno-omit-frame-pointer"
-    #     "-Dc_link_args=-fno-omit-frame-pointer"
-    #     "-Dcpp_args=-fno-omit-frame-pointer"
-    #     "-Dcpp_link_args=-fno-omit-frame-pointer"
-    #     "--buildtype=debugoptimized"
-    #     # "--strip=false"
-    #     "-Db_sanitize=${builtins.concatStringsSep "," ["address" "undefined"]}"
-    #   ];
-    # });
+     mesa = prev.mesa.overrideAttrs (oldAttrs: {
+       mesonFlags = final.lib.remove "-Db_ndebug=true" oldAttrs.mesonFlags ++ [
+         "-Dc_args=-fno-omit-frame-pointer"
+         "-Dc_link_args=-fno-omit-frame-pointer"
+         "-Dcpp_args=-fno-omit-frame-pointer"
+         "-Dcpp_link_args=-fno-omit-frame-pointer"
+         "--buildtype=debugoptimized"
+         "-Db_sanitize=${builtins.concatStringsSep "," ["address" "undefined"]}"
+       ];
+     });
     xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
       version = "git.74dd867";
       src = final.fetchFromGitHub {
