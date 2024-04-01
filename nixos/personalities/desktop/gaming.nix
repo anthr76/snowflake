@@ -25,6 +25,7 @@
           stdenv.cc.cc.lib
           libkrb5
           keyutils
+          gamemode
         ];
     };
     extraCompatPackages = with pkgs; [
@@ -34,11 +35,9 @@
   programs.gamescope = {
     enable = true;
     capSysNice = false;
-    # package = inputs.chaotic.packages.${pkgs.system}.gamescope_git;
     package = pkgs.gamescope_git;
   };
   environment.systemPackages = [
-    pkgs.vim
     pkgs.vulkan-tools
     pkgs.amdgpu_top
   ];
