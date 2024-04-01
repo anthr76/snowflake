@@ -38,6 +38,8 @@
   # Debugging Gamescope
   environment.enableDebugInfo = true;
   environment.systemPackages = [ pkgs.gdb ];
+  chaotic.nyx.overlay.onTopOf = "user-pkgs";
+  # chaotic.nyx.overlay.enable = false;
   # environment.variables.DRI_PRIME = "1";
 
 }

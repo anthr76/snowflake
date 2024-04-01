@@ -34,6 +34,8 @@
   programs.gamescope = {
     enable = true;
     capSysNice = false;
+    # package = inputs.chaotic.packages.${pkgs.system}.gamescope_git;
+    package = pkgs.gamescope_git;
   };
   environment.systemPackages = [
     pkgs.vim

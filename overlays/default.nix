@@ -82,31 +82,12 @@
       };
     });
     gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
-      preConfigure = ''
-        CFLAGS="-g -fno-omit-frame-pointer"
-        CXXFLAGS="-g -fno-omit-frame-pointer"
-      '';
-      # mesonFlags = oldAttrs.mesonFlags ++ [
-      #   "-Dc_args=${builtins.concatStringsSep "," ["-g" "-fno-omit-frame-pointer"]}"
-      #   "-Dcpp_args=${builtins.concatStringsSep "," ["-g" "-fno-omit-frame-pointer"]}"
-      # ];
       patches = oldAttrs.patches ++ [
         ./gamescope-native-res.patch
         ./0001-allow-gamescope-to-set-ctx-priority.patch
         # ./gamescope-color-management.patch
-        ./gamescope-hdr-casting.patch
+        # ./gamescope-hdr-casting.patch
         # ./gamescope-explicit-sync.patch
-      ];
-      version = "3.14.2";
-      src = final.fetchFromGitHub {
-        owner = "ValveSoftware";
-        repo = "gamescope";
-        rev = "3.14.2";
-        fetchSubmodules = true;
-        hash = "sha256-Ym1kl9naAm1MGlxCk32ssvfiOlstHiZPy7Ga8EZegus";
-      };
-      buildInputs = oldAttrs.buildInputs ++ [
-        final.libdecor #final.seatd final.xwayland final.xorg.xcbutilwm final.xorg.xcbutilerrors
       ];
     });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
