@@ -54,19 +54,6 @@
             ./nixos/hosts/bkp1.nwk2.rabbito.tech
           ];
         };
-        # FIXME: eval issue
-        # "lga-test1.tenant-29c7a3-baggie.coreweave.cloud" = lib.nixosSystem {
-        #   specialArgs = { inherit inputs outputs; };
-        #   modules = [
-        #     ./nixos/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud
-        #   ];
-        # };
-        "e39.nwk3.rabbito.tech" = lib.nixosSystem {
-          specialArgs = { inherit inputs outputs; };
-          modules = [
-            ./nixos/hosts/e39.nwk3.rabbito.tech
-          ];
-        };
         "octo.nwk3.rabbito.tech" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
@@ -91,28 +78,6 @@
             ./home-manager/hosts/bkp1.nwk2.rabbito.tech.nix
           ];
         };
-        "anthony@lga-test1.tenant-29c7a3-baggie.coreweave.cloud" = lib.homeManagerConfiguration {
-          pkgs = pkgsFor.x86_64-linux;
-          extraSpecialArgs = { inherit inputs outputs; };
-          modules = [
-            ./home-manager/hosts/lga-test1.tenant-29c7a3-baggie.coreweave.cloud.nix
-          ];
-        };
-        "anthony@e39.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
-          pkgs = pkgsFor.x86_64-linux;
-          extraSpecialArgs = { inherit inputs outputs; };
-          modules = [
-            ./home-manager/hosts/e39.nwk3.rabbito.tech.nix
-          ];
-        };
-        # FIXME: depends on packages that don't build on that system
-        # "anthony@nicoles-mbp.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
-        #   pkgs = pkgsFor.x86_64-darwin;
-        #   extraSpecialArgs = { inherit inputs outputs; };
-        #   modules = [
-        #     ./home-manager/hosts/nicoles-mbp.nwk3.rabbito.tech.nix
-        #   ];
-        # };
         "steam@octo.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
