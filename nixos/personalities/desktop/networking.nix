@@ -1,4 +1,4 @@
-{pkgs, lib, ...}:
+{pkgs, ...}:
 {
     imports = [
     ../server/tailscale.nix

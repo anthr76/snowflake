@@ -1,4 +1,4 @@
-{ config, inputs, lib, pkgs, modulesPath, ... }:
+{ lib, modulesPath, ... }:
 {
   imports = [
     ../personalities/base/nix.nix

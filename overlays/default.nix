@@ -1,5 +1,5 @@
 # This file defines overlays
-{ outputs, inputs }:
+{ inputs }:
 {
   # For every flake input, aliases 'pkgs.inputs.${flake}' to
   # 'inputs.${flake}.packages.${pkgs.system}' or
@@ -71,7 +71,7 @@
     #     "-Db_sanitize=${builtins.concatStringsSep "," ["address" "undefined"]}"
     #   ];
     # });
-    xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
+    xpadneo = prev.xpadneo.overrideAttrs (_oldAttrs: {
       version = "git.74dd867";
       src = final.fetchFromGitHub {
         owner = "atar-axis";

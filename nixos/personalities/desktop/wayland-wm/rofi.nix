@@ -1,4 +1,4 @@
-{ inputs, lib, config, pkgs, ... }: {
+{ pkgs, ... }: {
 
   environment.systemPackages = with pkgs; [
     rofi-wayland

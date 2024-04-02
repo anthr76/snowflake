@@ -13,9 +13,9 @@
 
   config = lib.mkIf config.gaming-kernel.enable {
     nixpkgs.overlays = [
-      (final: prev: {
+      (_final: prev: {
           linux_xanmod_latest_snowflake = prev.pkgs.linuxPackagesFor (
-            prev.pkgs.linux_xanmod_latest.override (old: with prev.lib; {
+            prev.pkgs.linux_xanmod_latest.override (_old: with prev.lib; {
               extraMakeFlags = ["KCFLAGS=-DAMD_PRIVATE_COLOR"];
               ignoreConfigErrors = true;
               suffix = "xanmod1";

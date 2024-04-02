@@ -1,6 +1,6 @@
 # This is a steamOS steam console like setup.
 # Lots of duplication here between we defined things, but since this is a console things need to be insecure and different.
-{pkgs, outputs, inputs, config, lib, ...}:
+{pkgs, outputs, inputs, config, ...}:
 {
   imports = [
     ../../personalities/base/bootloader.nix

@@ -1,4 +1,4 @@
-{inputs, pkgs, lib, ...}:
+{ pkgs, lib, ...}:
 {
   # chaotic.mesa-git.enable = true;
   programs.steam = {

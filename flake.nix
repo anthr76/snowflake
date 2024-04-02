@@ -20,7 +20,7 @@
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic, jovian-nixos, nix-github-actions, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, chaotic, jovian-nixos, nix-github-actions, ... }@inputs:
     let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;

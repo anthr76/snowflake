@@ -1,4 +1,4 @@
-{ inputs, lib, modulesPath, pkgs, config, ... }:
+{ inputs, lib, modulesPath, ... }:
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")

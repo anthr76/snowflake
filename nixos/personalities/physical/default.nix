@@ -1,11 +1,4 @@
 { pkgs, inputs, ... }:
-let
-  yubicoPackages = builtins.attrValues {
-    inherit (pkgs)
-      yubikey-manager yubico-piv-tool yubioath-flutter
-    ;
-  };
-in
 {
   disabledModules = [
     "${inputs.nixpkgs}/nixos/modules/programs/ssh.nix"
