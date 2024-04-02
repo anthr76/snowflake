@@ -1,6 +1,3 @@
-{ outputs, ... }:
-{
-  imports = [
-    ../cli
-  ] ++ (builtins.attrValues outputs.homeManagerModules);
+{ outputs, ... }: {
+  imports = [ ../cli ] ++ (builtins.attrValues outputs.homeManagerModules);
 }

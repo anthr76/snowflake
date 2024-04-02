@@ -12,8 +12,8 @@
     ./gaming.nix
     ./geoclue.nix
 
-   # TODO: may be redundant
-   # ./networking.nix
+    # TODO: may be redundant
+    # ./networking.nix
   ];
 
   nixpkgs = {
@@ -42,13 +42,9 @@
     };
   };
 
-
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
 
-
-  hardware.opengl = {
-    enable = true;
-  };
+  hardware.opengl = { enable = true; };
   hardware.opengl.driSupport = true;
   services.hardware.bolt.enable = true;
 }

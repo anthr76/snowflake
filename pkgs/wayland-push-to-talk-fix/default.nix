@@ -1,11 +1,4 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, pkg-config
-, libevdev
-, xdotool
-, xorg
-}:
+{ lib, stdenv, fetchFromGitHub, pkg-config, libevdev, xdotool, xorg }:
 
 with lib;
 
@@ -18,13 +11,7 @@ stdenv.mkDerivation {
     sha256 = "ZRSgrQHnNdEF2PyaflmI5sUoKCxtZ0mQY/bb/9PH64c=";
   };
 
-  nativeBuildInputs = [
-    pkg-config
-    libevdev
-    xdotool
-    xorg.libX11.dev
-  ];
-
+  nativeBuildInputs = [ pkg-config libevdev xdotool xorg.libX11.dev ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -32,7 +19,8 @@ stdenv.mkDerivation {
   '';
 
   meta = {
-    description = "This fixes the inability to use push to talk in Discord when running Wayland";
+    description =
+      "This fixes the inability to use push to talk in Discord when running Wayland";
     homepage = "https://github.com/Rush/wayland-push-to-talk-fix";
     license = licenses.mit;
     platforms = platforms.linux;

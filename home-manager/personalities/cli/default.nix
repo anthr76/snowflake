@@ -12,13 +12,5 @@
     ./containers.nix
     ./bat.nix
   ];
-  home.packages = with pkgs; [
-    ripgrep
-    fd
-    jq
-    distrobox
-    openssl
-    cfssl
-    sops
-  ];
+  home.packages = with pkgs; [ ripgrep fd jq distrobox openssl cfssl sops ];
 }

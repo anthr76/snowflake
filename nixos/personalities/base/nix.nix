@@ -1,6 +1,6 @@
-{ inputs, lib, config, ... }:
-{
-  systemd.services.nix-daemon.serviceConfig.LimitNOFILE = lib.mkForce 4096000000;
+{ inputs, lib, config, ... }: {
+  systemd.services.nix-daemon.serviceConfig.LimitNOFILE =
+    lib.mkForce 4096000000;
   nix = {
     # This will additionally add your inputs to the system's legacy channels
     # Making legacy nix commands consistent as well, awesome!
@@ -21,7 +21,7 @@
         "https://nyx.chaotic.cx/"
         # Snowflake
         "https://snowflake.cachix.org"
-        ];
+      ];
       trusted-public-keys = [
         "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
@@ -36,13 +36,12 @@
       flake-registry = ""; # Disable global flake registry
     };
     distributedBuilds = true;
-    buildMachines = [
-      { hostName = "eu.nixbuild.net";
-        system = "x86_64-linux";
-        maxJobs = 100;
-        supportedFeatures = [ "benchmark" "big-parallel" ];
-      }
-    ];
+    buildMachines = [{
+      hostName = "eu.nixbuild.net";
+      system = "x86_64-linux";
+      maxJobs = 100;
+      supportedFeatures = [ "benchmark" "big-parallel" ];
+    }];
   };
   programs.ssh.extraConfig = ''
     Host eu.nixbuild.net
@@ -55,7 +54,8 @@
   programs.ssh.knownHosts = {
     nixbuild = {
       hostNames = [ "eu.nixbuild.net" ];
-      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
+      publicKey =
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
     };
   };
   sops.secrets.nixbuild-ssh-key = {
