@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 let
   yubicoPackages = builtins.attrValues {
     inherit (pkgs)

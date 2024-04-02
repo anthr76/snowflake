@@ -1,4 +1,4 @@
-{ ...}:
+{ pkgs, config, ...}:
 {
   home.sessionVariables = {
     GOOGLE_DEFAULT_CLIENT_ID = "77185425430.apps.googleusercontent.com";
