@@ -1,10 +1,14 @@
-{ pkgs, ... }:
+{pkgs, ...}:
 let
   git-ssh-signingkey = pkgs.writeShellScriptBin "git-ssh-signingkey" ''
     echo key::$(${pkgs.openssh}/bin/ssh-add -L | ${pkgs.gnugrep}/bin/grep -m 1 -E "pkcs11|Authentication")
   '';
-in {
-  home.packages = with pkgs; [ git-ssh-signingkey pre-commit ];
+in
+{
+  home.packages = with pkgs; [
+    git-ssh-signingkey
+    pre-commit
+  ];
   # TODO: This needs to be modularized..
   programs.git = {
     enable = true;

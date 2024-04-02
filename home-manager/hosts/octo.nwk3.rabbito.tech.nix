@@ -1,4 +1,6 @@
 {
-  imports = [ ../users/steam ];
+  imports = [
+    ../users/steam
+  ];
 
 }

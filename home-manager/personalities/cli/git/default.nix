@@ -1,1 +1,6 @@
-{ ... }: { imports = [ ./gh.nix ./git.nix ]; }
+{ pkgs, ... }: {
+  imports = [
+    ./gh.nix
+    ./git.nix
+  ];
+}

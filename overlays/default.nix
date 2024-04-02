@@ -1,14 +1,18 @@
 # This file defines overlays
-{ inputs }: {
+{ outputs, inputs }:
+{
   # For every flake input, aliases 'pkgs.inputs.${flake}' to
   # 'inputs.${flake}.packages.${pkgs.system}' or
   # 'inputs.${flake}.legacyPackages.${pkgs.system}'
   flake-inputs = final: _: {
-    inputs = builtins.mapAttrs (_: flake:
-      let
-        legacyPackages = ((flake.legacyPackages or { }).${final.system} or { });
-        packages = ((flake.packages or { }).${final.system} or { });
-      in if legacyPackages != { } then legacyPackages else packages) inputs;
+    inputs = builtins.mapAttrs
+      (_: flake: let
+        legacyPackages = ((flake.legacyPackages or {}).${final.system} or {});
+        packages = ((flake.packages or {}).${final.system} or {});
+      in
+        if legacyPackages != {} then legacyPackages else packages
+      )
+      inputs;
   };
   # This one brings our custom packages from the 'pkgs' directory
   additions = final: _prev: import ../pkgs { pkgs = final; };
@@ -67,7 +71,7 @@
     #     "-Db_sanitize=${builtins.concatStringsSep "," ["address" "undefined"]}"
     #   ];
     # });
-    xpadneo = prev.xpadneo.overrideAttrs (_oldAttrs: {
+    xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
       version = "git.74dd867";
       src = final.fetchFromGitHub {
         owner = "atar-axis";
@@ -96,32 +100,35 @@
       };
       preConfigure = ''
         substituteInPlace src/logid/CMakeLists.txt \
-          --replace "/usr/share/dbus-1/system.d" "${
-            placeholder "out"
-          }/share/dbus-1/system.d" \
+          --replace "/usr/share/dbus-1/system.d" "${placeholder "out"}/share/dbus-1/system.d" \
       '';
-      buildInputs = oldAttrs.buildInputs ++ [ final.glib ];
+      buildInputs = oldAttrs.buildInputs ++ [final.glib];
     });
     sunshine = prev.sunshine.overrideAttrs (oldAttrs: {
-      cmakeFlags = oldAttrs.cmakeFlags
-        ++ [ "-DSUNSHINE_ENABLE_TRAY=OFF" "-DSUNSHINE_REQUIRE_TRAY=OFF" ];
+      cmakeFlags = oldAttrs.cmakeFlags ++ [
+        "-DSUNSHINE_ENABLE_TRAY=OFF"
+        "-DSUNSHINE_REQUIRE_TRAY=OFF"
+      ];
     });
     discord = prev.discord.overrideAttrs (oldAttrs: {
       withOpenASAR = true;
       withVencord = true;
-      postFixup = oldAttrs.postFixup or "" + ''
-        wrapProgram $out/bin/discord \
-        --add-flags "--ignore-gpu-blocklist " \
-        --add-flags "--disable-features=UseOzonePlatform " \
-        --add-flags "--enable-features=VaapiVideoDecoder " \
-        --add-flags "--use-gl=desktop " \
-        --add-flags "--enable-gpu-rasterization " \
-        --add-flags "--enable-zero-copy"
-      '';
+      postFixup =
+        oldAttrs.postFixup
+        or ""
+        + ''
+          wrapProgram $out/bin/discord \
+          --add-flags "--ignore-gpu-blocklist " \
+          --add-flags "--disable-features=UseOzonePlatform " \
+          --add-flags "--enable-features=VaapiVideoDecoder " \
+          --add-flags "--use-gl=desktop " \
+          --add-flags "--enable-gpu-rasterization " \
+          --add-flags "--enable-zero-copy"
+        '';
     });
     moonlight-qt = prev.moonlight-qt.overrideAttrs (oldAttrs: {
       version = "v0.3.3-89a628a";
-      patches = [ ];
+      patches = [];
       src = final.fetchFromGitHub {
         owner = "moonlight-stream";
         repo = "moonlight-qt";
@@ -129,8 +136,7 @@
         sha256 = "sha256-6KJTYYbrIPt3zNaK63fcFBb9W8reItpeqylugj0CwjU=";
         fetchSubmodules = true;
       };
-      buildInputs = oldAttrs.buildInputs
-        ++ [ final.libplacebo final.vulkan-headers ];
+      buildInputs = oldAttrs.buildInputs ++ [final.libplacebo final.vulkan-headers];
     });
   };
 

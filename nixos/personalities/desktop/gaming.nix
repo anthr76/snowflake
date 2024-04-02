@@ -1,4 +1,5 @@
-{ pkgs, lib, ... }: {
+{inputs, pkgs, lib, ...}:
+{
   # chaotic.mesa-git.enable = true;
   programs.steam = {
     enable = true;
@@ -6,7 +7,9 @@
     extest.enable = true;
     package = pkgs.steam.override {
       privateTmp = false;
-      extraEnv = { STEAM_FORCE_DESKTOPUI_SCALING = "1.5"; };
+      extraEnv = {
+        STEAM_FORCE_DESKTOPUI_SCALING = "1.5";
+      };
       extraPkgs = pkgs:
         with pkgs; [
           liberation_ttf
@@ -25,14 +28,19 @@
           gamemode
         ];
     };
-    extraCompatPackages = with pkgs; [ proton-ge-bin ];
+    extraCompatPackages = with pkgs; [
+      proton-ge-bin
+    ];
   };
   programs.gamescope = {
     enable = true;
     capSysNice = false;
     package = pkgs.gamescope_git;
   };
-  environment.systemPackages = [ pkgs.vulkan-tools pkgs.amdgpu_top ];
+  environment.systemPackages = [
+    pkgs.vulkan-tools
+    pkgs.amdgpu_top
+  ];
   programs.gamemode = {
     enable = true;
     settings = {

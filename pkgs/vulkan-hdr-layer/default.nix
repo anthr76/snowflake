@@ -1,6 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, meson, pkg-config, vulkan-loader, ninja
-, writeText, vulkan-headers, vulkan-utility-libraries, jq, libX11, libXrandr
-, libxcb, wayland }:
+{ lib, stdenv, fetchFromGitHub, meson, pkg-config, vulkan-loader, ninja, writeText, vulkan-headers, vulkan-utility-libraries,  jq, libX11, libXrandr, libxcb, wayland }:
 
 stdenv.mkDerivation rec {
   pname = "vulkan-hdr-layer";
@@ -20,15 +18,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ vulkan-headers meson ninja pkg-config jq ];
 
-  buildInputs = [
-    vulkan-headers
-    vulkan-loader
-    vulkan-utility-libraries
-    libX11
-    libXrandr
-    libxcb
-    wayland
-  ];
+  buildInputs = [ vulkan-headers vulkan-loader vulkan-utility-libraries libX11 libXrandr libxcb wayland ];
 
   # Help vulkan-loader find the validation layers
   setupHook = writeText "setup-hook" ''

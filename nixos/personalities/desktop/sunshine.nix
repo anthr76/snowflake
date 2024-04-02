@@ -1,11 +1,25 @@
-{ pkgs, ... }: {
-  environment.systemPackages = [ pkgs.xvfb-run pkgs.xwayland-run ];
+{
+  pkgs,
+  inputs,
+  ...
+}:
+{
+  environment.systemPackages = [
+    pkgs.xvfb-run
+    pkgs.xwayland-run
+  ];
   users.users = {
-    sunshine = {
+      sunshine = {
       isNormalUser = true;
       initialPassword = "suneshine";
       linger = true;
-      extraGroups = [ "wheel" "networkmanager" "input" "video" "sound" ];
+      extraGroups = [
+        "wheel"
+        "networkmanager"
+        "input"
+        "video"
+        "sound"
+      ];
     };
   };
   security.wrappers.sunshine = {
@@ -15,7 +29,7 @@
     source = "${pkgs.sunshine}/bin/sunshine";
   };
   services.avahi.publish.userServices = true;
-  boot.kernelModules = [ "uinput" ];
+  boot.kernelModules = ["uinput"];
   services.udev.extraRules = ''
     KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess"
   '';
@@ -36,13 +50,17 @@
   # };
 
   networking.firewall = {
-    allowedTCPPortRanges = [{
-      from = 47984;
-      to = 48010;
-    }];
-    allowedUDPPortRanges = [{
-      from = 47998;
-      to = 48010;
-    }];
+    allowedTCPPortRanges = [
+      {
+        from = 47984;
+        to = 48010;
+      }
+    ];
+    allowedUDPPortRanges = [
+      {
+        from = 47998;
+        to = 48010;
+      }
+    ];
   };
 }

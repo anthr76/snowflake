@@ -3,7 +3,9 @@
 
 { outputs, lib, ... }: {
 
-  imports = [ ../../personalities/global ];
+  imports = [
+    ../../personalities/global
+  ];
   nixpkgs = {
     # You can add overlays here
     overlays = [
@@ -31,7 +33,7 @@
     };
   };
 
-  home.file.".ssh/e39_tpm2.pub".text = (builtins.readFile ./e39_tpm2.pub);
+  home.file.".ssh/e39_tpm2.pub".text =  (builtins.readFile ./e39_tpm2.pub);
   home.file.".ssh/yubi.pub".text = (builtins.readFile ./yubi.pub);
 
   # Add stuff for your user as you see fit:

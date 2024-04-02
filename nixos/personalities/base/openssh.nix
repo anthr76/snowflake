@@ -4,7 +4,8 @@ let
   inherit (config.networking) hostName;
   hosts = outputs.nixosConfigurations;
   pubKey = host: ../../hosts/${host}/ssh_host_ed25519_key.pub;
-in {
+in
+{
   services.openssh = {
     enable = true;
     settings = {
@@ -21,12 +22,16 @@ in {
     }];
   };
 
+
   programs.ssh = {
     # Each hosts public key
-    knownHosts = builtins.mapAttrs (name: _: {
-      publicKeyFile = pubKey name;
-      extraHostNames = (lib.optional (name == hostName) "localhost");
-    }) hosts;
+    knownHosts = builtins.mapAttrs
+      (name: _: {
+        publicKeyFile = pubKey name;
+        extraHostNames =
+          (lib.optional (name == hostName) "localhost");
+      })
+      hosts;
   };
   # Passwordless sudo when SSH'ing with keys
   security.pam.enableSSHAgentAuth = true;

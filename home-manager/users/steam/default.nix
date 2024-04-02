@@ -3,7 +3,10 @@
 
 { outputs, lib, ... }: {
 
-  imports = [ ../../personalities/desktop/steam.nix ./linux.nix ];
+  imports = [
+    ../../personalities/desktop/steam.nix
+    ./linux.nix
+  ];
   nixpkgs = {
     overlays = [
       outputs.overlays.additions

@@ -1,4 +1,4 @@
-{ outputs, ... }: {
+{ inputs, outputs, lib, config, pkgs, ... }: {
   imports = [
     ./sops.nix
     ./fish.nix

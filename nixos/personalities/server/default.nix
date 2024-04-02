@@ -1,7 +1,7 @@
 # This is your system's configuration file.
 # Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
 
-{ outputs, config, ... }: {
+{ inputs, outputs, lib, config, pkgs, ... }: {
   # You can import other NixOS modules here
 
   nixpkgs = {
@@ -29,16 +29,14 @@
     };
   };
 
+
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ 22 ];
   };
-  services.openssh.banner = ''
-    WARNING:  Unauthorized access to this system is forbidden and will be
-    prosecuted by law. By accessing this system, you agree that your actions
-    may be monitored if unauthorized usage is suspected.
-  '';
+  services.openssh.banner = "WARNING:  Unauthorized access to this system is forbidden and will be\nprosecuted by law. By accessing this system, you agree that your actions\nmay be monitored if unauthorized usage is suspected.\n";
 
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
+
 
 }
