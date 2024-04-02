@@ -1,4 +1,4 @@
-{ inputs, lib, config, ... }: {
+{ inputs, lib, pkgs, config, ... }: {
   systemd.services.nix-daemon.serviceConfig.LimitNOFILE =
     lib.mkForce 4096000000;
   nix = {
@@ -61,5 +61,11 @@
   sops.secrets.nixbuild-ssh-key = {
     sopsFile = ../../../secrets/users.yaml;
     mode = "0600";
+  };
+  system = {
+    # Enable printing changes on nix build etc with nvd
+    activationScripts.report-changes = ''
+      ${pkgs.nvd}/bin/nvd ${pkgs.diffutils}/bin/diff $(${pkgs.coreutils}/bin/ls -dv /nix/var/nix/profiles/system-*-link | ${pkgs.coreutils}/bin/tail -2)
+    '';
   };
 }
