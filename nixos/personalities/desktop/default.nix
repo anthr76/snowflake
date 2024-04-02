@@ -1,7 +1,7 @@
 # This is your system's configuration file.
 # Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
 
-{ pkgs, outputs, inputs, ... }: {
+{ outputs, ... }: {
   # You can import other NixOS modules here
   imports = [
     ../base
@@ -12,8 +12,8 @@
     ./gaming.nix
     ./geoclue.nix
 
-   # TODO: may be redundant
-   # ./networking.nix
+    # TODO: may be redundant
+    # ./networking.nix
   ];
 
   nixpkgs = {
@@ -42,13 +42,9 @@
     };
   };
 
-
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
 
-
-  hardware.opengl = {
-    enable = true;
-  };
+  hardware.opengl = { enable = true; };
   hardware.opengl.driSupport = true;
   services.hardware.bolt.enable = true;
 }

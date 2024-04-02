@@ -1,56 +1,64 @@
-{ config, inputs, lib, pkgs, modulesPath, ... }:
+{ config, inputs, lib, modulesPath, ... }:
 
 {
-  imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
+  imports = [
+    (modulesPath + "/installer/scan/not-detected.nix")
     inputs.hardware.nixosModules.common-cpu-intel
-    ];
+  ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
+  boot.initrd.availableKernelModules = [
+    "xhci_pci"
+    "ahci"
+    "nvme"
+    "usbhid"
+    "usb_storage"
+    "sd_mod"
+    "rtsx_pci_sdmmc"
+  ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
-      fsType = "btrfs";
-      options = [ "subvol=rootfs" ];
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
+    fsType = "btrfs";
+    options = [ "subvol=rootfs" ];
+  };
 
-  fileSystems."/srv" =
-    { device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
-      fsType = "btrfs";
-      options = [ "subvol=rootfs/srv" ];
-    };
+  fileSystems."/srv" = {
+    device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
+    fsType = "btrfs";
+    options = [ "subvol=rootfs/srv" ];
+  };
 
-  fileSystems."/var/lib/portables" =
-    { device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
-      fsType = "btrfs";
-      options = [ "subvol=rootfs/var/lib/portables" ];
-    };
+  fileSystems."/var/lib/portables" = {
+    device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
+    fsType = "btrfs";
+    options = [ "subvol=rootfs/var/lib/portables" ];
+  };
 
-  fileSystems."/var/lib/machines" =
-    { device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
-      fsType = "btrfs";
-      options = [ "subvol=rootfs/var/lib/machines" ];
-    };
+  fileSystems."/var/lib/machines" = {
+    device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
+    fsType = "btrfs";
+    options = [ "subvol=rootfs/var/lib/machines" ];
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/7F84-BB22";
-      fsType = "vfat";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/7F84-BB22";
+    fsType = "vfat";
+  };
 
-  fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
-      fsType = "btrfs";
-      options = [ "subvol=nix" ];
-    };
+  fileSystems."/nix" = {
+    device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
+    fsType = "btrfs";
+    options = [ "subvol=nix" ];
+  };
 
-  fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
-      fsType = "btrfs";
-      options = [ "subvol=home" ];
-    };
+  fileSystems."/home" = {
+    device = "/dev/disk/by-uuid/9b390384-9c28-4d8b-84c9-2edc8f1326ae";
+    fsType = "btrfs";
+    options = [ "subvol=home" ];
+  };
 
   swapDevices = [ ];
 
@@ -64,5 +72,6 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.intel.updateMicrocode =
+    lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

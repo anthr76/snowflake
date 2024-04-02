@@ -2,14 +2,12 @@
   boot = {
     supportedFilesystems = [ "btrfs" ];
     loader = {
-      efi = {
-        canTouchEfiVariables = true;
-      };
+      efi = { canTouchEfiVariables = true; };
       grub = {
-         efiSupport = true;
-         device = "nodev";
-         enableCryptodisk = true;
-         configurationLimit = 8;
+        efiSupport = true;
+        device = "nodev";
+        enableCryptodisk = true;
+        configurationLimit = 8;
       };
     };
     initrd = {

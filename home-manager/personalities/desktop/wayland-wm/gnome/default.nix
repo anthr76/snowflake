@@ -1,6 +1,1 @@
-{ pkgs, ... }:
-{
-  imports = [
-    ./gnome-keyring.nix
-  ];
-}
+{ ... }: { imports = [ ./gnome-keyring.nix ]; }

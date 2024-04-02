@@ -3,7 +3,8 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/disk/by-id/nvme-Sabrent_Rocket_4.0_500GB_03F10711184419353987";
+        device =
+          "/dev/disk/by-id/nvme-Sabrent_Rocket_4.0_500GB_03F10711184419353987";
         content = {
           type = "gpt";
           partitions = {
@@ -25,12 +26,8 @@
                 type = "btrfs";
                 extraArgs = [ "-f" ];
                 subvolumes = {
-                  "/rootfs" = {
-                    mountpoint = "/";
-                  };
-                  "/home" = {
-                    mountpoint = "/home";
-                  };
+                  "/rootfs" = { mountpoint = "/"; };
+                  "/home" = { mountpoint = "/home"; };
                   "/nix" = {
                     mountOptions = [ "compress=zstd" "noatime" ];
                     mountpoint = "/nix";
@@ -53,11 +50,7 @@
               content = {
                 type = "btrfs";
                 extraArgs = [ "-f" ];
-                subvolumes = {
-                  "/data" = {
-                    mountpoint = "/data";
-                  };
-                };
+                subvolumes = { "/data" = { mountpoint = "/data"; }; };
                 mountpoint = "/partition-data";
               };
             };

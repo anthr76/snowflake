@@ -1,6 +1,1 @@
-{ pkgs, ... }: {
-  imports = [
-    ./gh.nix
-    ./git.nix
-  ];
-}
+{ ... }: { imports = [ ./gh.nix ./git.nix ]; }

@@ -1,4 +1,4 @@
-{ pkgs, config, ... }: {
+{ config, ... }: {
   accounts.email.accounts.gmail = {
     thunderbird.enable = true;
     realName = "Anthony Rabbito";

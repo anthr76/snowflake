@@ -1,7 +1,6 @@
 # This is a steamOS steam console like setup.
 # Lots of duplication here between we defined things, but since this is a console things need to be insecure and different.
-{pkgs, outputs, inputs, config, lib, ...}:
-{
+{ pkgs, outputs, inputs, config, ... }: {
   imports = [
     ../../personalities/base/bootloader.nix
     ../../personalities/base/sops.nix
@@ -17,9 +16,7 @@
       outputs.overlays.unstable-packages
       outputs.overlays.flake-inputs
     ];
-    config = {
-      allowUnfree = true;
-    };
+    config = { allowUnfree = true; };
   };
   gaming-kernel.enable = true;
   services.xserver.desktopManager.plasma6.enable = true;
@@ -41,16 +38,10 @@
   programs.steam = {
     enable = true;
     package = inputs.jovian-nixos.legacyPackages.${pkgs.system}.steam.override {
-      extraPkgs = pkgs:
-        with pkgs; [
-          liberation_ttf
-          wqy_zenhei
-        ];
+      extraPkgs = pkgs: with pkgs; [ liberation_ttf wqy_zenhei ];
     };
     extest.enable = true;
-    extraCompatPackages = with pkgs; [
-      proton-ge-bin
-    ];
+    extraCompatPackages = with pkgs; [ proton-ge-bin ];
   };
 
   boot = {
@@ -73,9 +64,9 @@
     consoleLogLevel = 0;
     initrd.verbose = false;
   };
-  boot.kernelModules = ["uinput"];
+  boot.kernelModules = [ "uinput" ];
   users.users = {
-      steam = {
+    steam = {
       isNormalUser = true;
       initialPassword = "steam";
       extraGroups = [
@@ -97,11 +88,7 @@
       enable = true;
       allowedTCPPorts = [ 22 ];
     };
-    wireless = {
-      iwd = {
-        enable = true;
-      };
-    };
+    wireless = { iwd = { enable = true; }; };
     networkmanager = {
       enable = true;
       wifi.backend = "iwd";
@@ -138,7 +125,7 @@
     # Kill greetd and Gamescope if the GPU crashes and VRAM is lost
     ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{FLAGS}=="1", RUN+="${pkgs.systemd}/bin/systemctl restart greetd"
   '';
-   services.logind.extraConfig = ''
+  services.logind.extraConfig = ''
     # don’t shutdown when power button is short-pressed
     HandlePowerKey=suspend
   '';

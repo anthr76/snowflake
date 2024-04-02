@@ -19,8 +19,8 @@
     mumble
     murmur
     (wineWowPackages.waylandFull.override {
-     wineRelease = "staging";
-     mingwSupport = true;
+      wineRelease = "staging";
+      mingwSupport = true;
     })
     dxvk
     winetricks

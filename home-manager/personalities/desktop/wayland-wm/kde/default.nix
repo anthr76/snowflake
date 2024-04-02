@@ -1,8 +1,5 @@
-{ pkgs, ... }:
-{
-  imports = [
-    ../../darkman.nix
-  ];
+{ pkgs, ... }: {
+  imports = [ ../../darkman.nix ];
   home.pointerCursor = {
     name = "breeze_cursors";
     package = pkgs.breeze-icons;

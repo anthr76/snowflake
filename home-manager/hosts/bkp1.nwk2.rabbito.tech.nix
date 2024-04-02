@@ -1,7 +1,4 @@
 {
-  imports = [
-    ../users/anthony
-    ../users/anthony/linux.nix
-  ];
+  imports = [ ../users/anthony ../users/anthony/linux.nix ];
 
 }
