@@ -1,8 +1,6 @@
 {
   services.darkman = {
     enable = true;
-    settings = {
-      usegeoclue = true;
-    };
+    settings = { usegeoclue = true; };
   };
 }

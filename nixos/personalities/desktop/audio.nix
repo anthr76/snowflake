@@ -9,10 +9,7 @@
     jack.enable = true;
     wireplumber.enable = true;
   };
-  environment.systemPackages = with pkgs; [
-    pavucontrol
-    pulseaudio
-  ];
+  environment.systemPackages = with pkgs; [ pavucontrol pulseaudio ];
   programs.noisetorch.enable = true;
   # Mumble for LAN use
   networking.firewall = {

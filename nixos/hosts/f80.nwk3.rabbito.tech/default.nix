@@ -1,5 +1,4 @@
-{ config, inputs, lib, modulesPath, pkgs, ... }:
-{
+{ config, inputs, lib, modulesPath, pkgs, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
@@ -17,7 +16,16 @@
     sopsFile = ../../../secrets/users.yaml;
   };
 
-  boot.initrd.availableKernelModules = [ "nvme" "thunderbolt" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "amdgpu"];
+  boot.initrd.availableKernelModules = [
+    "nvme"
+    "thunderbolt"
+    "xhci_pci"
+    "ahci"
+    "usbhid"
+    "usb_storage"
+    "sd_mod"
+    "amdgpu"
+  ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.kernelParams = [ "initcall_blacklist=simpledrm_platform_driver_init" ];
   hardware.enableAllFirmware = true;
@@ -31,10 +39,12 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "f80";
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.amd.updateMicrocode =
+    lib.mkDefault config.hardware.enableRedistributableFirmware;
   # boot.kernelPackages = pkgs.linuxPackages_testing;
   system.stateVersion = "23.05";
-  environment.variables.DXVK_FILTER_DEVICE_NAME = "AMD Radeon RX 7900 XTX (RADV NAVI31)";
+  environment.variables.DXVK_FILTER_DEVICE_NAME =
+    "AMD Radeon RX 7900 XTX (RADV NAVI31)";
   # Debugging Gamescope
   environment.enableDebugInfo = true;
   environment.systemPackages = [ pkgs.gdb ];

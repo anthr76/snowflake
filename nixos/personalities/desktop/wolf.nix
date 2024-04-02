@@ -1,22 +1,14 @@
-{
-  pkgs,
-  ...
-}:
-{
+{ pkgs, ... }: {
   imports = [
     # TODO: Restore when Podman works
     # ../../personalities/base/podman.nix
   ];
   users.users = {
-      wolf = {
+    wolf = {
       isNormalUser = true;
       initialPassword = "wolf";
       linger = true;
-      extraGroups = [
-        "wheel"
-        "networkmanager"
-        "input"
-      ];
+      extraGroups = [ "wheel" "networkmanager" "input" ];
     };
   };
   services.udev.extraRules = ''
@@ -36,12 +28,12 @@
     autoStart = true;
     image = "ghcr.io/games-on-whales/wolf:sha-b9b9de3";
     volumes = [
-    "/dev/input:/dev/input:rw"
-    "/run/udev:/run/udev:rw"
-    "/data/wolf:/data/wolf:rw"
-    # TODO: Restore when podman works.
-    # "/run/podman/podman.sock:/run/podman/podman.sock:rw"
-    "/var/run/docker.sock:/var/run/docker.sock"
+      "/dev/input:/dev/input:rw"
+      "/run/udev:/run/udev:rw"
+      "/data/wolf:/data/wolf:rw"
+      # TODO: Restore when podman works.
+      # "/run/podman/podman.sock:/run/podman/podman.sock:rw"
+      "/var/run/docker.sock:/var/run/docker.sock"
     ];
     environment = {
       WOLF_LOG_LEVEL = "INFO";
@@ -65,17 +57,8 @@
     ];
   };
   networking.firewall = {
-    allowedTCPPorts = [
-      47984
-      47989
-      48010
-    ];
-    allowedUDPPorts = [
-      47999
-      47998
-      48000
-      48010
-    ];
+    allowedTCPPorts = [ 47984 47989 48010 ];
+    allowedUDPPorts = [ 47999 47998 48000 48010 ];
     allowedUDPPortRanges = [
       {
         from = 48100;

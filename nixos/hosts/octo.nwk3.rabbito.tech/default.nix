@@ -1,5 +1,4 @@
-{ inputs, lib, modulesPath, pkgs, config, ... }:
-{
+{ inputs, lib, modulesPath, pkgs, config, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
@@ -10,7 +9,8 @@
     ../../personalities/desktop/game-console.nix
   ];
 
-  boot.initrd.availableKernelModules = [ "amdgpu" "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules =
+    [ "amdgpu" "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ "kvm-amd" ];
   hardware.enableAllFirmware = true;
