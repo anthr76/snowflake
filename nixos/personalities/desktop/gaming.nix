@@ -32,7 +32,7 @@
     capSysNice = false;
     package = pkgs.gamescope_git;
   };
-  environment.systemPackages = [ pkgs.vulkan-tools pkgs.amdgpu_top ];
+  environment.systemPackages = [ pkgs.protontricks pkgs.vulkan-tools pkgs.amdgpu_top ];
   programs.gamemode = {
     enable = true;
     settings = {
