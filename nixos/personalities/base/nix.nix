@@ -62,10 +62,12 @@
     sopsFile = ../../../secrets/users.yaml;
     mode = "0600";
   };
-  system = {
-    # Enable printing changes on nix build etc with nvd
-    activationScripts.report-changes = ''
-      ${pkgs.nvd}/bin/nvd ${pkgs.diffutils}/bin/diff $(${pkgs.coreutils}/bin/ls -dv /nix/var/nix/profiles/system-*-link | ${pkgs.coreutils}/bin/tail -2)
+  system.activationScripts.nixClosureDiff = {
+    supportsDryActivation = true;
+    text = ''
+      # show which packages changed versions or are new/removed in this upgrade
+      # source: <https://github.com/luishfonseca/dotfiles/blob/32c10e775d9ec7cc55e44592a060c1c9aadf113e/modules/upgrade-diff.nix>
+      ${pkgs.nvd}/bin/nvd --nix-bin-dir=${pkgs.nix}/bin diff /run/current-system "$systemConfig"
     '';
   };
 }
