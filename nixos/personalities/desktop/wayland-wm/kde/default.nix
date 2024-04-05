@@ -9,7 +9,6 @@
     kdePackages.kcalc
     kdePackages.kdenlive
     kdePackages.skanlite
-    vulkan-hdr-layer
     xwaylandvideobridge
   ];
   services = {

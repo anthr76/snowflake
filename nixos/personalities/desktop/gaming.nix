@@ -23,7 +23,6 @@
           libkrb5
           keyutils
           gamemode
-          vulkan-hdr-layer
         ];
     };
     extraCompatPackages = with pkgs; [ proton-ge-bin ];

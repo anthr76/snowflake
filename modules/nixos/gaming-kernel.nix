@@ -1,5 +1,6 @@
 # TODO: Make this much more robust if it proves useful.
-{ pkgs, lib, config, ... }: {
+{ pkgs, chaotic, lib, config, ... }: {
+
   options = {
     gaming-kernel = {
       enable = lib.mkEnableOption
