@@ -5,6 +5,18 @@
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
+    extraPackages = with pkgs; [
+      zig
+      lazygit
+      nodePackages_latest.npm
+      bottom
+      go
+      python3
+      unzip
+      cargo
+      stdenv.cc
+      helm-ls
+    ];
   };
   xdg.configFile."nvim/.neoconf.json".text = /* json */ ''
     {
