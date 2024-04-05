@@ -1,87 +1,84 @@
 { pkgs, ... }: {
-  home.sessionVariables = { EDITOR = "lvim"; };
-  home.packages = [ pkgs.unstable.lunarvim ];
-  home.shellAliases = {
-    "nvim" = "lvim";
-    "vim" = "lvim";
-    "vi" = "lvim";
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
+    vimdiffAlias = true;
   };
-  xdg.configFile = {
-    init = {
-      recursive = false;
-      target = "lvim/config.lua";
-      text = # lua
-        ''
-          vim.cmd([[
-            autocmd BufRead,BufNewFile */templates/*.y*ml,*/templates/*.tpl,*.gotmpl,helmfile*.yml set ft=helm
-            autocmd BufRead,BufNewFile */templates/*.y*ml,*/templates/*.tpl,*.gotmpl,helmfile*.yml LspStop yammls
-          ]])
-          local configs = require('lspconfig.configs')
-          local lspconfig = require('lspconfig')
-          local util = require('lspconfig.util')
-          require "nvim-treesitter.install".compilers = { "gcc" }
+  xdg.configFile."nvim/.neoconf.json".text = /* json */ ''
+    {
+      "neodev": {
+        "library": {
+          "enabled": true,
+          "plugins": true
+        }
+      },
+      "neoconf": {
+        "plugins": {
+          "lua_ls": {
+            "enabled": true
+          }
+        }
+      },
+      "lspconfig": {
+        "lua_ls": {
+          "Lua.format.enable": false
+        }
+      }
+    }
+  '';
+  xdg.configFile."nvim/.stylua.toml".text = /* toml */ ''
+    column_width = 120
+    line_endings = "Unix"
+    indent_type = "Spaces"
+    indent_width = 2
+    quote_style = "AutoPreferDouble"
+    call_parentheses = "None"
+    collapse_simple_statement = "Always"
+  '';
+  xdg.configFile."nvim/init.lua".text = /* lua */ ''
+    -- This file simply bootstraps the installation of Lazy.nvim and then calls other files for execution
+    -- This file doesn't necessarily need to be touched, BE CAUTIOUS editing this file and proceed at your own risk.
+    local lazypath = vim.env.LAZY or vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+    if not (vim.env.LAZY or (vim.uv or vim.loop).fs_stat(lazypath)) then
+      -- stylua: ignore
+      vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath })
+    end
+    vim.opt.rtp:prepend(lazypath)
 
-          if not configs.helm_ls then
-            configs.helm_ls = {
-              default_config = {
-                cmd = {"helm_ls", "serve"},
-                filetypes = {'helm'},
-                root_dir = function(fname)
-                  return util.root_pattern('Chart.yaml')(fname)
-                end,
-              },
-            }
-          end
-          lspconfig.helm_ls.setup {
-            filetypes = {"helm"},
-            cmd = {"helm_ls", "serve"},
-          }
-          -- Disable YAMLLS for Helm chart files
-          vim.cmd([[
-            autocmd FileType yaml if getline(1) =~# '^#.*helm' | LspStop | endif
-          ]])
-          lvim.plugins = {
-            {
-              "towolf/vim-helm",
-              event = "VeryLazy",
-            },
-            {
-              "folke/todo-comments.nvim",
-              event = "BufReadPost",
-              dependencies = { "nvim-lua/plenary.nvim" },
-              opts = {
-                -- your configuration comes here
-                -- or leave it empty to use the default settings
-                -- refer to the configuration section below
-              }
-            },
-            {
-              "andweeb/presence.nvim",
-              event = "VeryLazy",
-              opts = {
-              }
-            },
-            {
-              "zbirenbaum/copilot.lua",
-              cmd = "Copilot",
-              event = "InsertEnter",
-              config = function()
-                require("copilot").setup({})
-              end
-            },
-            {
-              "zbirenbaum/copilot-cmp",
-                event = "InsertEnter",
-                dependencies = { "zbirenbaum/copilot.lua" },
-                config = function()
-                  vim.defer_fn(function()
-                    require("copilot").setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
-                    require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
-                  end, 100)
-                end
-            },
-          }
-        '';
+    -- validate that lazy is available
+    if not pcall(require, "lazy") then
+      -- stylua: ignore
+      vim.api.nvim_echo({ { ("Unable to load lazy from: %s\n"):format(lazypath), "ErrorMsg" }, { "Press any key to exit...", "MoreMsg" } }, true, {})
+      vim.fn.getchar()
+      vim.cmd.quit()
+    end
+
+    require "lazy_setup"
+    require "polish"
+  '';
+  xdg.configFile."nvim/.neovim.yml".text = /* yaml */ ''
+    ---
+    base: lua51
+    globals:
+      vim:
+        any: true
+  '';
+  xdg.configFile."nvim/.selene.toml".text = /* toml */ ''
+    std = "neovim"
+    [rules]
+    global_usage = "allow"
+    if_same_then_else = "allow"
+    incorrect_standard_library_use = "allow"
+    mixed_table = "allow"
+    multiple_statements = "allow"
+  '';
+  xdg.configFile = {
+    userConfig = {
+      recursive = true;
+      target = "nvim/lua";
+      source = ./lua;
     };
   };
 }

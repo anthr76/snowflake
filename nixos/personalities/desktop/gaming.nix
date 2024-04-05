@@ -49,4 +49,6 @@
     };
   };
   gaming-kernel.enable = true;
+  chaotic.hdr.enable = true;
+  chaotic.hdr.specialisation.enable	= false;
 }

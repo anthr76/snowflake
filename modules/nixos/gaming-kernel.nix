@@ -1,6 +1,7 @@
 # TODO: Make this much more robust if it proves useful.
-{ pkgs, chaotic, lib, config, ... }: {
+{ pkgs, inputs, lib, config, ... }: {
 
+  # imports = [ inputs.chaotic.nixosModules.default ];
   options = {
     gaming-kernel = {
       enable = lib.mkEnableOption
@@ -20,7 +21,5 @@
       }
     ];
     boot.kernelPackages = lib.mkForce pkgs.linuxPackages_cachyos;
-    chaotic.hdr.enable = true;
-    chaotic.hdr.specialisation.enable	= false;
   };
 }
