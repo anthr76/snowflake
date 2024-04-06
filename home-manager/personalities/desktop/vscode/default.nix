@@ -56,6 +56,7 @@
         };
         tabSize = 2;
       };
+      terminal.intergrated.inheritEnv = true;
       explorer = {
         compactFolders = false;
         confirmDelete = false;
@@ -74,8 +75,11 @@
         newWindowDimensions = "maximized";
         restoreWindows = "none";
         titleBarStyle = "custom";
+        autoDetectColorScheme = true;
       };
       workbench = {
+        preferredDarkColorTheme = "Catppuccin Mocha";
+        preferredLightColorTheme = "Catppuccin Latte";
         colorTheme = "Catppuccin Mocha";
         iconTheme = "catppuccin-perfect-macchiato";
         sideBar = {
