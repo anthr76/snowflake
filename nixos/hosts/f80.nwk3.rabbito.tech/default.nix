@@ -46,10 +46,7 @@
   environment.variables.DXVK_FILTER_DEVICE_NAME =
     "AMD Radeon RX 7900 XTX (RADV NAVI31)";
   # Debugging Gamescope
-  environment.enableDebugInfo = true;
   environment.systemPackages = [ pkgs.gdb ];
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
-  # chaotic.nyx.overlay.enable = false;
-  # environment.variables.DRI_PRIME = "1";
 
 }

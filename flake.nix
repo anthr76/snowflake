@@ -64,7 +64,6 @@
           specialArgs = { inherit inputs outputs; };
           modules = [
             chaotic.nixosModules.default
-            jovian-nixos.nixosModules.jovian
             ./nixos/hosts/octo.nwk3.rabbito.tech
           ];
         };

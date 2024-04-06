@@ -19,6 +19,8 @@
     config = { allowUnfree = true; };
   };
   gaming-kernel.enable = true;
+  chaotic.hdr.enable = true;
+  chaotic.hdr.specialisation.enable	= false;
   services.xserver.desktopManager.plasma6.enable = true;
   services.flatpak.enable = true;
   xdg.portal.enable = true;
@@ -37,7 +39,7 @@
   ];
   programs.steam = {
     enable = true;
-    package = inputs.jovian-nixos.legacyPackages.${pkgs.system}.steam.override {
+    package = pkgs.steam.override {
       extraPkgs = pkgs: with pkgs; [ liberation_ttf wqy_zenhei ];
     };
     extest.enable = true;
@@ -103,19 +105,12 @@
     };
   };
   hardware.steam-hardware.enable = true;
-  jovian = {
-    hardware.has.amd.gpu = true;
-    decky-loader.enable = false;
-    devices.steamdeck.enable = false;
+  snowflake = {
     steam = {
       enable = true;
       autoStart = true;
       user = "steam";
       desktopSession = "plasma";
-    };
-    steamos = {
-      useSteamOSConfig = true;
-      enableBluetoothConfig = false;
     };
   };
   services.udev.extraRules = ''
@@ -124,9 +119,5 @@
 
     # Kill greetd and Gamescope if the GPU crashes and VRAM is lost
     ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{FLAGS}=="1", RUN+="${pkgs.systemd}/bin/systemctl restart greetd"
-  '';
-  services.logind.extraConfig = ''
-    # don’t shutdown when power button is short-pressed
-    HandlePowerKey=suspend
   '';
 }

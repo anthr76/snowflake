@@ -23,5 +23,6 @@
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "octo";
   system.stateVersion = "23.11";
-  # boot.kernelPackages = pkgs.linuxPackages_testing;
+  environment.systemPackages = [ pkgs.gdb ];
+  chaotic.nyx.overlay.onTopOf = "user-pkgs";
 }
