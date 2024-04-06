@@ -20,6 +20,10 @@
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic

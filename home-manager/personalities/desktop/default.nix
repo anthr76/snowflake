@@ -1,5 +1,6 @@
 { pkgs, ... }: {
   imports = [
+    ./vscode
     ./fonts.nix
     ./wezterm.nix
     ./chromium.nix
