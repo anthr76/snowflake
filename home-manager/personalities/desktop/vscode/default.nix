@@ -1,13 +1,10 @@
 { pkgs, inputs, config, ...}:
 {
+  # TODO: See if we can just include in a overlay for vscode.
+  home.packages = [ pkgs.helm-ls ];
   programs.vscode = {
     enable = true;
     mutableExtensionsDir = false;
-    package = pkgs.vscode.overrideAttrs (old: {
-      buildInputs = (old.buildInputs or []) ++ [
-        pkgs.helm-ls
-      ];
-    });
     extensions = let
       inherit (inputs.nix-vscode-extensions.extensions.${pkgs.system}) vscode-marketplace;
     in
