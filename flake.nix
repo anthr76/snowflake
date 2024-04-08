@@ -63,6 +63,7 @@
         "octo.nwk3.rabbito.tech" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
+            jovian-nixos.nixosModules.jovian
             chaotic.nixosModules.default
             ./nixos/hosts/octo.nwk3.rabbito.tech
           ];

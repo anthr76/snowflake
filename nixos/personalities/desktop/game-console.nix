@@ -19,8 +19,6 @@
     config = { allowUnfree = true; };
   };
   gaming-kernel.enable = true;
-  chaotic.hdr.enable = true;
-  chaotic.hdr.specialisation.enable	= false;
   services.xserver.desktopManager.plasma6.enable = true;
   services.flatpak.enable = true;
   xdg.portal.enable = true;
@@ -105,12 +103,19 @@
     };
   };
   hardware.steam-hardware.enable = true;
-  snowflake = {
+  jovian = {
+    hardware.has.amd.gpu = true;
+    decky-loader.enable = false;
+    devices.steamdeck.enable = false;
     steam = {
       enable = true;
       autoStart = true;
       user = "steam";
       desktopSession = "plasma";
+    };
+    steamos = {
+      useSteamOSConfig = true;
+      enableBluetoothConfig = false;
     };
   };
   services.udev.extraRules = ''
