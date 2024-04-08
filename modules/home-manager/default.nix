@@ -1,3 +1,3 @@
 {
-  fonts = fonts.nix;
+  fonts = ./fonts.nix;
 }
