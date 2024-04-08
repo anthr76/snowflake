@@ -24,6 +24,7 @@ in {
       monospace = mkFontOption "monospace";
       regular = mkFontOption "regular";
     };
+    fonts = {};  # Define fonts option here if it's not already defined elsewhere
   };
 
   config = lib.mkIf cfg.enable {
