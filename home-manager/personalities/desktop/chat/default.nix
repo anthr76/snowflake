@@ -4,7 +4,7 @@
     fractal-next
     slack
     element-desktop
-    vesktop
+    discord
     # For Discord
     wayland-push-to-talk-fix
     discover-overlay
