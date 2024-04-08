@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 
 let
   mkFontOption = kind: {
@@ -12,19 +12,25 @@ let
       type = lib.types.package;
       default = null;
       description = "Package for ${kind} font profile";
-      example = "pkgs.fira-code";
+      example = pkgs.fira-code;
     };
   };
+
   cfg = config.fontProfiles;
 in {
-  options.fontProfiles = {
-    enable = lib.mkEnableOption "Whether to enable font profiles";
-    monospace = mkFontOption "monospace";
-    regular = mkFontOption "regular";
+  options = {
+    fontProfiles = {
+      enable = lib.mkEnableOption "Whether to enable font profiles";
+      monospace = mkFontOption "monospace";
+      regular = mkFontOption "regular";
+    };
   };
 
   config = lib.mkIf cfg.enable {
     fonts.fontconfig.enable = true;
-    home.packages = [ cfg.monospace.package cfg.regular.package ];
+    home.packages = [
+      (builtins.getAttr "package" cfg.monospace)
+      (builtins.getAttr "package" cfg.regular)
+    ];
   };
 }
