@@ -119,6 +119,14 @@
         --add-flags "--enable-zero-copy"
       '';
     });
+    vesktop = prev.vesktop.overrideAttrs (oldAttrs: {
+      patches = oldAttrs.patches ++ [
+          (final.fetchpatch {
+            url = "https://patch-diff.githubusercontent.com/raw/Vencord/Vesktop/pull/489.patch";
+            sha256 = "sha256-8x3dn/WT2Exe/odHCjtZscdVXKL8MuTKfI1/7MCq/xk=";
+          })
+      ];
+    });
     moonlight-qt = prev.moonlight-qt.overrideAttrs (oldAttrs: {
       version = "v0.3.3-89a628a";
       patches = [ ];
