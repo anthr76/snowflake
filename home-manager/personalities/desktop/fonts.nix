@@ -2,12 +2,12 @@
   fontProfiles = {
     enable = true;
     monospace = {
-      family = "JetBrains Mono Nerd Font";
-      package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
+      family = "MonaspiceKr Nerd Font Mono";
+      package = pkgs.nerdfonts.override { fonts = [ "Monaspace" ]; };
     };
     regular = {
-      family = "Fira Sans";
-      package = pkgs.fira;
+      family = "Noto Sans";
+      package = pkgs.noto-fonts;
     };
   };
 }
