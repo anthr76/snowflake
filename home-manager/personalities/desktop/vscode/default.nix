@@ -45,7 +45,7 @@
         };
         defaultFormatter = "esbenp.prettier-vscode";
         fontFamily = "${config.fontProfiles.monospace.family}";
-        fontLigatures = "'calt', 'liga', 'dlig', 'ss01', 'ss02', 'ss03', 'ss06'";
+        fontLigatures = "'calt', 'liga', 'ss06'";
         guides = {
           bracketPairs = true;
           bracketPairsHorizontal = true;
