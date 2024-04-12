@@ -17,7 +17,7 @@
     nixpkgs-pr-269415.url =
       "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    chaotic.url = "github:anthr76/nyx";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     nix-vscode-extensions = {
