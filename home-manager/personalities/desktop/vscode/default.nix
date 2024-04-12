@@ -39,22 +39,10 @@
         shipitsmarter.sops-edit
       ];
     userSettings = {
-      "[go]": {
-        editor = {
-          defaultFormatter = "golang.go";
-        };
-        toolsManagement = {
-          autoUpdate = true;
-        };
-      };
-      "[nix]": {
-        "editor.defaultFormatter" = "jnoortheen.nix-ide";
-      };
-      "[terraform]": {
-        editor = {
-          defaultFormatter = "hashicorp.terraform";
-        };
-      };
+      "[go]".editor.defaultFormatter = "golang.go";
+      "[go]".toolsManagement.autoUpdate = true;
+      "[nix]".editor.defaultFormatter = "jnoortheen.nix-ide";
+      "[terraform]".editor.defaultFormatter = "hashicorp.terraform";
       git = {
         autofetch = true;
         confirmSync = false;
