@@ -78,8 +78,6 @@
         autoDetectColorScheme = true;
       };
       workbench = {
-        preferredDarkColorTheme = "Catppuccin Mocha";
-        preferredLightColorTheme = "Catppuccin Latte";
         colorTheme = "Catppuccin Mocha";
         iconTheme = "catppuccin-perfect-macchiato";
         sideBar = {
