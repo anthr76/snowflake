@@ -39,6 +39,48 @@
         shipitsmarter.sops-edit
       ];
     userSettings = {
+      "[go]".editor.defaultFormatter = "golang.go";
+      "[go]".toolsManagement.autoUpdate = true;
+      "[nix]".editor.defaultFormatter = "jnoortheen.nix-ide";
+      "[terraform]".editor.defaultFormatter = "hashicorp.terraform";
+      git = {
+        autofetch = true;
+        confirmSync = false;
+      };
+      linter = {
+        linters = {
+          yamllint = {
+            configFiles = [
+              ".yamllint.yml"
+              ".yamllint.yaml"
+              ".yamllint"
+              ".ci/yamllint/.yamllint.yaml"
+            ];
+          };
+        };
+      };
+      nix = {
+        enableLanguageServer = true;
+        serverPath = "${pkgs.nixd}/bin/nixd";
+        serverSettings = {
+          nixd = {
+            formatting = {
+              command = "nixfmt";
+            };
+          };
+        };
+      };
+      path-autocomplete = {
+        triggerOutsideStrings = true;
+      };
+      todo-tree = {
+        highlights = {
+          useColourScheme = true;
+        };
+        tree = {
+          expanded = true;
+        };
+      };
       editor = {
         bracketPairColorization = {
           enabled = true;
@@ -56,7 +98,7 @@
         };
         tabSize = 2;
       };
-      terminal.intergrated.inheritEnv = true;
+      "terminal.intergrated.inheritEnv" = true;
       explorer = {
         compactFolders = false;
         confirmDelete = false;
@@ -70,6 +112,9 @@
         trimFinalNewlines = true;
         trimTrailingWhitespace = true;
       };
+      vs-kubernetes = {
+        "vs-kubernetes.crd-code-completion" = "disabled";
+      };
       window = {
         commandCenter = false;
         newWindowDimensions = "maximized";
@@ -78,8 +123,6 @@
         autoDetectColorScheme = true;
       };
       workbench = {
-        preferredDarkColorTheme = "Catppuccin Mocha";
-        preferredLightColorTheme = "Catppuccin Latte";
         colorTheme = "Catppuccin Mocha";
         iconTheme = "catppuccin-perfect-macchiato";
         sideBar = {
@@ -92,6 +135,10 @@
       };
       "workbench.iconTheme" = "catppuccin-perfect-macchiato";
       "extensions.autoUpdate" = false;
+      update = {
+        mode = "manual";
+        showReleaseNotes = false;
+      };
     };
   };
 }
