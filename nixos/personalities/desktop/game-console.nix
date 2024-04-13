@@ -6,6 +6,7 @@
     ../../personalities/base/sops.nix
     ../../personalities/base/openssh.nix
     ../../personalities/base/nix.nix
+    ../../personalities/base/tmpfs.nix
     ./sunshine.nix
     ./audio.nix
   ] ++ (builtins.attrValues outputs.nixosModules);
