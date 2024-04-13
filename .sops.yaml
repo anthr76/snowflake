@@ -7,7 +7,7 @@ keys:
   - &lga-test1 age1td7hkcms0fmrt438ta2kmxxfmp0lget6gdae7me60apprll543sqr525jy
   - &e39 age1a4uumamqg8248ntjjl088ppq7m75p6zyhu5r8yyaqjvvk5yjpuksqspeea
   - &octo age1g69hshlnlxf60yz8mehnhj3u4gsy7frzvedgnqtwnjufw50anecqhnlhar
-  - &f80 age1mntfkg0jyv698z8kg6mlq8mr72ecpyt0dmn8y0skux9r26km4uzsge8h9q
+  - &f80 age17j2dw9kdpqntanmk9ndfw3gfu2cld22teuwzfuhnu8j7xpm2yf5se8d2f7
 
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$

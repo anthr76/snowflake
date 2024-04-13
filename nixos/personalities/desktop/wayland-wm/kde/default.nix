@@ -3,6 +3,7 @@
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   hardware.sane.enable = true;
   security.pam.services.greetd.kwallet.enable = true;
+  hardware.bluetooth.enable = true;
   environment.systemPackages = with pkgs; [
     wl-clipboard
     kdePackages.plasma-thunderbolt
