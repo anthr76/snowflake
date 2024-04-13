@@ -21,7 +21,8 @@
   gaming-kernel.enable = true;
   chaotic.hdr.enable = true;
   chaotic.hdr.specialisation.enable	= false;
-  services.xserver.desktopManager.plasma6.enable = true;
+  chaotic.mesa-git.enable = true;
+  services.desktopManager.plasma6.enable = true;
   services.flatpak.enable = true;
   xdg.portal.enable = true;
   services.packagekit.enable = true;
@@ -105,6 +106,10 @@
     };
   };
   hardware.steam-hardware.enable = true;
+  # jovian = {
+  #   steamos.useSteamOSConfig = true;
+  #   hardware.has.amd.gpu = true;
+  # };
   snowflake = {
     steam = {
       enable = true;

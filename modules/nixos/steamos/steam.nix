@@ -50,7 +50,7 @@ in
 
       systemd.packages = [ inputs.jovian-nixos.legacyPackages.${pkgs.system}.gamescope-session ];
 
-      services.xserver.displayManager.sessionPackages = [ inputs.jovian-nixos.legacyPackages.${pkgs.system}.gamescope-session ];
+      services.displayManager.sessionPackages = [ inputs.jovian-nixos.legacyPackages.${pkgs.system}.gamescope-session ];
 
       # Conflicts with powerbuttond
       services.logind.extraConfig = ''

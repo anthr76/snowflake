@@ -81,9 +81,6 @@
       patches = oldAttrs.patches ++ [
         ./gamescope-native-res.patch
         ./0001-allow-gamescope-to-set-ctx-priority.patch
-        # FIXME: Color management needs a rebase.
-        # ./gamescope-color-management.patch
-        # ./gamescope-hdr-casting.patch
       ];
     });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
