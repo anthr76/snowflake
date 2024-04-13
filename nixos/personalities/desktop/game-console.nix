@@ -24,7 +24,7 @@
   xdg.portal.enable = true;
   services.packagekit.enable = true;
   fonts.enableDefaultPackages = true;
-  hardware.xpadneo.enable = true;
+  hardware.xpadneo.enable = false;
   services.fwupd.enable = true;
   environment.systemPackages = [
     pkgs.mangohud
@@ -94,14 +94,7 @@
       wifi.backend = "iwd";
     };
   };
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.input = {
-    General = {
-      UserspaceHID = true;
-      ClassicBondedOnly = false;
-      LEAutoSecurity = false;
-    };
-  };
+  hardware.bluetooth.enable = true;;
   hardware.steam-hardware.enable = true;
   jovian = {
     hardware.has.amd.gpu = true;
@@ -115,7 +108,7 @@
     };
     steamos = {
       useSteamOSConfig = true;
-      enableBluetoothConfig = false;
+      enableBluetoothConfig = true;
     };
   };
   services.udev.extraRules = ''
