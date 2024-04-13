@@ -7,7 +7,6 @@
     ../../personalities/base/openssh.nix
     ../../personalities/base/nix.nix
     ../../personalities/base/tmpfs.nix
-    ./sunshine.nix
     ./audio.nix
   ] ++ (builtins.attrValues outputs.nixosModules);
   nixpkgs = {
@@ -38,7 +37,7 @@
   ];
   programs.steam = {
     enable = true;
-    package = pkgs.steam.override {
+    package = inputs.jovian-nixos.legacyPackages.${pkgs.system}.steam.override {
       extraPkgs = pkgs: with pkgs; [ liberation_ttf wqy_zenhei ];
     };
     extest.enable = true;
