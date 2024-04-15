@@ -77,21 +77,21 @@
         fetchSubmodules = true;
       };
     });
-    # gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
-    #   patches = oldAttrs.patches ++ [
-    #     ./gamescope-native-res.patch
-    #     ./0001-allow-gamescope-to-set-ctx-priority.patch
-    #     # FIXME: Color management needs a rebase.
-    #   #   ./gamescope-color-management.patch
-    #   #   ./gamescope-hdr-casting.patch
-    #   #   # wlserver: Fix overzealous HDR metadata validation
-    #   #   (final.fetchpatch {
-    #   #     url =
-    #   #       "https://patch-diff.githubusercontent.com/raw/ValveSoftware/gamescope/pull/1064.patch";
-    #   #     sha256 = "sha256-Q6jvetT5B6wz6XYit6oVfyHz6vzuaWG6rllnAYSl6GE=";
-    #   #   })
-    #   ];
-    # });
+    gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
+      patches = oldAttrs.patches ++ [
+        ./gamescope-native-res.patch
+        ./0001-allow-gamescope-to-set-ctx-priority.patch
+        # FIXME: Color management needs a rebase.
+      #   ./gamescope-color-management.patch
+      #   ./gamescope-hdr-casting.patch
+      #   # wlserver: Fix overzealous HDR metadata validation
+      #   (final.fetchpatch {
+      #     url =
+      #       "https://patch-diff.githubusercontent.com/raw/ValveSoftware/gamescope/pull/1064.patch";
+      #     sha256 = "sha256-Q6jvetT5B6wz6XYit6oVfyHz6vzuaWG6rllnAYSl6GE=";
+      #   })
+      ];
+    });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
       version = "v0.3.3";
       src = final.fetchgit {
