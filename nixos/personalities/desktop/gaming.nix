@@ -32,6 +32,12 @@
     capSysNice = false;
     package = pkgs.gamescope_git;
   };
+  hardware.opengl = {
+    driSupport32Bit = true;
+    extraPackages = [ pkgs.gamescope-wsi_git ];
+    extraPackages32 = [ pkgs.pkgsi686Linux.gamescope-wsi_git ];
+  };
+  hardware.pulseaudio.support32Bit = true;
   environment.systemPackages = [ pkgs.protontricks pkgs.vulkan-tools pkgs.amdgpu_top ];
   programs.gamemode = {
     enable = true;
