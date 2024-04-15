@@ -42,8 +42,6 @@
     };
   };
 
-  # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
-
   hardware.opengl = { enable = true; };
   hardware.opengl.driSupport = true;
   services.hardware.bolt.enable = true;
