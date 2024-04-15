@@ -120,7 +120,7 @@
         newWindowDimensions = "maximized";
         restoreWindows = "none";
         titleBarStyle = "custom";
-        autoDetectColorScheme = true;
+        autoDetectColorScheme = false;
       };
       workbench = {
         colorTheme = "Catppuccin Mocha";
