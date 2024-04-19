@@ -12,10 +12,6 @@
   config = lib.mkIf config.gaming-kernel.enable {
     boot.kernelPatches = [
       {
-        name = "amd_vrr";
-        patch = ./amd_vrr.patch;
-      }
-      {
         name = "cap_sys_nice_bgone";
         patch = ./cap_sys_nice_begone.patch;
       }
