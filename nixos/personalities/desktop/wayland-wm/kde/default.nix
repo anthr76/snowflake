@@ -11,6 +11,7 @@
     kdePackages.kdenlive
     kdePackages.skanlite
     xwaylandvideobridge
+    vulkan-hdr-layer
   ];
   services = {
     xserver = {

@@ -81,6 +81,11 @@
       patches = oldAttrs.patches ++ [
         ./gamescope-native-res.patch
         ./0001-allow-gamescope-to-set-ctx-priority.patch
+        (final.fetchpatch {
+          url =
+            "https://patch-diff.githubusercontent.com/raw/ValveSoftware/gamescope/pull/1232.patch";
+          sha256 = "sha256-GV8Ks4PJoL1ykdDUlQAcBjEk2WLkKIZvKMcJ+IhL2c8=";
+        })
       ];
     });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
