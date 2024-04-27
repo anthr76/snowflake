@@ -74,6 +74,12 @@
             ./nixos/hosts/f80.nwk3.rabbito.tech
           ];
         };
+        "fw1.nwk3.rabbito.tech" = lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+          modules = [
+            ./nixos/hosts/fw1.nwk3.rabbito.tech
+          ];
+        };
       };
       homeConfigurations = {
         "anthony@bkp1.nwk2.rabbito.tech" = lib.homeManagerConfiguration {

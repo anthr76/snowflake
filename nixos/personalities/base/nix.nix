@@ -68,4 +68,13 @@
       ${pkgs.nvd}/bin/nvd --nix-bin-dir=${pkgs.nix}/bin diff /run/current-system "$systemConfig"
     '';
   };
+  # For nixos-rebuild build-vm
+  virtualisation.vmVariant = {
+      virtualisation.sharedDirectories = {
+          keys = {
+              source = "/etc/ssh";
+              target = "/etc/ssh";
+          };
+      };
+  };
 }
