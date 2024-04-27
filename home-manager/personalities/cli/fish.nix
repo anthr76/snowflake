@@ -4,7 +4,7 @@
     enable = true;
     shellAliases = {
       yssh = "ssh-add -s ${pkgs.yubico-piv-tool}/lib/libykcs11.so";
-      tssh = "ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so";
+      tssh = if pkgs.stdenv.isLinux then "ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so" else "";
     };
     functions = {
       fish_greeting = "";

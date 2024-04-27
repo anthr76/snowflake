@@ -6,6 +6,8 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin.url = "github:LnL7/nix-darwin";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     hardware.url = "github:nixos/nixos-hardware";
     sops-nix.url = "github:mic92/sops-nix";
     disko.url = "github:nix-community/disko";
@@ -26,7 +28,7 @@
     };
   };
 
-  outputs = { self, disko, nixpkgs, nixpkgs-unstable, home-manager, chaotic
+  outputs = { self, disko, nix-darwin, nixpkgs, nixpkgs-unstable, home-manager, chaotic
     , jovian-nixos, nix-github-actions, ... }@inputs:
     let
       inherit (self) outputs;
@@ -97,6 +99,20 @@
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [ ./home-manager/hosts/f80.nwk3.rabbito.tech.nix ];
         };
+        "anthony@nicoles-mbp.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
+          pkgs = pkgsFor.x86_64-darwin;
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [ ./home-manager/hosts/nicoles-mbp.nwk3.rabbito.tech.nix ];
+        };
+      };
+      darwinConfigurations = {
+        "nicoles-mbp" = nix-darwin.lib.darwinSystem {
+          modules = [
+            nix-darwin/hosts/nicoles-mbp.nwk3.rabbito.tech
+          ];
+          pkgs = pkgsFor.x86_64-darwin;
+          specialArgs = { inherit inputs outputs; };
+       };
       };
 
       # Run `nix flake check`
