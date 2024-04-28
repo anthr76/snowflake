@@ -1,6 +1,7 @@
 { inputs, outputs, lib, config, pkgs, ... }: {
   imports = [
     ./sops.nix
+    ./serial.nix
     ./fish.nix
     ./nix.nix
     ./users.nix
