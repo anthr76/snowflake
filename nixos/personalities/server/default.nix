@@ -39,5 +39,4 @@
     may be monitored if unauthorized usage is suspected.
   '';
   boot.kernelPackages = pkgs.linuxPackages_cachyos-server;
-  chaotic.scx.enable = true;
 }
