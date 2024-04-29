@@ -57,6 +57,12 @@
             }
           ];
           subnet = "192.168.17.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "10.40.99.1";
+            }
+          ];
         }
         {
           pools = [
@@ -65,6 +71,12 @@
             }
           ];
           subnet = "192.168.16.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "10.40.99.1";
+            }
+          ];
         }
         {
           pools = [
@@ -87,6 +99,12 @@
             }
           ];
           subnet = "192.168.14.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "10.40.99.1";
+            }
+          ];
         }
         {
           pools = [
@@ -95,6 +113,12 @@
             }
           ];
           subnet = "192.168.13.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "10.40.99.1";
+            }
+          ];
         }
       ];
       valid-lifetime = 4000;
