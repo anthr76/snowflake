@@ -8,6 +8,8 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    gomod2nix.url = "github:nix-community/gomod2nix";
+    gomod2nix.inputs.nixpkgs.follows = "nixpkgs";
     hardware.url = "github:nixos/nixos-hardware";
     sops-nix.url = "github:mic92/sops-nix";
     disko.url = "github:nix-community/disko";
@@ -28,7 +30,7 @@
     };
   };
 
-  outputs = { self, disko, nix-darwin, nixpkgs, nixpkgs-unstable, home-manager, chaotic
+  outputs = { self, disko, gomod2nix, nix-darwin, nixpkgs, nixpkgs-unstable, home-manager, chaotic
     , jovian-nixos, nix-github-actions, ... }@inputs:
     let
       inherit (self) outputs;
@@ -39,6 +41,9 @@
         import nixpkgs {
           inherit system;
           config.allowUnfree = true;
+          overlays = [
+            gomod2nix.overlays.default
+          ];
         });
       withPrefix = prefix:
         lib.mapAttrs' (name: value: {
@@ -49,7 +54,7 @@
     in {
       githubActions = nix-github-actions.lib.mkGithubMatrix {
         # aarch64-linux is not supported by GitHub
-        checks = nixpkgs.lib.getAttrs [ "x86_64-linux" "x86_64-darwin" ] self.checks;
+        checks = nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks;
         attrPrefix = "";
       };
       packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
@@ -80,6 +85,7 @@
           specialArgs = { inherit inputs outputs; };
           modules = [
             ./nixos/hosts/fw1.nwk3.rabbito.tech
+            chaotic.nixosModules.default
           ];
         };
       };

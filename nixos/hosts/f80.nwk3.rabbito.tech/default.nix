@@ -48,5 +48,5 @@
   # Debugging Gamescope
   environment.systemPackages = [ pkgs.gdb ];
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
-
+  chaotic.scx.enable = true;
 }

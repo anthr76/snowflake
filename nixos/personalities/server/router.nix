@@ -1,16 +1,19 @@
-{ inputs, config, pkgs, ... }:
+{ inputs, config, pkgs, lib, ... }:
 {
  imports = [
    ./default.nix
-  #  ./tailscale.nix
+   ./tailscale.nix
    ../base
  ];
-
+  # Typically enabled in base but since we're a router we want all the control
+  networking.networkmanager.enable = lib.mkForce false;
   boot = {
     kernel = {
       sysctl = {
         "net.ipv4.conf.all.forwarding" = true;
         "net.ipv6.conf.all.forwarding" = true;
+        # TODO: Configure IPV6
+        # "net.ipv6.conf.wan.disable_ipv6" = true;
         "net.ipv6.conf.all.accept_ra" = 0;
         "net.ipv6.conf.all.autoconf" = 0;
         "net.ipv6.conf.all.use_tempaddr" = 0;
@@ -80,17 +83,32 @@
   };
   services.coredns = {
     enable = true;
-    # TODO: Move to overlay to disable check
-    # package = pkgs.coredns.override {
-    #   doCheck = false;
-    #   externalPlugins = [
-    #     {
-    #       name = "k8s_gateway";
-    #       repo = "github.com/ori-edge/k8s_gateway";
-    #       version = "3645f683ae8ccebf8eae21d675874d8f8f7b54fa";
-    #     }
-    #   ];
-    #   vendorHash = "sha256-Szj2uaml4qEXQPnXbhzJ2AmLpAHtYL123vSb0nSJFfw=";
-    # };
+    # https://github.com/NixOS/nixpkgs/issues/307750
+    package = pkgs.coredns-snowflake;
+  };
+  services.radvd = {
+    enable = true;
+    config = ''
+      interface vlan100 {
+          IgnoreIfMissing on;
+          AdvDefaultPreference high;
+          MaxRtrAdvInterval 600;
+          AdvReachableTime 0;
+          AdvIntervalOpt on;
+          AdvSendAdvert on;
+          AdvOtherConfigFlag off;
+          AdvRetransTimer 0;
+          AdvCurHopLimit 64;
+          prefix ::/0 {
+              AdvAutonomous on;
+              AdvValidLifetime 2592000;
+              AdvOnLink on;
+              AdvPreferredLifetime 14400;
+              DeprecatePrefix off;
+              DecrementLifetimes off;
+          };
+      };
+
+    '';
   };
 }

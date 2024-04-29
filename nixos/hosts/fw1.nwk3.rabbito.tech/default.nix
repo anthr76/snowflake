@@ -129,6 +129,7 @@
       (common) {
         log error
         reload
+        # TODO: Use something like https://github.com/StevenBlack/hosts santized on cron
         loop
         loadbalance
         cache
@@ -139,11 +140,6 @@
           fallthrough
           ttl 1
           reload 300ms
-        }
-        template ANY ANY {
-          match (?:^|\.)(?:deviceenrollment|mdmenrollment|iprofiles|wifi)?\.(?:.{1,3})+
-          rcode NXDOMAIN
-          fallthrough
         }
       }
 

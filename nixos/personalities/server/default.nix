@@ -38,7 +38,6 @@
     prosecuted by law. By accessing this system, you agree that your actions
     may be monitored if unauthorized usage is suspected.
   '';
-
-  # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
-
+  boot.kernelPackages = pkgs.linuxPackages_cachyos-server;
+  chaotic.scx.enable = true;
 }
