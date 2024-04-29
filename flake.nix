@@ -65,7 +65,10 @@
       nixosConfigurations = {
         "bkp1.nwk2.rabbito.tech" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
-          modules = [ ./nixos/hosts/bkp1.nwk2.rabbito.tech ];
+          modules = [
+            ./nixos/hosts/bkp1.nwk2.rabbito.tech
+            chaotic.nixosModules.default
+          ];
         };
         "octo.nwk3.rabbito.tech" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
