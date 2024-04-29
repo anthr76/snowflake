@@ -25,6 +25,7 @@
     enable = true;
     internalInterfaces = [
       "vlan8"
+      "vlan99"
       "vlan10"
       "vlan100"
       "vlan101"
@@ -51,7 +52,7 @@
   };
   networking.firewall = {
     enable = true;
-    trustedInterfaces = [ "tailscale0" "vlan8" "vlan10" "vlan99" "vlan100" ];
+    trustedInterfaces = [ "tailscale0" "vlan8" "vlan10" "vlan99" "vlan100" "vlan101" ];
     interfaces = {
       wan = {
         allowedTCPPorts = [
