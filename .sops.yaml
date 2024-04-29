@@ -8,7 +8,7 @@ keys:
   - &e39 age1a4uumamqg8248ntjjl088ppq7m75p6zyhu5r8yyaqjvvk5yjpuksqspeea
   - &octo age1mntfkg0jyv698z8kg6mlq8mr72ecpyt0dmn8y0skux9r26km4uzsge8h9q
   - &f80 age17j2dw9kdpqntanmk9ndfw3gfu2cld22teuwzfuhnu8j7xpm2yf5se8d2f7
-  - &fw1-nwk3 age1zm7dk99t3yyy6nauncuwyy8c2eaa82lv2na6x0hjhhpx9awv9ukqy5gf99
+  - &fw1-nwk3 age1hfg2qhhgkun0jz3ez383slf3ruldxyhvcr4488nuhn6vuuaje4rqhp0h96
 
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$
