@@ -73,6 +73,12 @@
             }
           ];
           subnet = "10.40.99.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "10.40.99.1";
+            }
+          ];
         }
         {
           pools = [
