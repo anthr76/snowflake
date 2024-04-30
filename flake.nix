@@ -113,6 +113,11 @@
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [ ./home-manager/hosts/nicoles-mbp.nwk3.rabbito.tech.nix ];
         };
+        "anthony@fw1.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
+          pkgs = pkgsFor.x86_64-linux;
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [ ./home-manager/hosts/fw1.nwk3.rabbito.tech.nix ];
+        };
       };
       darwinConfigurations = {
         "nicoles-mbp" = nix-darwin.lib.darwinSystem {

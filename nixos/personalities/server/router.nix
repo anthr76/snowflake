@@ -13,12 +13,12 @@
         "net.ipv4.conf.all.forwarding" = true;
         "net.ipv6.conf.all.forwarding" = true;
         # TODO: Configure IPV6
-        # "net.ipv6.conf.wan.disable_ipv6" = true;
-        "net.ipv6.conf.all.accept_ra" = 0;
-        "net.ipv6.conf.all.autoconf" = 0;
-        "net.ipv6.conf.all.use_tempaddr" = 0;
-        "net.ipv6.conf.wan.accept_ra" = 2;
-        "net.ipv6.conf.wan.autoconf" = 1;
+        "net.ipv6.conf.wan.disable_ipv6" = true;
+        # "net.ipv6.conf.all.accept_ra" = 0;
+        # "net.ipv6.conf.all.autoconf" = 0;
+        # "net.ipv6.conf.all.use_tempaddr" = 0;
+        # "net.ipv6.conf.wan.accept_ra" = 2;
+        # "net.ipv6.conf.wan.autoconf" = 1;
         "net.core.default_qdisc" = "fq";
         "net.ipv4.tcp_congestion_control" = "bbr";
       };
@@ -62,8 +62,6 @@
           22
         ];
         allowedUDPPorts = [
-          # Wireguard
-          51820
         ];
       };
     };
@@ -86,8 +84,9 @@
     # https://github.com/NixOS/nixpkgs/issues/307750
     package = pkgs.coredns-snowflake;
   };
+  # TODO: IPV6
   services.radvd = {
-    enable = true;
+    enable = false;
     config = ''
       interface vlan100 {
           IgnoreIfMissing on;
@@ -110,5 +109,16 @@
       };
 
     '';
+  };
+  services.avahi = {
+    enable = true;
+    hostName = "${config.networking.hostName}";
+    interfaces = [ "vlan100" ];
+    publish = {
+      enable = true;
+      addresses = true;
+      domain = true;
+      userServices = true;
+    };
   };
 }

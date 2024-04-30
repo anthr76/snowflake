@@ -1,17 +1,14 @@
 { config, ... }:
-let tailScalePort = 41641;
-in {
+{
   sops.secrets = {
     tailscale-auth-key = { sopsFile = ../../../secrets/users.yaml; };
   };
-  networking.firewall.allowedUDPPorts = [ tailScalePort ];
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
   services.tailscale = {
-    # package = pkgs.unstable.tailscale;
-    # useRoutingFeatures = "server";
+    useRoutingFeatures = "both";
     extraUpFlags = [ "--accept-routes" "--reset" ];
+    openFirewall = true;
     enable = true;
-    port = tailScalePort;
+    port = 41641;
     authKeyFile = config.sops.secrets.tailscale-auth-key.path;
   };
 }

@@ -32,6 +32,9 @@
     vlan100 = { ipv4 = { addresses = [{ address = "192.168.14.1"; prefixLength = 24; }]; }; };
     vlan101 = { ipv4 = { addresses = [{ address = "192.168.13.1"; prefixLength = 24; }]; }; };
   };
+  services.tailscale.extraUpFlags = [
+    "--advertise-routes=192.168.14.0/24,10.40.99.0/24,192.168.13.0/24"
+  ];
   services.kea.dhcp4 = {
     settings = {
       interfaces-config = {
