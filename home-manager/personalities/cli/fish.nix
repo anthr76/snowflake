@@ -4,7 +4,7 @@
     enable = true;
     shellAliases = {
       yssh = "ssh-add -s ${pkgs.yubico-piv-tool}/lib/libykcs11.so";
-      tssh = if pkgs.stdenv.isLinux then "ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so" else "";
+      tssh = if pkgs.stdenv.isLinux then "ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so" else "echo Not supported.";
     };
     functions = {
       fish_greeting = "";
@@ -14,14 +14,24 @@
       };
       gitignore = "curl -sL https://www.gitignore.io/api/$argv";
     };
-    plugins = [{
-      name = "fzf";
-      src = pkgs.fetchFromGitHub {
-        owner = "PatrickF1";
-        repo = "fzf.fish";
-        rev = "v8.3";
-        sha256 = "eSNUqvKXTxcuvICxo8BmVWL1ESXQuU7VhOl7aONrhwM=";
-      };
-    }];
   };
+  programs.fzf = {
+    enable = true;
+    enableFishIntegration = true;
+  };
+
+  programs.atuin = {
+    enable = true;
+    enableFishIntegration = true;
+    flags = [ "--disable-up-arrow" ];
+    settings = {
+      auto_sync = true;
+      sync_frequency = "5m";
+      sync_address = "https://api.atuin.sh";
+      search_mode = "fuzzy";
+      filter_mode_shell_up_key_binding = "directory";
+      style = "compact";
+    };
+  };
+
 }
