@@ -91,6 +91,13 @@
             chaotic.nixosModules.default
           ];
         };
+        "fw1-nwk2" = lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+          modules = [
+            ./nixos/hosts/fw1-nwk3
+            chaotic.nixosModules.default
+          ];
+        };
       };
       homeConfigurations = {
         "anthony@bkp1" = lib.homeManagerConfiguration {

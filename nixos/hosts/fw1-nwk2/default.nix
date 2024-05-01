@@ -6,10 +6,10 @@
     inputs.disko.nixosModules.disko
   ];
   networking.hostName = "fw1";
-  networking.domain = "nwk3.rabbito.tech";
+  networking.domain = "nwk2.rabbito.tech";
   services.cfdyndns.records = [
-    "fw-1.nwk3.rabbito.tech"
-    "nwk3.rabbito.tech"
+    "fw-1.nwk2.rabbito.tech"
+    "nwk2.rabbito.tech"
   ];
   boot.initrd.availableKernelModules = [
     "xhci_pci"
@@ -31,77 +31,77 @@
   '';
 
   networking.interfaces = {
-    vlan8 = { ipv4 = { addresses = [{ address = "192.168.17.1"; prefixLength = 24; }]; }; };
-    vlan10 = { ipv4 = { addresses = [{ address = "192.168.16.1"; prefixLength = 24; }]; }; };
-    vlan99 = { ipv4 = { addresses = [{ address = "10.40.99.1"; prefixLength = 24; }]; }; };
-    vlan100 = { ipv4 = { addresses = [{ address = "192.168.14.1"; prefixLength = 24; }]; }; };
-    vlan101 = { ipv4 = { addresses = [{ address = "192.168.13.1"; prefixLength = 24; }]; }; };
+    vlan8 = { ipv4 = { addresses = [{ address = "192.168.15.1"; prefixLength = 24; }]; }; };
+    vlan10 = { ipv4 = { addresses = [{ address = "192.168.7.1"; prefixLength = 24; }]; }; };
+    vlan99 = { ipv4 = { addresses = [{ address = "10.30.99.1"; prefixLength = 24; }]; }; };
+    vlan100 = { ipv4 = { addresses = [{ address = "192.168.11.1"; prefixLength = 24; }]; }; };
+    vlan101 = { ipv4 = { addresses = [{ address = "192.168.5.1"; prefixLength = 24; }]; }; };
   };
   services.tailscale.extraUpFlags = [
-    "--advertise-routes=192.168.14.0/24,10.40.99.0/24,192.168.13.0/24"
+    "--advertise-routes=192.168.11.0/24,10.30.99.0/24,192.168.7.0/24"
   ];
   services.kea.dhcp4 = {
     settings = {
       interfaces-config = {
         interfaces = [
-          "vlan8/192.168.17.1"
-          "vlan10/192.168.16.1"
-          "vlan99/10.40.99.1"
-          "vlan100/192.168.14.1"
-          "vlan101/192.168.13.1"
+          "vlan8/192.168.15.1"
+          "vlan10/192.168.7.1"
+          "vlan99/10.30.99.1"
+          "vlan100/192.168.11.1"
+          "vlan101/192.168.5.1"
         ];
       };
       option-data = [
         {
           name = "domain-name-servers";
-          data = "10.40.99.1";
+          data = "10.30.99.1";
         }
         {
           name = "routers";
-          data = "10.40.99.1";
+          data = "10.30.99.1";
         }
       ];
       subnet4 = [
         {
           pools = [
             {
-              pool = "192.168.17.20 - 192.168.17.240";
+              pool = "192.168.15.20 - 192.168.15.240";
             }
           ];
-          subnet = "192.168.17.0/24";
+          subnet = "192.168.15.0/24";
         }
         {
           pools = [
             {
-              pool = "192.168.16.20 - 192.168.16.240";
+              pool = "192.168.7.20 - 192.168.7.240";
             }
           ];
-          subnet = "192.168.16.0/24";
+          subnet = "192.168.7.0/24";
         }
         {
           pools = [
             {
-              pool = "10.40.99.20 - 10.40.99.240";
+              pool = "10.30.99.20 - 10.30.99.240";
             }
           ];
-          subnet = "10.40.99.0/24";
+          subnet = "10.30.99.0/24";
         }
         {
           pools = [
             {
-              pool = "192.168.14.20 - 192.168.14.240";
+              pool = "192.168.11.20 - 192.168.11.240";
             }
           ];
-          subnet = "192.168.14.0/24";
+          subnet = "192.168.11s.0/24";
         }
         {
           pools = [
             {
-              pool = "192.168.13.20 - 192.168.13.240";
+              pool = "192.168.5.20 - 192.168.5.240";
             }
           ];
-          subnet = "192.168.13.0/24";
-          # Robot Vacuum refues to work with 10.40.99.1
+          subnet = "192.168.5.0/24";
+          # Robot Vacuum refues to work with 10.30.99.1
           option-data = [
             {
               name = "routers";
@@ -143,11 +143,11 @@
         }
       }
 
-      nwk3.rabbito.tech:53 {
+      nwk2.rabbito.tech:53 {
         import common
       }
-      nwk2.rabbito.tech:53 {
-        forward . 10.30.99.1
+      nwk3.rabbito.tech:53 {
+        forward . 10.40.99.1
       }
       scr1.rabbito.tech:53 {
         forward . 10.5.0.7 10.5.0.8

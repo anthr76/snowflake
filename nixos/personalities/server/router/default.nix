@@ -1,9 +1,13 @@
 { inputs, config, pkgs, lib, ... }:
 {
  imports = [
-   ./default.nix
-   ./tailscale.nix
-   ../base
+   ../default.nix
+   ../tailscale.nix
+   ../../base
+   ./ddns.nix
+   ./dhcp.nix
+   ./dns.nix
+   ./firewall.nix
  ];
   # Typically enabled in base but since we're a router we want all the control
   networking.networkmanager.enable = lib.mkForce false;
@@ -58,63 +62,6 @@
     vlan99 = { id=99; interface="lan"; };
     vlan100 = { id=100; interface="lan"; };
     vlan101 = { id=101; interface="lan"; };
-  };
-  networking.firewall = {
-    enable = true;
-    trustedInterfaces = [ "tailscale0" "vlan8" "vlan10" "vlan99" "vlan100" "vlan101" ];
-    interfaces = {
-      wan = {
-        allowedTCPPorts = [
-          22
-        ];
-        allowedUDPPorts = [
-        ];
-      };
-    };
-  };
-  services.kea.dhcp4 = {
-    enable = true;
-    settings = {
-      lease-database = {
-        name = "/var/lib/kea/dhcp4.leases";
-        persist = true;
-        type = "memfile";
-      };
-      rebind-timer = 2000;
-      renew-timer = 1000;
-      valid-lifetime = 4000;
-    };
-  };
-  services.coredns = {
-    enable = true;
-    # https://github.com/NixOS/nixpkgs/issues/307750
-    package = pkgs.coredns-snowflake;
-  };
-  # TODO: IPV6
-  services.radvd = {
-    enable = false;
-    config = ''
-      interface vlan100 {
-          IgnoreIfMissing on;
-          AdvDefaultPreference high;
-          MaxRtrAdvInterval 600;
-          AdvReachableTime 0;
-          AdvIntervalOpt on;
-          AdvSendAdvert on;
-          AdvOtherConfigFlag off;
-          AdvRetransTimer 0;
-          AdvCurHopLimit 64;
-          prefix ::/0 {
-              AdvAutonomous on;
-              AdvValidLifetime 2592000;
-              AdvOnLink on;
-              AdvPreferredLifetime 14400;
-              DeprecatePrefix off;
-              DecrementLifetimes off;
-          };
-      };
-
-    '';
   };
   services.avahi = {
     enable = true;
