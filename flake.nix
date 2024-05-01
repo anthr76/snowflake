@@ -63,66 +63,66 @@
       nixosModules = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
       nixosConfigurations = {
-        "bkp1.nwk2.rabbito.tech" = lib.nixosSystem {
+        "bkp1" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
-            ./nixos/hosts/bkp1.nwk2.rabbito.tech
+            ./nixos/hosts/bkp1
             chaotic.nixosModules.default
           ];
         };
-        "octo.nwk3.rabbito.tech" = lib.nixosSystem {
+        "octo" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
             chaotic.nixosModules.default
-            ./nixos/hosts/octo.nwk3.rabbito.tech
+            ./nixos/hosts/octo
           ];
         };
-        "f80.nwk3.rabbito.tech" = lib.nixosSystem {
+        "f80" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
             chaotic.nixosModules.default
-            ./nixos/hosts/f80.nwk3.rabbito.tech
+            ./nixos/hosts/f80
           ];
         };
-        "fw1.nwk3.rabbito.tech" = lib.nixosSystem {
+        "fw1-nwk3" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
-            ./nixos/hosts/fw1.nwk3.rabbito.tech
+            ./nixos/hosts/fw1-nwk3
             chaotic.nixosModules.default
           ];
         };
       };
       homeConfigurations = {
-        "anthony@bkp1.nwk2.rabbito.tech" = lib.homeManagerConfiguration {
+        "anthony@bkp1" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/hosts/bkp1.nwk2.rabbito.tech.nix ];
+          modules = [ ./home-manager/hosts/bkp1.nix ];
         };
-        "steam@octo.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
+        "steam@octo" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/hosts/octo.nwk3.rabbito.tech.nix ];
+          modules = [ ./home-manager/hosts/octo.nix ];
         };
-        "anthony@f80.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
+        "anthony@f80" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/hosts/f80.nwk3.rabbito.tech.nix ];
+          modules = [ ./home-manager/hosts/f80.nix ];
         };
-        "anthony@nicoles-mbp.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
+        "anthony@nicoles-mbp" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-darwin;
           extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/hosts/nicoles-mbp.nwk3.rabbito.tech.nix ];
+          modules = [ ./home-manager/hosts/nicoles-mbp.nix ];
         };
-        "anthony@fw1.nwk3.rabbito.tech" = lib.homeManagerConfiguration {
+        "anthony@fw1-nwk3" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/hosts/fw1.nwk3.rabbito.tech.nix ];
+          modules = [ ./home-manager/hosts/fw1-nwk3.nix ];
         };
       };
       darwinConfigurations = {
         "nicoles-mbp" = nix-darwin.lib.darwinSystem {
           modules = [
-            nix-darwin/hosts/nicoles-mbp.nwk3.rabbito.tech
+            nix-darwin/hosts/nicoles-mbp
           ];
           pkgs = pkgsFor.x86_64-darwin;
           specialArgs = { inherit inputs outputs; };

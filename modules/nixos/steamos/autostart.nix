@@ -34,10 +34,10 @@ in
         desktopSession = mkOption {
           type = with types ; nullOr str // {
             check = userProvidedDesktopSession:
-              lib.assertMsg (userProvidedDesktopSession != null -> (str.check userProvidedDesktopSession && lib.elem userProvidedDesktopSession config.services.xserver.displayManager.sessionData.sessionNames)) ''
+              lib.assertMsg (userProvidedDesktopSession != null -> (str.check userProvidedDesktopSession && lib.elem userProvidedDesktopSession config.services.displayManager.sessionData.sessionNames)) ''
                   Desktop session '${userProvidedDesktopSession}' not found.
                   Valid values for 'snowflake.steam.desktopSession' are:
-                    ${lib.concatStringsSep "\n  " config.services.xserver.displayManager.sessionData.sessionNames}
+                    ${lib.concatStringsSep "\n  " config.services.displayManager.sessionData.sessionNames}
                   If you don't want a desktop session to switch to, set 'snowflake.steam.desktopSession' to 'gamescope-wayland'.
               '';
           };

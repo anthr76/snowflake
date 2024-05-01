@@ -7,6 +7,12 @@
  ];
   # Typically enabled in base but since we're a router we want all the control
   networking.networkmanager.enable = lib.mkForce false;
+  environment.systemPackages = with pkgs; [
+    ethtool
+    tcpdump
+    conntrack-tools
+    mtr
+  ];
   boot = {
     kernel = {
       sysctl = {
@@ -113,7 +119,8 @@
   services.avahi = {
     enable = true;
     hostName = "${config.networking.hostName}";
-    interfaces = [ "vlan100" ];
+    allowInterfaces = [ "vlan100" "vlan101" ];
+    reflector = true;
     publish = {
       enable = true;
       addresses = true;

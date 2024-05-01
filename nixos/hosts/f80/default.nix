@@ -39,6 +39,7 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "f80";
+  networking.domain = "nwk3.rabbito.tech";
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
   # boot.kernelPackages = pkgs.linuxPackages_testing;

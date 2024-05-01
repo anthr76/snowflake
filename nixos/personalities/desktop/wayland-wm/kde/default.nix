@@ -14,13 +14,10 @@
     vulkan-hdr-layer
   ];
   services = {
-    xserver = {
-      enable = true;
-      desktopManager.plasma6 = { enable = true; };
-      # Currently broken with fish shell
-      displayManager.sddm = {
-        enable = false;
-        wayland.enable = false;
+    desktopManager = {
+      plasma6 = {
+        enable = true;
+        notoPackage = pkgs.noto-fonts-lgc-plus;
       };
     };
     greetd = {

@@ -4,7 +4,7 @@
     tailscale-auth-key = { sopsFile = ../../../secrets/users.yaml; };
   };
   services.tailscale = {
-    useRoutingFeatures = "both";
+    # useRoutingFeatures = "both";
     extraUpFlags = [ "--accept-routes" "--reset" ];
     openFirewall = true;
     enable = true;

@@ -22,6 +22,7 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "octo";
+  networking.domain = "nwk3.rabbito.tech";
   system.stateVersion = "23.11";
   environment.systemPackages = [ pkgs.gdb ];
   chaotic.nyx.overlay.onTopOf = "user-pkgs";

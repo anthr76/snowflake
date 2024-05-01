@@ -17,5 +17,6 @@
     ../../personalities/server
   ];
   networking.hostName = "bkp1";
+  networking.domain = "nwk2.rabbito.tech";
   system.stateVersion = "23.05";
 }
