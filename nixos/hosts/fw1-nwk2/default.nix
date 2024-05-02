@@ -26,8 +26,8 @@
   system.stateVersion = "23.11";
   nixpkgs.hostPlatform = "x86_64-linux";
   services.udev.extraRules = ''
-    SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:e0:67:26:40:d9", NAME="lan"
-    SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:e0:67:26:40:d8", NAME="wan"
+    SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:e0:67:27:82:e9", NAME="lan"
+    SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:e0:67:27:82:e8", NAME="wan"
   '';
 
   networking.interfaces = {
@@ -56,10 +56,6 @@
           name = "domain-name-servers";
           data = "10.30.99.1";
         }
-        {
-          name = "routers";
-          data = "10.30.99.1";
-        }
       ];
       subnet4 = [
         {
@@ -69,6 +65,12 @@
             }
           ];
           subnet = "192.168.15.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "192.168.15.1";
+            }
+          ];
         }
         {
           pools = [
@@ -77,6 +79,12 @@
             }
           ];
           subnet = "192.168.7.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "192.168.7.1";
+            }
+          ];
         }
         {
           pools = [
@@ -85,6 +93,12 @@
             }
           ];
           subnet = "10.30.99.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "10.30.99.1";
+            }
+          ];
         }
         {
           pools = [
@@ -92,7 +106,13 @@
               pool = "192.168.11.20 - 192.168.11.240";
             }
           ];
-          subnet = "192.168.11s.0/24";
+          subnet = "192.168.11.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "192.168.11.1";
+            }
+          ];
         }
         {
           pools = [
@@ -101,11 +121,10 @@
             }
           ];
           subnet = "192.168.5.0/24";
-          # Robot Vacuum refues to work with 10.30.99.1
           option-data = [
             {
               name = "routers";
-              data = "192.168.13.1";
+              data = "192.168.5.1";
             }
           ];
         }

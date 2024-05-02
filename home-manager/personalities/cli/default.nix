@@ -12,7 +12,7 @@
     ./containers.nix
     ./bat.nix
   ];
-  home.packages = with pkgs; [ 
+  home.packages = with pkgs; [
     ripgrep
     fd
     jq

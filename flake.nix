@@ -94,7 +94,7 @@
         "fw1-nwk2" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
-            ./nixos/hosts/fw1-nwk3
+            ./nixos/hosts/fw1-nwk2
             chaotic.nixosModules.default
           ];
         };
@@ -120,10 +120,10 @@
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [ ./home-manager/hosts/nicoles-mbp.nix ];
         };
-        "anthony@fw1-nwk3" = lib.homeManagerConfiguration {
+        "anthony@generic" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/hosts/fw1-nwk3.nix ];
+          modules = [ ./home-manager/hosts/generic.nix ];
         };
       };
       darwinConfigurations = {

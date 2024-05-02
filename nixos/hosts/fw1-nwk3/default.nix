@@ -56,10 +56,6 @@
           name = "domain-name-servers";
           data = "10.40.99.1";
         }
-        {
-          name = "routers";
-          data = "10.40.99.1";
-        }
       ];
       subnet4 = [
         {
@@ -69,6 +65,12 @@
             }
           ];
           subnet = "192.168.17.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "192.168.17.1";
+            }
+          ];
         }
         {
           pools = [
@@ -77,6 +79,12 @@
             }
           ];
           subnet = "192.168.16.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "192.168.16.1";
+            }
+          ];
         }
         {
           pools = [
@@ -85,6 +93,12 @@
             }
           ];
           subnet = "10.40.99.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "10.40.99.1";
+            }
+          ];
         }
         {
           pools = [
@@ -93,6 +107,12 @@
             }
           ];
           subnet = "192.168.14.0/24";
+          option-data = [
+            {
+              name = "routers";
+              data = "192.168.14.1";
+            }
+          ];
         }
         {
           pools = [
@@ -101,7 +121,6 @@
             }
           ];
           subnet = "192.168.13.0/24";
-          # Robot Vacuum refues to work with 10.40.99.1
           option-data = [
             {
               name = "routers";
