@@ -85,19 +85,6 @@
         --add-flags "--enable-zero-copy"
       '';
     });
-    moonlight-qt = prev.moonlight-qt.overrideAttrs (oldAttrs: {
-      version = "v0.3.3-89a628a";
-      patches = [ ];
-      src = final.fetchFromGitHub {
-        owner = "moonlight-stream";
-        repo = "moonlight-qt";
-        rev = "89a628a0dde50264fd2170125588c15d8dd80a2c";
-        sha256 = "sha256-6KJTYYbrIPt3zNaK63fcFBb9W8reItpeqylugj0CwjU=";
-        fetchSubmodules = true;
-      };
-      buildInputs = oldAttrs.buildInputs
-        ++ [ final.libplacebo final.vulkan-headers ];
-    });
   };
 
   # When applied, the unstable nixpkgs set (declared in the flake inputs) will

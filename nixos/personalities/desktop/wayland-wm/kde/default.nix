@@ -14,6 +14,9 @@
     vulkan-hdr-layer
   ];
   services = {
+    xserver = {
+      enable = true;
+    };
     desktopManager = {
       plasma6 = {
         enable = true;
