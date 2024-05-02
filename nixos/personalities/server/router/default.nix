@@ -16,6 +16,7 @@
     tcpdump
     conntrack-tools
     mtr
+    nmap
   ];
   boot = {
     kernel = {
