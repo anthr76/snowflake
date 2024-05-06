@@ -7,7 +7,7 @@
         efiSupport = true;
         device = "nodev";
         enableCryptodisk = true;
-        configurationLimit = 8;
+        configurationLimit = 15;
       };
     };
     initrd = {

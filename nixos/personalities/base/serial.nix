@@ -25,7 +25,7 @@ let
   '';
 in
 {
-    boot.kernelParams = [ "console=tty0" "console=ttyS0,115200" ];
+    boot.kernelParams = [ "console=ttyS0,115200" ];
 
     # set terminal size once after login
     environment.loginShellInit = "${resize}/bin/resize";
