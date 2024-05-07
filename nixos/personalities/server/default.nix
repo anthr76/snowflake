@@ -28,7 +28,9 @@
       allowUnfree = true;
     };
   };
-
+  imports = [
+    ./serial.nix
+  ];
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ 22 ];

@@ -25,7 +25,8 @@ let
   '';
 in
 {
-    boot.kernelParams = [ "console=ttyS0,115200" ];
+    # TODO: Verify this is safe.
+    boot.kernelParams = [ "console=tty0" "console=ttyS0,115200n8" ];
 
     # set terminal size once after login
     environment.loginShellInit = "${resize}/bin/resize";
@@ -36,10 +37,4 @@ in
     # default is something like vt220... however we want to get alt least some colors...
     systemd.services."serial-getty@".environment.TERM = "xterm-256color";
 
-    # also make grub respond on serial consoles
-    boot.loader.grub.extraConfig = ''
-      serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
-      terminal_input --append serial
-      terminal_output --append serial
-    '';
 }

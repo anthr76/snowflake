@@ -4,7 +4,9 @@ let
     inherit (pkgs) yubikey-manager yubico-piv-tool yubioath-flutter;
   };
 in {
-  disabledModules = [ "${inputs.nixpkgs}/nixos/modules/programs/ssh.nix" ];
+  disabledModules = [
+    "${inputs.nixpkgs}/nixos/modules/programs/ssh.nix"
+  ];
   imports = [
     "${inputs.nixpkgs-pr-169155}/nixos/modules/programs/ssh.nix"
     ./tpm2.nix

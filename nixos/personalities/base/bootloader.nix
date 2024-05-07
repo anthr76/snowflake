@@ -3,10 +3,8 @@
     supportedFilesystems = [ "btrfs" ];
     loader = {
       efi = { canTouchEfiVariables = true; };
-      grub = {
-        efiSupport = true;
-        device = "nodev";
-        enableCryptodisk = true;
+      systemd-boot = {
+        enable = true;
         configurationLimit = 15;
       };
     };

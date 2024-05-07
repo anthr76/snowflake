@@ -2,7 +2,8 @@
   description = "anthr76 Flakes";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Lazy TODO: https://nixpk.gs/pr-tracker.html?pr=308884
+    nixpkgs.url = "github:nixos/nixpkgs?ref=58a1abdbae3217ca6b702f03d3b35125d88a2994";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
