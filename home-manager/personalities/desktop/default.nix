@@ -4,6 +4,7 @@
     ./fonts.nix
     ./wezterm.nix
     ./chromium.nix
+    ./firefox.nix
     ./email.nix
     ./chat
     ./wayland-wm/common
