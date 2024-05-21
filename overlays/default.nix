@@ -28,6 +28,38 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
+    ffmpeg = prev.ffmpeg.override {
+      withDebug = false;
+      buildFfplay = false;
+      withHeadlessDeps = true;
+      withCuda = true;
+      withNvdec = true;
+      withFontconfig = true;
+      withGPL = true;
+      withAom = true;
+      withAss = true;
+      withBluray = true;
+      withFdkAac =true;
+      withFreetype = true;
+      withMp3lame = true;
+      withOpencoreAmrnb = true;
+      withOpenjpeg = true;
+      withOpus = true;
+      withSrt = true;
+      withTheora = true;
+      withVidStab = true;
+      withVorbis = true;
+      withVpx = true;
+      withWebp = true;
+      withX264 = true;
+      withX265 = true;
+      withXvid = true;
+      withZmq = true;
+      withUnfree = true;
+      withNvenc = true;
+      buildPostproc = true;
+      withSmallDeps = true;
+    };
     lunarvim = prev.lunarvim.overrideAttrs (oldAttrs: {
       src = final.fetchFromGitHub {
         owner = "LunarVim";

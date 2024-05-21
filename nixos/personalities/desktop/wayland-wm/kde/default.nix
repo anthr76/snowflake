@@ -1,6 +1,7 @@
 { pkgs, ... }: {
   imports = [ ../../default.nix ];
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  environment.sessionVariables.GTK_USE_PORTAL = "1";
   hardware.sane.enable = true;
   security.pam.services.greetd.kwallet.enable = true;
   hardware.bluetooth.enable = true;
