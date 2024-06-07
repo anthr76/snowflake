@@ -24,8 +24,8 @@
         tamasfe.even-better-toml
         helm-ls.helm-ls
         ms-vscode.makefile-tools
-        Grafana.vscode-jsonnet
-        GitHub.vscode-github-actions
+        grafana.vscode-jsonnet
+        github.vscode-github-actions
         # Formatters
         esbenp.prettier-vscode
         # Linters
