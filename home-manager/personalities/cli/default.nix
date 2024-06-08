@@ -11,6 +11,7 @@
     ./lsd.nix
     ./containers.nix
     ./bat.nix
+    ./direnv.nix
   ];
   home.packages = with pkgs; [
     ripgrep

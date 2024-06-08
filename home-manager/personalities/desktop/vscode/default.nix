@@ -23,6 +23,9 @@
         redhat.vscode-yaml
         tamasfe.even-better-toml
         helm-ls.helm-ls
+        ms-vscode.makefile-tools
+        grafana.vscode-jsonnet
+        github.vscode-github-actions
         # Formatters
         esbenp.prettier-vscode
         # Linters
