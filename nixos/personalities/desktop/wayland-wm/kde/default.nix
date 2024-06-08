@@ -10,6 +10,7 @@
     kdePackages.plasma-thunderbolt
     kdePackages.kcalc
     kdePackages.kdenlive
+    ladspaPlugins
     kdePackages.skanlite
     kdePackages.dragon
     xwaylandvideobridge

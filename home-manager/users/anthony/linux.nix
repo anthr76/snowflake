@@ -22,15 +22,14 @@
         "x-scheme-handler/tg" = "org.telegram.desktop.desktop";
       };
       defaultApplications = {
-        "text/html" = "chromium-browser.desktop";
-        "x-scheme-handler/http" = "chromium-browser.desktop";
-        "x-scheme-handler/https" = "chromium-browser.desktop";
-        "x-www-browser" = "chromium-browser.desktop";
-        "x-scheme-handler/about" = "chromium-browser.desktop";
-        "x-scheme-handler/unknown" = "chromium-browser.desktop";
-        "application/pdf" = "chromium-browser.desktop";
+        "text/html" = "firefox.desktop";
+        "x-scheme-handler/http" = "firefox.desktop";
+        "x-scheme-handler/https" = "firefox.desktop";
+        "x-www-browser" = "firefox.desktop";
+        "x-scheme-handler/about" = "firefox.desktop";
+        "x-scheme-handler/unknown" = "firefox.desktop";
+        "application/pdf" = "firefox.desktop";
         "x-scheme-handler/element" = "element-desktop.desktop";
-        # "x-scheme-handler/bs-sso-authorized" = "ubuntu-22-04-BlastShield.desktop";
       };
     };
   };

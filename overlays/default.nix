@@ -28,56 +28,38 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
-    ffmpeg = prev.ffmpeg.override {
-      withDebug = false;
-      buildFfplay = false;
-      withHeadlessDeps = true;
-      withCuda = true;
-      withNvdec = true;
-      withFontconfig = true;
-      withGPL = true;
-      withAom = true;
-      withAss = true;
-      withBluray = true;
-      withFdkAac =true;
-      withFreetype = true;
-      withMp3lame = true;
-      withOpencoreAmrnb = true;
-      withOpenjpeg = true;
-      withOpus = true;
-      withSrt = true;
-      withTheora = true;
-      withVidStab = true;
-      withVorbis = true;
-      withVpx = true;
-      withWebp = true;
-      withX264 = true;
-      withX265 = true;
-      withXvid = true;
-      withZmq = true;
-      withUnfree = true;
-      withNvenc = true;
-      buildPostproc = true;
-      withSmallDeps = true;
-    };
-    lunarvim = prev.lunarvim.overrideAttrs (oldAttrs: {
-      src = final.fetchFromGitHub {
-        owner = "LunarVim";
-        repo = "LunarVim";
-        rev = "9ee3b7b8846d7ed2fa79f03d67083f8b95c897f2";
-        sha256 = "sha256-grCEaLJrcPMdM9ODWSExcNsc+G+QmEmZ7EBfBeEVeGU";
-        fetchSubmodules = true;
-      };
-      runtimeDeps = oldAttrs.runtimeDeps ++ [
-        final.gopls
-        final.clang-tools
-        final.wget
-        final.libgcc
-        final.vimPlugins.nvim-treesitter.withAllGrammars
-        final.lazygit
-        final.clang
-      ];
-    });
+    # ffmpeg = prev.ffmpeg.override {
+    #   withDebug = false;
+    #   buildFfplay = false;
+    #   withHeadlessDeps = true;
+    #   withCuda = true;
+    #   withNvdec = true;
+    #   withFontconfig = true;
+    #   withGPL = true;
+    #   withAom = true;
+    #   withAss = true;
+    #   withBluray = true;
+    #   withFdkAac =true;
+    #   withFreetype = true;
+    #   withMp3lame = true;
+    #   withOpencoreAmrnb = true;
+    #   withOpenjpeg = true;
+    #   withOpus = true;
+    #   withSrt = true;
+    #   withTheora = true;
+    #   withVidStab = true;
+    #   withVorbis = true;
+    #   withVpx = true;
+    #   withWebp = true;
+    #   withX264 = true;
+    #   withX265 = true;
+    #   withXvid = true;
+    #   withZmq = true;
+    #   withUnfree = true;
+    #   withNvenc = true;
+    #   buildPostproc = true;
+    #   withSmallDeps = true;
+    # };
     xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
       version = "git.74dd867";
       src = final.fetchFromGitHub {
