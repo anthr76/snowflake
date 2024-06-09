@@ -12,7 +12,7 @@
     kdePackages.kdenlive
     ladspaPlugins
     kdePackages.skanlite
-    kdePackages.dragon
+    mpv
     xwaylandvideobridge
     vulkan-hdr-layer
   ];

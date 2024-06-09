@@ -1,7 +1,7 @@
 { lib, stdenv, fetchurl, dpkg, makeWrapper, buildFHSEnv
 , gtk3, gdk-pixbuf, cairo, libjpeg_original, glib, pango, libGLU
 , libGL, nvidia_cg_toolkit, zlib, openssl, libuuid
-, alsa-lib, udev, libjack2, freetype, libva, libvdpau
+, alsa-lib, udev, libjack2, freetype, libva, libvdpau, twolame, gmp
 }:
 let
   fullPath = lib.makeLibraryPath [
@@ -24,6 +24,8 @@ let
     freetype
     libva
     libvdpau
+    twolame
+    gmp
   ];
 
   lightworks_2023_02 = stdenv.mkDerivation rec {
