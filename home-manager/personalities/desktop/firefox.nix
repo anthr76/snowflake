@@ -23,6 +23,7 @@
         "identity.fxaccounts.enabled" = false;
         "privacy.trackingprotection.enabled" = true;
         "signon.rememberSignons" = false;
+        "media.ffmpeg.vaapi.enabled" = true;
       };
     };
   };
