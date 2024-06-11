@@ -50,4 +50,8 @@
   environment.systemPackages = [ pkgs.gdb ];
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
   chaotic.scx.enable = true;
+  fonts.fontconfig = {
+    subpixel.rgba = "rgb";
+    hinting.style = "full";
+  };
 }
