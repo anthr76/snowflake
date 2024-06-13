@@ -40,6 +40,7 @@
         luisfontes19.vscode-swissknife
         ms-kubernetes-tools.vscode-kubernetes-tools
         shipitsmarter.sops-edit
+        editorconfig.editorconfig
       ];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
