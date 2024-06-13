@@ -9,6 +9,7 @@
     ../../personalities/base/tmpfs.nix
     ./sunshine.nix
     ./audio.nix
+    inputs.jovian-nixos.nixosModules.default
   ] ++ (builtins.attrValues outputs.nixosModules);
   nixpkgs = {
     overlays = [
@@ -19,10 +20,10 @@
     ];
     config = { allowUnfree = true; };
   };
-  gaming-kernel.enable = true;
-  chaotic.hdr.enable = true;
-  chaotic.hdr.specialisation.enable	= false;
-  chaotic.mesa-git.enable = true;
+  gaming-kernel.enable = false;
+  # chaotic.hdr.enable = true;
+  # chaotic.hdr.specialisation.enable	= false;
+  # chaotic.mesa-git.enable = true;
   services.desktopManager.plasma6.enable = true;
   services.flatpak.enable = true;
   xdg.portal.enable = true;
@@ -111,7 +112,10 @@
   #   steamos.useSteamOSConfig = true;
   #   hardware.has.amd.gpu = true;
   # };
-  snowflake = {
+  jovian = {
+    devices.steamdeck.enableKernelPatches = true;
+    steamos.useSteamOSConfig = true;
+    hardware.has.amd.gpu = true;
     steam = {
       enable = true;
       autoStart = true;
