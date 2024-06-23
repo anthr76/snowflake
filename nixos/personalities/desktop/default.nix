@@ -43,6 +43,5 @@
   };
 
   hardware.opengl = { enable = true; };
-  hardware.opengl.driSupport = true;
   services.hardware.bolt.enable = true;
 }

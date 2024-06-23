@@ -26,6 +26,7 @@
         ms-vscode.makefile-tools
         grafana.vscode-jsonnet
         github.vscode-github-actions
+        ms-vscode.cpptools-extension-pack
         # Formatters
         esbenp.prettier-vscode
         # Linters
