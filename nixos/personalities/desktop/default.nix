@@ -42,6 +42,6 @@
     };
   };
 
-  hardware.opengl = { enable = true; };
+  hardware.graphics = { enable = true; };
   services.hardware.bolt.enable = true;
 }

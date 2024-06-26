@@ -32,8 +32,8 @@
     capSysNice = false;
     package = pkgs.gamescope_git;
   };
-  hardware.opengl = {
-    driSupport32Bit = true;
+  hardware.graphics = {
+    enable32Bit = true;
     extraPackages = [ pkgs.gamescope-wsi_git ];
     extraPackages32 = [ pkgs.pkgsi686Linux.gamescope-wsi_git ];
   };
