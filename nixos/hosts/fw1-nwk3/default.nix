@@ -68,6 +68,7 @@ in
             }
           ];
           subnet = "192.168.17.0/24";
+          id = 17;
           option-data = [
             {
               name = "routers";
@@ -82,6 +83,7 @@ in
             }
           ];
           subnet = "192.168.16.0/24";
+          id = 16;
           option-data = [
             {
               name = "routers";
@@ -96,6 +98,7 @@ in
             }
           ];
           subnet = "10.40.99.0/24";
+          id = 99;
           option-data = [
             {
               name = "routers";
@@ -110,6 +113,7 @@ in
             }
           ];
           subnet = "192.168.14.0/24";
+          id = 14;
           option-data = [
             {
               name = "routers";
@@ -124,6 +128,7 @@ in
             }
           ];
           subnet = "192.168.13.0/24";
+          id = 13;
           option-data = [
             {
               name = "routers";

@@ -74,6 +74,7 @@
       patches = oldAttrs.patches ++ [
         ./gamescope-native-res.patch
         ./0001-allow-gamescope-to-set-ctx-priority.patch
+        ./gamescope-overlay.patch
       ];
     });
     logiops = prev.logiops.overrideAttrs (oldAttrs: {
