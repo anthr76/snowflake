@@ -52,6 +52,6 @@
   chaotic.scx.enable = true;
   fonts.fontconfig = {
     subpixel.rgba = "rgb";
-    hinting.style = "full";
+    hinting.style = "slight";
   };
 }
