@@ -25,6 +25,6 @@
     })
     dxvk
     winetricks
-    lightworks_2023_02
+    lightworks_2023_02_02
   ];
 }

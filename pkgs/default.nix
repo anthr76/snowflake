@@ -8,5 +8,5 @@
   discover-overlay = pkgs.python3Packages.callPackage ./discover-overlay { };
   # FIXME: Make this a overlay
   coredns-snowflake = pkgs.callPackage ./coredns-snowflake { };
-  lightworks_2023_02 = pkgs.callPackage ./lightworks_2023_02 { };
+  lightworks_2023_02_02 = pkgs.callPackage ./lightworks_2023_02_02 { };
 }

@@ -28,16 +28,16 @@ let
     gmp
   ];
 
-  lightworks_2023_02 = stdenv.mkDerivation rec {
+  lightworks_2023_02_02 = stdenv.mkDerivation rec {
     version = "2023.2";
-    rev = "146471";
+    rev = "146752";
     pname = "lightworks";
 
     src =
       if stdenv.hostPlatform.system == "x86_64-linux" then
         fetchurl {
           url = "https://cdn.lwks.com/releases/${version}/lightworks_${version}_r${rev}.deb";
-          sha256 = "sha256-N0tKu2Pwk2WskM+PV0GGY3H8Ey9TkrDNpv0lUJdm6S8=";
+          sha256 = "sha256-Xjcqdhe85YdPX8AHpKmo/K77AURg0JvtqIvilQOV2ek=";
         }
       else throw "${pname}-${version} is not supported on ${stdenv.hostPlatform.system}";
 
@@ -80,10 +80,10 @@ let
 
 # Lightworks expects some files in /usr/share/lightworks
 in buildFHSEnv {
-  name = lightworks_2023_02.name;
+  name = lightworks_2023_02_02.name;
 
   targetPkgs = pkgs: [
-      lightworks_2023_02
+      lightworks_2023_02_02
   ];
 
   runScript = "lightworks";
