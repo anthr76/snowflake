@@ -1,4 +1,7 @@
-{ lib, inputs, ... }:
+{ lib, inputs, pkgs, ... }:
+let
+  zoneSerial = toString inputs.self.lastModified;
+in
 {
   imports = [
     ../../personalities/server/router
@@ -65,6 +68,7 @@
             }
           ];
           subnet = "192.168.15.0/24";
+          id = 15;
           option-data = [
             {
               name = "routers";
@@ -79,6 +83,7 @@
             }
           ];
           subnet = "192.168.7.0/24";
+          id = 7;
           option-data = [
             {
               name = "routers";
@@ -93,6 +98,7 @@
             }
           ];
           subnet = "10.30.99.0/24";
+          id = 99;
           option-data = [
             {
               name = "routers";
@@ -107,6 +113,7 @@
             }
           ];
           subnet = "192.168.11.0/24";
+          id = 11;
           option-data = [
             {
               name = "routers";
@@ -121,6 +128,7 @@
             }
           ];
           subnet = "192.168.5.0/24";
+          id = 5;
           option-data = [
             {
               name = "routers";
@@ -132,49 +140,45 @@
       valid-lifetime = 4000;
     };
   };
-  services.coredns = {
-    config = ''
-      (common) {
-        log error
-        reload
-        # TODO: Use something like https://github.com/StevenBlack/hosts santized on cron
-        loop
-        loadbalance
-        cache
-        local
-        prometheus 0.0.0.0:9153
-        ready
-        hosts {
-          fallthrough
-          ttl 1
-          reload 300ms
-        }
-      }
-
-
-      .:53 {
-        import common
-        forward . tls://1.1.1.1 tls://1.0.0.1 {
-          tls_servername cloudflare-dns.com
-        }
-        health {
-          lameduck 5s
-        }
-      }
-
-      nwk2.rabbito.tech:53 {
-        import common
-      }
-      nwk3.rabbito.tech:53 {
-        forward . 10.40.99.1
-      }
-      scr1.rabbito.tech:53 {
-        forward . 10.5.0.7 10.5.0.8
-      }
-      kutara.io:53 {
-        forward . 10.5.0.7 10.5.0.8
-      }
-
+  services.bind = {
+    extraConfig = ''
+      zone "mole-bowfin.ts.net" {
+          type forward;
+          forwarders { 100.100.100.100; };
+      };
+      zone "scr1.rabbito.tech" {
+          type forward;
+          forwarders { 10.5.0.7; 10.5.0.8; };
+      };
+      zone "kutara.io" {
+          type forward;
+          forwarders { 10.5.0.7; 10.5.0.8; };
+      };
+      zone "nwk3.rabbito.tech" {
+          type forward;
+          forwarders { 10.40.99.1; };
+      };
     '';
+    zones = {
+      "nwk3.rabbito.tech." = {
+        master = true;
+            file = pkgs.writeText "nwk2.rabbito.tech" (lib.strings.concatStrings [
+              ''
+                $ORIGIN nwk2.rabbito.tech.
+                $TTL    86400
+                @ IN SOA nwk2.rabbito.tech. admin.rabbito.tech (
+                ${zoneSerial}           ; serial number
+                3600                    ; refresh
+                900                     ; retry
+                1209600                 ; expire
+                1800                    ; ttl
+                )
+                                IN    NS      fw1.nwk2.rabbito.tech.
+                fw1             IN    A       10.30.99.1
+              ''
+            ]);
+      };
+    };
+  };
   };
 }
