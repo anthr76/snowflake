@@ -2,7 +2,7 @@
   description = "anthr76 Flakes";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=f573e8d789e7e707e59f0565d61ed22dceec0447";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=d689a1ac7dff4324503214206d68fad7670c38ba";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
