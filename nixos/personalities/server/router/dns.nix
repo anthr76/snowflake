@@ -1,31 +1,33 @@
 { config, outputs, pkgs, lib, ... }:
 {
-  systemd.timers.dnscrypt-proxy2-blocklists = {
-    description = "Fetch and update blocklist file daily";
-    wantedBy = [ "timers.target" "dnscrypt-proxy2.service"];
-    timerConfig = {
-      OnCalendar = "daily";
-      Persistent = true;
-    };
-  };
-  systemd.services.dnscrypt-proxy2-blocklists = {
-    path = [
-      pkgs.curl
-    ];
-    script = ''
-      set -x
-      curl -o /var/lib/dnscrypt-proxy/blocklist.txt https://big.oisd.nl/domainswild
-    '';
-    serviceConfig.Type = "oneshot";
-    serviceConfig.Restart = "on-failure";
-  };
+  # TODO Set up blocklist
+  # Ensure resolution without DNS.
+  # systemd.timers.dnscrypt-proxy2-blocklists = {
+  #   description = "Fetch and update blocklist file daily";
+  #   wantedBy = [ "timers.target" "dnscrypt-proxy2.service"];
+  #   timerConfig = {
+  #     OnCalendar = "daily";
+  #     Persistent = true;
+  #   };
+  # };
+  # systemd.services.dnscrypt-proxy2-blocklists = {
+  #   path = [
+  #     pkgs.curl
+  #   ];
+  #   script = ''
+  #     set -x
+  #     curl -o /var/lib/dnscrypt-proxy/blocklist.txt https://big.oisd.nl/domainswild
+  #   '';
+  #   serviceConfig.Type = "oneshot";
+  #   serviceConfig.Restart = "on-failure";
+  # };
   services.dnscrypt-proxy2 = {
     enable = true;
     settings = {
       listen_addresses = [ "127.0.0.1:53" ];
-      blocked_names = {
-        blocked_names_file = "/var/lib/dnscrypt-proxy/blocklist.txt";
-      };
+      # blocked_names = {
+      #   blocked_names_file = "/var/lib/dnscrypt-proxy/blocklist.txt";
+      # };
       allowed_names = {
         allowed_names_file = pkgs.writeText "allow_list.txt" (lib.strings.concatStrings [
           ''

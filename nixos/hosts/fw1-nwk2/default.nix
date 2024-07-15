@@ -160,7 +160,7 @@ in
       };
     '';
     zones = {
-      "nwk3.rabbito.tech." = {
+      "nwk2.rabbito.tech." = {
         master = true;
             file = pkgs.writeText "nwk2.rabbito.tech" (lib.strings.concatStrings [
               ''
