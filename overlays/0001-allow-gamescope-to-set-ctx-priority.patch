@@ -1,82 +1,34 @@
-From d225a990add0a9a0b1a848244b5453a70102a864 Mon Sep 17 00:00:00 2001
+From 55677450b3ae542b56df8df2267025692bdda200 Mon Sep 17 00:00:00 2001
 From: Anthony Rabbito <hello@anthonyrabbito.com>
-Date: Tue, 25 Jun 2024 21:12:54 -0400
-Subject: [PATCH] [REBASE] 0001-allow-gamescope-to-set-ctx-priority.patch
+Date: Tue, 9 Jul 2024 11:49:33 -0400
+Subject: [PATCH] ctx.patch
 
 ---
- src/main.cpp | 52 ++++++++++++----------------------------------------
- 1 file changed, 12 insertions(+), 40 deletions(-)
+ src/main.cpp | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
 diff --git a/src/main.cpp b/src/main.cpp
-index 59dec4f..30f9b00 100644
+index e8ebd66..d975896 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
-@@ -814,53 +814,25 @@ int main(int argc, char **argv)
+@@ -762,17 +762,13 @@ int main(int argc, char **argv)
  		}
  	}
- 
--#if defined(__linux__) && HAVE_LIBCAP
-+#if defined(__linux__)
+
+-	if ( gamescope::Process::HasCapSysNice() )
  	{
--		cap_t pCaps = cap_get_proc();
--		defer( cap_free( pCaps ) );
--		if ( pCaps )
-+		g_bNiceCap = true;
+ 		gamescope::Process::SetNice( -20 );
 +		fprintf(stdout, "WARNING: This version of gamescope is patched to assume a patched kernel to not require CAP_SYS_NICE for priority queues\n");
-+		if ( g_bRt )
- 		{
--			cap_flag_value_t nicecapvalue = CAP_CLEAR;
--			cap_get_flag( pCaps, CAP_SYS_NICE, CAP_EFFECTIVE, &nicecapvalue );
--
--			if ( nicecapvalue == CAP_SET )
--			{
--				g_bNiceCap = true;
--
--				errno = 0;
--				int nOldNice = nice( 0 );
--				if ( nOldNice != -1 && errno == 0 )
--				{
--					g_nOldNice = nOldNice;
--				}
-+			struct sched_param sched;
-+			sched_getparam(0, &sched);
-+			sched.sched_priority = sched_get_priority_min(SCHED_RR);
- 
--				errno = 0;
--				int nNewNice = nice( -20 );
--				if ( nNewNice != -1 && errno == 0 )
--				{
--					g_nNewNice = nNewNice;
--				}
--				if ( g_bRt )
--				{
--					struct sched_param sched;
--					sched_getparam(0, &sched);
--					sched.sched_priority = sched_get_priority_min(SCHED_RR);
--
--					if (pthread_getschedparam(pthread_self(), &g_nOldPolicy, &g_schedOldParam)) {
--						fprintf(stderr, "Failed to get old scheduling parameters: %s", strerror(errno));
--						exit(1);
--					}
--					if (sched_setscheduler(0, SCHED_RR, &sched))
--						fprintf(stderr, "Failed to set realtime: %s", strerror(errno));
--				}
-+			if (pthread_getschedparam(pthread_self(), &g_nOldPolicy, &g_schedOldParam)) {
-+				fprintf(stderr, "Failed to get old scheduling parameters: %s", strerror(errno));
-+				exit(1);
- 			}
-+			if (sched_setscheduler(0, SCHED_RR, &sched))
-+				fprintf(stderr, "Failed to set realtime: %s", strerror(errno));
- 		}
+
+ 		if ( g_bRt )
+ 			gamescope::Process::SetRealtime();
  	}
- 
--	if ( g_bNiceCap == false )
+-	else
 -	{
 -		fprintf( stderr, "No CAP_SYS_NICE, falling back to regular-priority compute and threads.\nPerformance will be affected.\n" );
 -	}
- #endif
- 
- #if 0
--- 
-2.45.1
 
+ #if 0
+ 	while( !IsInDebugSession() )
+--
+2.45.1
