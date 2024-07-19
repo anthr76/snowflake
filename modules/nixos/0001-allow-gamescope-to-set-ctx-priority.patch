@@ -1,0 +1,108 @@
+From f277c47bde65569d8395764e7210aba0b36761a4 Mon Sep 17 00:00:00 2001
+From: Anthony Rabbito <hello@anthonyrabbito.com>
+Date: Thu, 18 Jul 2024 22:01:44 -0400
+Subject: [PATCH] ctx
+
+Signed-off-by: Anthony Rabbito <hello@anthonyrabbito.com>
+---
+ src/Utils/Process.cpp | 67 ++-----------------------------------------
+ 1 file changed, 2 insertions(+), 65 deletions(-)
+
+diff --git a/src/Utils/Process.cpp b/src/Utils/Process.cpp
+index 32c52f1..13bc0b2 100644
+--- a/src/Utils/Process.cpp
++++ b/src/Utils/Process.cpp
+@@ -82,7 +82,7 @@ namespace gamescope::Process
+ 
+             char szPath[ PATH_MAX ];
+             snprintf( szPath, sizeof( szPath ), "/proc/%s/stat", pEntry->d_name );
+-            
++
+             FILE *pStatFile = fopen( szPath, "r" );
+             if ( !pStatFile )
+                 continue;
+@@ -408,80 +408,17 @@ namespace gamescope::Process
+ 
+     bool HasCapSysNice()
+     {
+-#if defined(__linux__) && HAVE_LIBCAP
+-        static bool s_bHasCapSysNice = []() -> bool
+-        {
+-            cap_t pCaps = cap_get_proc();
+-            if ( !pCaps )
+-                return false;
+-            defer( cap_free( pCaps ) );
+-
+-			cap_flag_value_t eNiceCapValue = CAP_CLEAR;
+-			if ( cap_get_flag( pCaps, CAP_SYS_NICE, CAP_EFFECTIVE, &eNiceCapValue ) != 0 )
+-                return false;
+-
+-            return eNiceCapValue == CAP_SET;
+-        }();
+-
+-        return s_bHasCapSysNice;
+-#else
+-        return false;
+-#endif
++        return true;
+     }
+ 
+     std::optional<int> g_oOldNice;
+     std::optional<int> g_oNewNice;
+     void SetNice( int nNice )
+     {
+-#if defined(__linux__)
+-        if ( !HasCapSysNice() )
+-            return;
+-
+-        errno = 0;
+-        int nOldNice = nice( 0 );
+-        if ( nOldNice != -1 || errno == 0 )
+-        {
+-            g_oOldNice = nOldNice;
+-        }
+-
+-        errno = 0;
+-        int nNewNice = nice( -20 );
+-        if ( nNewNice != -1 || errno == 0 )
+-        {
+-            g_oNewNice = nNewNice;
+-        }
+-#endif
+     }
+ 
+     void RestoreNice()
+     {
+-#if defined(__linux__)
+-        if ( !HasCapSysNice() )
+-            return;
+-
+-        if ( !g_oOldNice || !g_oNewNice )
+-            return;
+-
+-        if ( *g_oOldNice == *g_oNewNice )
+-            return;
+-
+-        errno = 0;
+-        int nNewNice = nice( *g_oOldNice - *g_oNewNice );
+-        if ( g_oNewNice != -1 || errno == 0 )
+-        {
+-            g_oNewNice = nNewNice;
+-        }
+-
+-        if ( g_oOldNice == g_oNewNice )
+-        {
+-            g_oOldNice = std::nullopt;
+-            g_oNewNice = std::nullopt;
+-        }
+-        else
+-        {
+-            s_ProcessLog.errorf( "RestoreNice: Old Nice != New Nice" );
+-        }
+-#endif
+     }
+ 
+     struct SchedulerInfo
+-- 
+2.45.1
+

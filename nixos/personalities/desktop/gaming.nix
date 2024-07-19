@@ -1,5 +1,16 @@
 { inputs, pkgs, lib, ... }: {
   # chaotic.mesa-git.enable = true;
+  # nixpkgs = {
+  #   overlays = [
+  #   (final: prev: {
+  #       gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
+  #         patches = oldAttrs.patches ++ [
+  #           ./gamescope-overlay.patch
+  #         ];
+  #       });
+  #     })
+  #   ];
+  # };
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
