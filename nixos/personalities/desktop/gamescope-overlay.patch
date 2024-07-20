@@ -1,74 +1,213 @@
-From f8dcccb8b6f8269e1f4c53171012dd36bd7d332b Mon Sep 17 00:00:00 2001
+From 66c307ac1adef70d91d89b58828f49a0c754116b Mon Sep 17 00:00:00 2001
 From: Anthony Rabbito <hello@anthonyrabbito.com>
-Date: Sun, 30 Jun 2024 18:18:18 -0400
-Subject: [PATCH] ./1232.patch
+Date: Fri, 19 Jul 2024 22:47:54 -0400
+Subject: [PATCH] fix: overlay always
 
+Signed-off-by: Anthony Rabbito <hello@anthonyrabbito.com>
 ---
- src/main.cpp         | 2 ++
- src/steamcompmgr.cpp | 9 ++++++++-
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ src/steamcompmgr.cpp | 68 +++++++++++++++++++-------------------------
+ 1 file changed, 30 insertions(+), 38 deletions(-)
 
-diff --git a/src/main.cpp b/src/main.cpp
-index 31bee29..8246f2c 100644
---- a/src/main.cpp
-+++ b/src/main.cpp
-@@ -120,6 +120,7 @@ const struct option *gamescope_options = (struct option[]){
- 	{ "debug-hud", no_argument, nullptr, 'v' },
- 	{ "debug-events", no_argument, nullptr, 0 },
- 	{ "steam", no_argument, nullptr, 'e' },
-+	{ "overlay-workaround", no_argument, nullptr, 0 },
- 	{ "force-composition", no_argument, nullptr, 'c' },
- 	{ "composite-debug", no_argument, nullptr, 0 },
- 	{ "disable-xres", no_argument, nullptr, 'x' },
-@@ -184,6 +185,7 @@ const char usage[] =
- 	"  -T, --stats-path               write statistics to path\n"
- 	"  -C, --hide-cursor-delay        hide cursor image after delay\n"
- 	"  -e, --steam                    enable Steam integration\n"
-+	"  --overlay-workaround           workaround steam overlay's issues with wayland by allowing the overlay attach to the game rather than gamescope\n"
- 	"  --xwayland-count               create N xwayland servers\n"
- 	"  --prefer-vk-device             prefer Vulkan device for compositing (ex: 1002:7300)\n"
- 	"  --force-orientation            rotate the internal display (left, right, normal, upsidedown)\n"
 diff --git a/src/steamcompmgr.cpp b/src/steamcompmgr.cpp
-index 25630b0..f671b6e 100644
+index b8102eb..bc0e9cd 100644
 --- a/src/steamcompmgr.cpp
 +++ b/src/steamcompmgr.cpp
-@@ -948,6 +948,7 @@ static bool		debugEvents = false;
- extern bool		steamMode;
- 
- gamescope::ConVar<bool> cv_composite_force{ "composite_force", false, "Force composition always, never use scanout" };
-+bool 			overlayWorkaround = false;
- static bool		useXRes = true;
- 
- struct wlr_buffer_map_entry {
-@@ -6325,6 +6326,10 @@ spawn_client( char **argv, bool bAsyncChild )
- 	const char *pchCurrentPreload = getenv( "LD_PRELOAD" );
- 	bool bFirst = true;
- 
-+	if( overlayWorkaround ){
-+		xwm_log.debugf( "Working around steam overlay" );
-+	}
-+
- 	if ( pchCurrentPreload != nullptr )
- 	{
- 		pchPreloadCopy = strdup( pchCurrentPreload );
-@@ -6345,7 +6350,7 @@ spawn_client( char **argv, bool bAsyncChild )
- 			// If there's a string and it's not gameoverlayrenderer, append it to our new LD_PRELOAD
- 			if ( pchPreloadCopy[ i ] != '\0' )
- 			{
--				if ( strstr( pchPreloadCopy + i, "gameoverlayrenderer.so" ) == nullptr )
-+				if ( overlayWorkaround || strstr( pchPreloadCopy + i, "gameoverlayrenderer.so" ) == nullptr )
+@@ -1577,7 +1577,7 @@ bool MouseCursor::getTexture()
  				{
- 					if ( bFirst == false )
- 					{
-@@ -7199,6 +7204,8 @@ steamcompmgr_main(int argc, char **argv)
- 					debugFocus = true;
- 				} else if (strcmp(opt_name, "synchronous-x11") == 0) {
- 					synchronize = true;
-+				} else if (strcmp(opt_name, "overlay-workaround") == 0) {
-+					overlayWorkaround = true;
- 				} else if (strcmp(opt_name, "debug-events") == 0) {
- 					debugEvents = true;
- 				} else if (strcmp(opt_name, "cursor") == 0) {
+ 					pixels[i * image->width + j] = image->pixels[i * image->width + j];
+ 				}
+-			} 
++			}
+ 			std::vector<uint32_t> resizeBuffer( nDesiredWidth * nDesiredHeight );
+ 			stbir_resize_uint8_srgb( (unsigned char *)pixels.data(),       image->width,  image->height,  0,
+ 									 (unsigned char *)resizeBuffer.data(), nDesiredWidth, nDesiredHeight, 0,
+@@ -2255,7 +2255,7 @@ paint_all(bool async)
+ 					}
+ 				}
+ 			}
+-			
++
+ 			int nOldLayerCount = frameInfo.layerCount;
+ 
+ 			uint32_t flags = 0;
+@@ -2263,7 +2263,7 @@ paint_all(bool async)
+ 				flags |= PaintWindowFlag::BasePlane;
+ 			paint_window(w, w, &frameInfo, global_focus.cursor, flags);
+ 			update_touch_scaling( &frameInfo );
+-			
++
+ 			// paint UI unless it's fully hidden, which it communicates to us through opacity=0
+ 			// we paint it to extract scaling coefficients above, then remove the layer if one was added
+ 			if ( w->opacity == TRANSLUCENT && bHasVideoUnderlay && nOldLayerCount < frameInfo.layerCount )
+@@ -2276,7 +2276,7 @@ paint_all(bool async)
+ 				float opacityScale = g_bPendingFade
+ 					? 0.0f
+ 					: ((currentTime - fadeOutStartTime) / (float)g_FadeOutDuration);
+-		
++
+ 				paint_cached_base_layer(g_HeldCommits[HELD_COMMIT_FADE], g_CachedPlanes[HELD_COMMIT_FADE], &frameInfo, 1.0f - opacityScale, false);
+ 				paint_window(w, w, &frameInfo, global_focus.cursor, PaintWindowFlag::BasePlane | PaintWindowFlag::FadeTarget | PaintWindowFlag::DrawBorders, opacityScale, override);
+ 			}
+@@ -2356,7 +2356,7 @@ paint_all(bool async)
+ 		if ( tex != nullptr )
+ 		{
+ 			// HACK! HACK HACK HACK
+-			// To avoid stutter when toggling the overlay on 
++			// To avoid stutter when toggling the overlay on
+ 			int curLayer = frameInfo.layerCount++;
+ 
+ 			FrameInfo_t::Layer_t *layer = &frameInfo.layers[ curLayer ];
+@@ -2955,7 +2955,7 @@ win_maybe_a_dropdown( steamcompmgr_win_t *w )
+ 	//
+ 	// TODO: Come back to me for original Age of Empires HD launcher.
+ 	// Does that use it? It wants blending!
+-	// 
++	//
+ 	// Only do this if we have CONTROLPARENT right now. Some other apps, such as the
+ 	// Street Fighter V (310950) Splash Screen also use LAYERED and TOOLWINDOW, and we don't
+ 	// want that to be overlayed.
+@@ -2970,12 +2970,12 @@ win_maybe_a_dropdown( steamcompmgr_win_t *w )
+ 
+ 	// Josh:
+ 	// The logic here is as follows. The window will be treated as a dropdown if:
+-	// 
++	//
+ 	// If this window has a fixed position on the screen + static gravity:
+ 	//  - If the window has either skipPage or skipTaskbar
+ 	//    - If the window isn't a dialog, always treat it as a dropdown, as it's
+ 	//      probably meant to be some form of popup.
+-	//    - If the window is a dialog 
++	//    - If the window is a dialog
+ 	// 		- If the window has transient for, disregard it, as it is trying to redirecting us elsewhere
+ 	//        ie. a settings menu dialog popup or something.
+ 	//      - If the window has both skip taskbar and pager, treat it as a dialog.
+@@ -3067,7 +3067,7 @@ static bool is_good_override_candidate( steamcompmgr_win_t *override, steamcompm
+ 		return false;
+ 
+ 	return override != focus && override->GetGeometry().nX >= 0 && override->GetGeometry().nY >= 0;
+-} 
++}
+ 
+ static bool
+ pick_primary_focus_and_override(focus_t *out, Window focusControlWindow, const std::vector<steamcompmgr_win_t*>& vecPossibleFocusWindows, bool globalFocus, const std::vector<uint32_t>& ctxFocusControlAppIDs)
+@@ -3208,7 +3208,7 @@ found:;
+ 
+ 	if ( focus )
+ 	{
+-		if ( window_has_commits( focus ) ) 
++		if ( window_has_commits( focus ) )
+ 			out->focusWindow = focus;
+ 		else
+ 			focus->outdatedInteractiveFocus = true;
+@@ -3251,9 +3251,9 @@ found:;
+ 					override_focus = fake_override;
+ 					goto found2;
+ 				}
+-			}	
++			}
+ 		}
+-		
++
+ 		found2:;
+ 		resolveTransientOverrides( true );
+ 	}
+@@ -4512,7 +4512,7 @@ finish_destroy_win(xwayland_ctx_t *ctx, Window id, bool gone)
+ 		{
+ 			if (gone)
+ 				finish_unmap_win (ctx, w);
+-			
++
+ 			{
+ 				std::unique_lock lock( ctx->list_mutex );
+ 				*prev = w->xwayland().next;
+@@ -4569,7 +4569,7 @@ destroy_win(xwayland_ctx_t *ctx, Window id, bool gone, bool fade)
+ 		global_focus.overrideWindow = nullptr;
+ 	if (x11_win(global_focus.fadeWindow) == id && gone)
+ 		global_focus.fadeWindow = nullptr;
+-		
++
+ 	MakeFocusDirty();
+ 
+ 	finish_destroy_win(ctx, id, gone);
+@@ -5174,7 +5174,7 @@ handle_property_notify(xwayland_ctx_t *ctx, XPropertyEvent *ev)
+ 		{
+ 			get_win_type(ctx, w);
+ 			MakeFocusDirty();
+-		}		
++		}
+ 	}
+ 	if (ev->atom == ctx->atoms.sizeHintsAtom)
+ 	{
+@@ -6075,7 +6075,7 @@ void handle_done_commits_xdg( bool vblank, uint64_t vblank_idx )
+ 			commits_before_their_time.push_back( entry );
+ 			continue;
+ 		}
+-		
++
+ 		if (!entry.earliestPresentTime)
+ 		{
+ 			entry.earliestPresentTime = next_refresh_time;
+@@ -6929,7 +6929,7 @@ void update_mode_atoms(xwayland_ctx_t *root_ctx, bool* needs_flush = nullptr)
+ 	}
+ 	XChangeProperty(root_ctx->dpy, root_ctx->root, root_ctx->atoms.gamescopeDisplayModeListExternal, XA_STRING, 8, PropModeReplace,
+ 		(unsigned char *)modes, strlen(modes) + 1 );
+-	
++
+ 	uint32_t one = 1;
+ 	XChangeProperty(root_ctx->dpy, root_ctx->root, root_ctx->atoms.gamescopeDisplayIsExternal, XA_CARDINAL, 32, PropModeReplace,
+ 		(unsigned char *)&one, 1 );
+@@ -7048,30 +7048,22 @@ void LaunchNestedChildren( char **ppPrimaryChildArgv )
+ 		const char *pszCurrentPreload = getenv( "LD_PRELOAD" );
+ 		if ( pszCurrentPreload && *pszCurrentPreload )
+ 		{
+-			// Remove gameoverlayrenderer.so from the child if Gamescope
+-			// is running with a window + Vulkan swapchain (eg. SDL2 backend)
+-			if ( GetBackend()->UsesVulkanSwapchain() )
++			// Remove gameoverlayrenderer.so from the child always
++			std::vector<std::string_view> svLibraries = gamescope::Split( pszCurrentPreload, " :" );
++			std::erase_if( svLibraries, []( std::string_view svPreload )
+ 			{
+-				std::vector<std::string_view> svLibraries = gamescope::Split( pszCurrentPreload, " :" );
+-				std::erase_if( svLibraries, []( std::string_view svPreload )
+-				{
+-					return svPreload.find( "gameoverlayrenderer.so" ) != std::string_view::npos;
+-				});
++				return svPreload.find( "gameoverlayrenderer.so" ) != std::string_view::npos;
++			});
+ 
+-				bool bFirst = true;
+-				for ( std::string_view svLibrary : svLibraries )
++			bool bFirst = true;
++			for ( std::string_view svLibrary : svLibraries )
++			{
++				if ( !bFirst )
+ 				{
+-					if ( !bFirst )
+-					{
+-						sNewPreload.append( ":" );
+-					}
+-					bFirst = false;
+-					sNewPreload.append( svLibrary );
++					sNewPreload.append( ":" );
+ 				}
+-			}
+-			else
+-			{
+-				sNewPreload = pszCurrentPreload;
++				bFirst = false;
++				sNewPreload.append( svLibrary );
+ 			}
+ 		}
+ 	}
+@@ -7709,7 +7701,7 @@ void steamcompmgr_send_frame_done_to_focus_window()
+ 	{
+ 		wlserver_lock();
+ 		wlserver_send_frame_done( global_focus.focusWindow->xwayland().surface.main_surface , &now );
+-		wlserver_unlock();		
++		wlserver_unlock();
+ 	}
+ }
+ 
 -- 
 2.45.1
 
