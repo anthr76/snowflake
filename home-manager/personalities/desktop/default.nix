@@ -14,7 +14,6 @@
     moonlight-qt
     syncthing
     zoom-us
-    bottles
     system76-keyboard-configurator
     podman-desktop
     mumble

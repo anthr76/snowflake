@@ -38,7 +38,8 @@
     extraPackages32 = [ pkgs.pkgsi686Linux.gamescope-wsi_git ];
   };
   hardware.pulseaudio.support32Bit = true;
-  environment.systemPackages = [ pkgs.protontricks pkgs.vulkan-tools pkgs.amdgpu_top ];
+  #FIXME: https://github.com/NixOS/nixpkgs/pull/326868
+  environment.systemPackages = [ pkgs.protontricks pkgs.vulkan-tools pkgs.amdgpu_top pkgs.gamescope_git ];
   programs.gamemode = {
     enable = true;
     settings = {

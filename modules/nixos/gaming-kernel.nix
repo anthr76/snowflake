@@ -1,7 +1,6 @@
 # TODO: Make this much more robust if it proves useful.
-{ pkgs, inputs, lib, config, ... }: {
+{ pkgs, lib, config, ... }: {
 
-  # imports = [ inputs.chaotic.nixosModules.default ];
   options = {
     gaming-kernel = {
       enable = lib.mkEnableOption
@@ -21,5 +20,16 @@
       }
     ];
     boot.kernelPackages = lib.mkForce pkgs.linuxPackages_cachyos;
+    nixpkgs = {
+      overlays = [
+      (final: prev: {
+          gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
+            patches = oldAttrs.patches ++ [
+              ./0001-allow-gamescope-to-set-ctx-priority.patch
+            ];
+          });
+        })
+      ];
+    };
   };
 }

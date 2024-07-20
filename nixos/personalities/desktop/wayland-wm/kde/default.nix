@@ -14,7 +14,6 @@
     kdePackages.skanlite
     mpv
     xwaylandvideobridge
-    vulkan-hdr-layer
   ];
   services = {
     xserver = {
