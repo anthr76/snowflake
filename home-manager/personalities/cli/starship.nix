@@ -1,7 +1,7 @@
 { 
     programs.starship = { 
         enable = true;
-        kubernetes = {
+        settings.kubernetes = {
             disabled = false;
             contexts = [
                 {
