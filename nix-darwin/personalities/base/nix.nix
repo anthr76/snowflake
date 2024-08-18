@@ -22,7 +22,9 @@
           Day = 7;
         };
         # Keep the last 3 generations
-        options = "--delete-older-than +3";
+        # TODO: Figure out how to GC generations instead of time frame this is broken
+        # https://github.com/NixOS/nixpkgs/issues/282884
+        # options = "--delete-older-than +3";
       };
       settings = {
         trusted-users = [ "root" "@admin" ];
