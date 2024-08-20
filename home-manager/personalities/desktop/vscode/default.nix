@@ -30,6 +30,7 @@
         unifiedjs.vscode-mdx
         # Formatters
         esbenp.prettier-vscode
+        darkriszty.markdown-table-prettify
         # Linters
         davidanson.vscode-markdownlint
         fnando.linter
@@ -43,6 +44,10 @@
         ms-kubernetes-tools.vscode-kubernetes-tools
         shipitsmarter.sops-edit
         editorconfig.editorconfig
+        shd101wyy.markdown-preview-enhanced
+        bierner.emojisense
+        yzhang.markdown-all-in-one
+        streetsidesoftware.code-spell-checker
       ];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
