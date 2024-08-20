@@ -49,6 +49,7 @@
         yzhang.markdown-all-in-one
         streetsidesoftware.code-spell-checker
         chrischinchilla.vale-vscode
+        github.copilot
       ];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
