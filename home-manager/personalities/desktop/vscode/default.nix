@@ -48,6 +48,7 @@
         bierner.emojisense
         yzhang.markdown-all-in-one
         streetsidesoftware.code-spell-checker
+        chrischinchilla.vale-vscode
       ];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
