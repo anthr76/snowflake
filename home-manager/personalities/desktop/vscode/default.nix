@@ -27,6 +27,7 @@
         grafana.vscode-jsonnet
         github.vscode-github-actions
         ms-vscode.cpptools-extension-pack
+        unifiedjs.vscode-mdx
         # Formatters
         esbenp.prettier-vscode
         # Linters
