@@ -8,7 +8,6 @@
         color_scheme = "Catppuccin Mocha",
         hide_tab_bar_if_only_one_tab = true,
         default_prog = { "${pkgs.fish}/bin/fish", "-l" },
-        front_end = "WebGpu",
       }
     '';
   };
