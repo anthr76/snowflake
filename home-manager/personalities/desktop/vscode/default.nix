@@ -156,7 +156,7 @@
         };
       };
       "workbench.iconTheme" = "catppuccin-perfect-macchiato";
-      "vale.valeCLI.path" = "${pkgs.vale}/bin/vale";
+      "vale.valeCLI.path" = "${pkgs.vale-ls}/bin/vale-ls";
       "extensions.autoUpdate" = false;
       update = {
         mode = "manual";
