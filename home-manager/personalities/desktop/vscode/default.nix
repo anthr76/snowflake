@@ -1,7 +1,7 @@
 { pkgs, inputs, config, ...}:
 {
   # TODO: See if we can just include in a overlay for vscode.
-  home.packages = [ pkgs.helm-ls pkgs.vale pkgs.vale-ls ];
+  home.packages = [ pkgs.helm-ls ];
   programs.vscode = {
     enable = true;
     mutableExtensionsDir = false;
@@ -52,7 +52,6 @@
         bierner.emojisense
         yzhang.markdown-all-in-one
         streetsidesoftware.code-spell-checker
-        chrischinchilla.vale-vscode
         github.copilot
         mechatroner.rainbow-csv
         tobermory.es6-string-html
