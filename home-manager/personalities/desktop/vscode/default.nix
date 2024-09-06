@@ -1,7 +1,7 @@
 { pkgs, inputs, config, ...}:
 {
   # TODO: See if we can just include in a overlay for vscode.
-  home.packages = [ pkgs.helm-ls pkgs.vale ];
+  home.packages = [ pkgs.helm-ls ];
   programs.vscode = {
     enable = true;
     mutableExtensionsDir = false;
@@ -156,6 +156,7 @@
         };
       };
       "workbench.iconTheme" = "catppuccin-perfect-macchiato";
+      "vale.valeCLI.path" = "${pkgs.vale}/bin/vale"
       "extensions.autoUpdate" = false;
       update = {
         mode = "manual";
