@@ -27,11 +27,17 @@
         grafana.vscode-jsonnet
         github.vscode-github-actions
         ms-vscode.cpptools-extension-pack
+        unifiedjs.vscode-mdx
+        ms-python.vscode-pylance
+        ms-python.black-formatter
         # Formatters
         esbenp.prettier-vscode
+        darkriszty.markdown-table-prettify
         # Linters
         davidanson.vscode-markdownlint
         fnando.linter
+        dbaeumer.vscode-eslint
+        charliermarsh.ruff
         # Remote development
         ms-vscode-remote.remote-containers
         ms-vscode-remote.remote-ssh
@@ -42,6 +48,16 @@
         ms-kubernetes-tools.vscode-kubernetes-tools
         shipitsmarter.sops-edit
         editorconfig.editorconfig
+        shd101wyy.markdown-preview-enhanced
+        bierner.emojisense
+        yzhang.markdown-all-in-one
+        streetsidesoftware.code-spell-checker
+        github.copilot
+        mechatroner.rainbow-csv
+        tobermory.es6-string-html
+        bpruitt-goddard.mermaid-markdown-syntax-highlighting
+        bashmish.es6-string-css
+        github.vscode-pull-request-github
       ];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
