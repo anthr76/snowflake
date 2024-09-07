@@ -11,6 +11,7 @@
     ../physical
     ./gaming.nix
     ./geoclue.nix
+    ./vm.nix
 
     # TODO: may be redundant
     # ./networking.nix
