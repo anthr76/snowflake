@@ -17,6 +17,7 @@
       inputs;
   };
   # Adds pkgs.stable == inputs.nixpkgs-stable.legacyPackages.${pkgs.system}
+  # TODO: This doesn't work?
   stable = final: _: {
     stable = inputs.nixpkgs-stable.legacyPackages.${final.system};
   };
