@@ -51,7 +51,11 @@
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
   chaotic.scx.enable = true;
   fonts.fontconfig = {
+    antialias = false;
     subpixel.rgba = "none";
-    hinting.style = "slight";
+    hinting.style = "full";
+    defaultFonts.emoji = [
+      "Noto Color Emoji"
+    ];
   };
 }

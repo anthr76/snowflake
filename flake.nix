@@ -32,10 +32,11 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
   };
 
   outputs = { self, disko, gomod2nix, nix-darwin, nixpkgs, nixpkgs-unstable, home-manager, chaotic
-    , jovian-nixos, nix-github-actions, ... }@inputs:
+    , jovian-nixos, nix-github-actions, nix-flatpak, ... }@inputs:
     let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;
@@ -85,6 +86,7 @@
           specialArgs = { inherit inputs outputs; };
           modules = [
             chaotic.nixosModules.default
+            nix-flatpak.nixosModules.nix-flatpak
             ./nixos/hosts/f80
           ];
         };

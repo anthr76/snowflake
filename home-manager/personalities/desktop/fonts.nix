@@ -6,8 +6,8 @@
       package = pkgs.nerdfonts.override { fonts = [ "Monaspace" ]; };
     };
     regular = {
-      family = "Noto Sans";
-      package = pkgs.noto-fonts;
+      family = "Roboto";
+      package = pkgs.roboto;
     };
   };
 }
