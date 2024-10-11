@@ -76,7 +76,7 @@
   };
   services.miniupnpd = {
     enable = true;
-    upnp = true;
+    upnp = false;
     natpmp = true;
     externalInterface = "wan";
     internalIPs = [
