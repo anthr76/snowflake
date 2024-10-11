@@ -74,4 +74,18 @@
       userServices = true;
     };
   };
+  services.miniupnpd = {
+    enable = true;
+    upnp = true;
+    natpmp = true;
+    externalInterface = "wan";
+    internalIPs = [
+      "vlan10"
+      "vlan100"
+      "vlan101"
+      "vlan8"
+      "vlan99"
+      "lan"
+    ];
+  };
 }
