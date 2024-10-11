@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, inputs, ... }: {
   imports = [
     ./vscode
     ./fonts.nix
@@ -18,10 +18,7 @@
     podman-desktop
     mumble
     murmur
-    (wineWowPackages.waylandFull.override {
-      wineRelease = "staging";
-      mingwSupport = true;
-    })
+    inputs.nix-gaming.packages.${pkgs.system}.wine-ge
     dxvk
     winetricks
     lightworks_2023_02_02
