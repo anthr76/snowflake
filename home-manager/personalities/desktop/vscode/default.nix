@@ -30,6 +30,7 @@
         unifiedjs.vscode-mdx
         ms-python.vscode-pylance
         ms-python.black-formatter
+        nickgo.cuelang
         # Formatters
         esbenp.prettier-vscode
         darkriszty.markdown-table-prettify
