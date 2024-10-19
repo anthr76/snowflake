@@ -9,6 +9,7 @@
     ./chat
     ./wayland-wm/common
     ./wayland-wm/kde
+    ./obs.nix
   ];
   home.packages = with pkgs; [
     moonlight-qt
