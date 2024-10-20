@@ -30,7 +30,7 @@
         trusted-users = [ "root" "@admin" ];
         builders-use-substitutes = true;
         auto-optimise-store = lib.mkDefault true;
-        experimental-features = [ "nix-command" "flakes" "repl-flake" ];
+        experimental-features = [ "nix-command" "flakes" ];
         warn-dirty = false;
         flake-registry = ""; # Disable global flake registry
         substituters = [

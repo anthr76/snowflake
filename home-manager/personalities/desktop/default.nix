@@ -19,9 +19,13 @@
     podman-desktop
     mumble
     murmur
-    inputs.nix-gaming.packages.${pkgs.system}.wine-ge
+    (wineWowPackages.waylandFull.override {
+      wineRelease = "staging";
+      mingwSupport = true;
+    })
     dxvk
     winetricks
     lightworks_2023_02_02
+    shadps4
   ];
 }

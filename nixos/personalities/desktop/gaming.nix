@@ -5,7 +5,7 @@
     gamescopeSession.enable = true;
     extest.enable = true;
     package = pkgs.steam.override {
-      privateTmp = false;
+      # privateTmp = false;
       extraEnv = { STEAM_FORCE_DESKTOPUI_SCALING = "1.5"; };
       extraPkgs = pkgs:
         with pkgs; [

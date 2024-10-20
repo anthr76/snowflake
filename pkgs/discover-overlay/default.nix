@@ -1,13 +1,15 @@
-{ buildPythonPackage, fetchPypi, gobject-introspection, gtk-layer-shell, gtk3
+{ buildPythonPackage, fetchFromGitHub, gobject-introspection, gtk-layer-shell, gtk3
 , lib, wrapGAppsHook, pillow, pygobject3, pyxdg, requests, setuptools
 , websocket-client, xlib, }:
 buildPythonPackage rec {
   pname = "discover-overlay";
-  version = "0.6.9";
+  version = "0.7.8";
 
-  src = fetchPypi {
-    inherit pname version;
-    hash = "sha256-14UmxAF4X0GnPokZeXAqeZYdSDUPrE3ZpNDUdk64Bik=";
+  src = fetchFromGitHub {
+    owner = "trigg";
+    repo = "Discover";
+    rev = "v0.7.8";
+    sha256 = "sha256-0b0uZDa9Q3pQ6X65C+E31dMpdTPt4vvHDEqFEtRoedg=";
   };
   nativeBuildInputs = [ wrapGAppsHook gobject-introspection ];
   propagatedBuildInputs = [
