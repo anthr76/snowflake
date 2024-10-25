@@ -20,5 +20,10 @@ in {
   programs.ssh.startAgent = true;
   programs.ssh.agentPKCS11Whitelist =
     "${pkgs.yubico-piv-tool}/lib/libykcs11*,${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11*";
-  services.pcscd.enable = true;
+  services.pcscd = {
+    enable = true;
+    plugins = [
+      inputs.nixpkgs-pr-350153.legacyPackages.${pkgs.system}.ccid
+    ];
+  };
 }

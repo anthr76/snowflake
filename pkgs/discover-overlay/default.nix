@@ -1,6 +1,6 @@
 { buildPythonPackage, fetchFromGitHub, gobject-introspection, gtk-layer-shell, gtk3
 , lib, wrapGAppsHook, pillow, pygobject3, pyxdg, requests, setuptools
-, websocket-client, xlib, }:
+, websocket-client, xlib, pulsectl-asyncio }:
 buildPythonPackage rec {
   pname = "discover-overlay";
   version = "0.7.8";
@@ -23,6 +23,7 @@ buildPythonPackage rec {
     setuptools
     websocket-client
     xlib
+    pulsectl-asyncio
   ];
 
   doCheck = false;

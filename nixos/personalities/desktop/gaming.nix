@@ -1,45 +1,38 @@
 { inputs, pkgs, lib, ... }: {
-  # chaotic.mesa-git.enable = true;
+  # Current nixpkgs mesa 10/24/24 causes microstutters.
+  chaotic.mesa-git.enable = true;
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
-    extest.enable = true;
+    extest.enable = false;
+    protontricks.enable = true;
+    fontPackages = with pkgs; [
+      liberation_ttf
+      wqy_zenhei
+      source-han-sans
+    ];
+    extraPackages = with pkgs; [
+      gamemode
+    ];
     package = pkgs.steam.override {
-      # privateTmp = false;
       extraEnv = { STEAM_FORCE_DESKTOPUI_SCALING = "1.5"; };
-      extraPkgs = pkgs:
-        with pkgs; [
-          liberation_ttf
-          wqy_zenhei
-          # Gamescope
-          xorg.libXcursor
-          xorg.libXi
-          xorg.libXinerama
-          xorg.libXScrnSaver
-          libpng
-          libpulseaudio
-          libvorbis
-          stdenv.cc.cc.lib
-          libkrb5
-          keyutils
-          gamemode
-        ];
+      extraLibraries = pkgs: [ pkgs.xorg.libxcb ];
     };
     extraCompatPackages = with pkgs; [ proton-ge-bin ];
   };
   programs.gamescope = {
     enable = true;
     capSysNice = false;
-    package = pkgs.gamescope_git;
+    package = pkgs.gamescope;
   };
   hardware.graphics = {
     enable32Bit = true;
-    extraPackages = [ pkgs.gamescope-wsi_git ];
-    extraPackages32 = [ pkgs.pkgsi686Linux.gamescope-wsi_git ];
+    extraPackages = [ pkgs.gamescope-wsi ];
+    extraPackages32 = [ pkgs.pkgsi686Linux.gamescope-wsi ];
   };
   hardware.pulseaudio.support32Bit = true;
   #FIXME: https://github.com/NixOS/nixpkgs/pull/326868
-  environment.systemPackages = [ pkgs.protontricks pkgs.vulkan-tools pkgs.amdgpu_top pkgs.gamescope_git ];
+  environment.systemPackages = [ pkgs.vulkan-tools pkgs.amdgpu_top pkgs.gamescope ];
   programs.gamemode = {
     enable = true;
     settings = {

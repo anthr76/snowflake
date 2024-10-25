@@ -50,6 +50,7 @@
   environment.systemPackages = [ pkgs.gdb ];
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
   chaotic.scx.enable = true;
+  chaotic.scx.scheduler = "scx_bpfland";
   fonts.fontconfig = {
     antialias = false;
     subpixel.rgba = "none";
