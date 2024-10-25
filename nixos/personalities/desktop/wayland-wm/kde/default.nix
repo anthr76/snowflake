@@ -1,9 +1,20 @@
-{ pkgs, ... }: {
+{ pkgs, lib, config, ... }: {
   imports = [ ../../default.nix ];
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   environment.sessionVariables.GTK_USE_PORTAL = "1";
   hardware.sane.enable = true;
-  security.pam.services.greetd.kwallet.enable = true;
+  programs.kde-pim.enable = true;
+  programs.partition-manager.enable = true;
+  security.pam.services = {
+    login.kwallet.enable = true;
+    kde = {
+      allowNullPassword = true;
+      kwallet.enable = true;
+    };
+    kde-fingerprint = lib.mkIf config.services.fprintd.enable { fprintAuth = true; };
+    kde-smartcard = lib.mkIf config.security.pam.p11.enable { p11Auth = true; };
+  };
+
   hardware.bluetooth.enable = true;
   environment.systemPackages = with pkgs; [
     wl-clipboard
@@ -22,17 +33,10 @@
     desktopManager = {
       plasma6 = {
         enable = true;
-        notoPackage = pkgs.noto-fonts-lgc-plus;
       };
-    };
-    greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command =
-            "${pkgs.greetd.greetd}/bin/agreety --cmd startplasma-wayland";
-          user = "greeter";
-        };
+      displayManager.sddm = {
+        enable = true;
+        wayland.enable = true;
       };
     };
   };

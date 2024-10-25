@@ -60,6 +60,26 @@
     #   withNvenc = true;
     #   buildPostproc = true;
     #   withSmallDeps = true;
+    # example = prev.example.overrideAttrs (oldAttrs: rec {
+    # ...
+    # });
+    # kdePackages = prev.kdePackages // {
+    #   kwin = prev.kdePackages.kwin.overrideAttrs (old: {
+    #     src = final.fetchFromGitLab {
+    #       domain = "invent.kde.org";
+    #       owner = "plasma";
+    #       repo = "kwin";
+    #       rev = "0fef229587d642e6175f39abc45fc839baffe1f1";
+    #       hash = "sha256-obRUX6D00SNneHxqBmxIEdNA+VG9EFZn4c2mqybX14M=";
+    #     };
+    #     patches = (old.patches or []) ++ [
+    #       (final.fetchpatch {
+    #         url =
+    #           "https://invent.kde.org/plasma/kwin/-/merge_requests/4800.patch";
+    #         sha256 = "sha256-O7i2j2aElv5tUZSyMXGrPs3A0PYdYzfXHgrjIgKvVgE=";
+    #       })
+    #     ];
+    #   });
     # };
     xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
       version = "git.74dd867";
@@ -105,6 +125,18 @@
         --add-flags "--enable-zero-copy"
       '';
     });
+
+    kdePackages = prev.kdePackages // {
+      sddm = prev.kdePackages.sddm.overrideAttrs (old: {
+        patches = (old.patches or []) ++ [
+          (final.fetchpatch {
+            url =
+              "https://patch-diff.githubusercontent.com/raw/sddm/sddm/pull/1779.patch";
+            sha256 = "";
+          })
+        ];
+      });
+    };
   };
 
   # When applied, the unstable nixpkgs set (declared in the flake inputs) will
