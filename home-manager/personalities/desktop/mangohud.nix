@@ -15,6 +15,7 @@
       hdr = true;
       fsr = true;
       no_display = true;
+      gamemode = true;
     };
   };
 }
