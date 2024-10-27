@@ -46,6 +46,9 @@
         gpu_device = "0";
         amd_performance_level = "high";
       };
+      custom = {
+        start = "${pkgs.rpc-bridge}/bin/bridge.sh";
+      };
     };
   };
   gaming-kernel.enable = true;
