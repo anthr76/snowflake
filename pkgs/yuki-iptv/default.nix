@@ -1,54 +1,64 @@
 {
+  bash,
   fetchurl,
-  python3,
-  stdenv,
-  mpv,
   ffmpeg,
+  gettext,
+  glib,
+  gobject-introspection,
   lib,
-  gettext
+  mpv-unwrapped,
+  python3,
+  stdenv
 }:
 
 stdenv.mkDerivation rec {
   pname = "yuki-iptv";
-  version = "0.0.13";
+  version = "0.0.15";
 
   src = fetchurl {
     url = "https://codeberg.org/liya/yuki-iptv/archive/${version}.tar.gz";
-    sha256 = "8d1858f8bcd5908f58daab2231ef6d0beb25e0003c6197e86ed39a32670e2308";
+    sha256 = "sha256-8u8KoabExVqyj8ohGUl28SqIJYGfNLNl/tyHM9gwX88=";
   };
 
   buildInputs = [
-    python3
-    mpv
     ffmpeg
+    mpv-unwrapped
   ];
 
   nativeBuildInputs = [
-    python3.pkgs.wrapPython
     gettext
+    python3.pkgs.wrapPython
   ];
 
   pythonPath = with python3.pkgs; [
-    pyqt6
-    pillow
-    pygobject3
-    unidecode
-    requests
     chardet
+    pygobject3
+    pyqt6
+    pyqt6-sip
+    requests
     setproctitle
+    unidecode
     wand
-    sip
   ];
 
-  preBuild = ''
-    # Replace version in About dialog
-    sed -i "s/__DEB_VERSION__/${version}/g" usr/lib/yuki-iptv/yuki-iptv.py
+  preFixup = ''
+    buildPythonPath "$out $pythonPath"
+
+    wrapProgram $out/bin/yuki-iptv \
+      --prefix PYTHONPATH : "$program_PYTHONPATH" \
+      --set GI_TYPELIB_PATH "${glib.out}/lib/girepository-1.0:${gobject-introspection.out}/lib/girepository-1.0" \
   '';
 
   postPatch = ''
     substituteInPlace usr/lib/yuki-iptv/yuki-iptv.py \
       --replace __DEB_VERSION__ ${version}
 
+    substituteInPlace usr/bin/yuki-iptv \
+      --replace "#!/bin/sh" "#!${bash}/bin/sh" \
+      --replace "python3" "${python3}/bin/python3"
+
+    substituteInPlace usr/lib/yuki-iptv/thirdparty/mpv.py \
+      --replace "ctypes.util.find_library('mpv')" "'${lib.makeLibraryPath [ mpv-unwrapped ]}/libmpv.so'"
   '';
 
   installPhase = ''
@@ -60,17 +70,10 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  preFixup = ''
-    buildPythonPath "$out $pythonPath"
-
-    wrapProgram $out/bin/yuki-iptv \
-      --prefix PYTHONPATH : "$program_PYTHONPATH"
-  '';
-
   meta = with lib; {
     description = "IPTV player with EPG support";
-    license = licenses.gpl3;
-    platforms = platforms.all;
+    license = licenses.cc-by-40;
+    platforms = platforms.linux;
     homepage = "https://codeberg.org/liya/yuki-iptv";
   };
 }

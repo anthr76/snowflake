@@ -27,5 +27,6 @@
     winetricks
     lightworks_2023_02_02
     shadps4
+    yuki-iptv
   ];
 }
