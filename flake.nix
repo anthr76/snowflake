@@ -35,8 +35,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-flatpak.url = "github:gmodena/nix-flatpak";
-    # ccid broken in nixpkgs
-    nixpkgs-pr-350153.url = "github:nixos/nixpkgs?ref=853015057fa0cd29fa47e94ebd88ea4d74b3703c";
   };
 
   outputs = { self, disko, gomod2nix, nix-darwin, nixpkgs, nixpkgs-unstable, home-manager, chaotic

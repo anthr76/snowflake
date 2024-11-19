@@ -1,6 +1,32 @@
 { inputs, pkgs, lib, ... }: {
-  # Current nixpkgs mesa 10/24/24 causes microstutters.
-  chaotic.mesa-git.enable = true;
+  # chaotic.mesa-git = {
+  #   enable = true;
+  #   extraPackages = with pkgs; [
+  #     libva
+  #     libvdpau-va-gl
+  #     vaapiVdpau
+  #     libdrm_git
+  #     latencyflex-vulkan
+  #     mesa_git
+  #     mesa_git.opencl
+  #     vulkanPackages_latest.vulkan-loader
+  #     vulkanPackages_latest.vulkan-headers
+  #     vulkanPackages_latest.vulkan-validation-layers
+  #     vulkanPackages_latest.vulkan-extension-layer
+  #     vulkanPackages_latest.vulkan-utility-libraries
+  #     vulkanPackages_latest.vulkan-volk
+  #     vulkanPackages_latest.spirv-headers
+  #     vulkanPackages_latest.spirv-tools
+  #   ];
+  #   extraPackages32 = with pkgs.pkgsi686Linux; [
+  #     pkgs.mesa32_git
+  #     pkgs.mesa32_git.opencl
+  #     libdrm32_git
+  #     libva
+  #     libvdpau-va-gl
+  #     vaapiVdpau
+  #   ];
+  # };
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
