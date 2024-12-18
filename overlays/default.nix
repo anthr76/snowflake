@@ -86,8 +86,8 @@
       src = final.fetchFromGitHub {
         owner = "atar-axis";
         repo = "xpadneo";
-        rev = "74dd867e9e4fa4f6b2bb73df5434d8c8972152e8";
-        sha256 = "sha256-fi5+S/UPoNZk3pUVXf6F4NY32Gy70U6A8bOX8PJizRo=";
+        rev = "ed569629dbf0ef0033386a54826aff6da2af2a9f";
+        sha256 = "";
         fetchSubmodules = true;
       };
     });

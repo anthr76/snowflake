@@ -58,6 +58,24 @@
           };
         };
       };
+      morpheus = {
+        type = "disk";
+        device = "/dev/disk/by-id/ata-TOSHIBA_MD09ACA18TR_74A0A004TK2H";
+        content = {
+          type = "gpt";
+          partitions = {
+            morpheus = {
+              size = "100%";
+              content = {
+                type = "btrfs";
+                extraArgs = [ "-f" ];
+                subvolumes = { "/morpheus" = { mountpoint = "/morpheus"; }; };
+                mountpoint = "/morpheus";
+              };
+            };
+          };
+        };
+      };
     };
   };
 }

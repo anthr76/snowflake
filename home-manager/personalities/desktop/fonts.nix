@@ -3,7 +3,7 @@
     enable = true;
     monospace = {
       family = "MonaspiceKr Nerd Font Mono";
-      package = pkgs.nerdfonts.override { fonts = [ "Monaspace" ]; };
+      package = pkgs.nerd-fonts.monaspace;
     };
     regular = {
       family = "Roboto";

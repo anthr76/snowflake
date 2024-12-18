@@ -31,14 +31,38 @@
   fonts.enableDefaultPackages = true;
   hardware.xpadneo.enable = true;
   services.fwupd.enable = true;
-  environment.systemPackages = [
-    pkgs.mangohud
-    pkgs.vim
-    pkgs.vulkan-tools
-    pkgs.kdePackages.discover
-    pkgs.amdgpu_top
-    pkgs.dolphin-emu
-    pkgs.steam-rom-manager
+  environment.systemPackages = with pkgs; [
+    mangohud
+    vim
+    vulkan-tools
+    kdePackages.discover
+    amdgpu_top
+    steam-rom-manager
+    # Gamecube / Wii
+    dolphin-emu
+    # PSX
+    duckstation
+    # Dreamcast
+    flycast
+    # Saturn
+    yabause
+    # N64
+    mupen64plus
+    # SNES
+    bsnes-hd
+    # TODO: Changed format
+    # (retroarch.override {
+    #   cores = with libretro; [
+    #     # 32X
+    #     picodrive
+    #     # PCE
+    #     beetle-supergrafx
+    #     # ColecoVision
+    #     bluemsx
+    #     # NES
+    #     mesen
+    #   ];
+    # })
   ];
   programs.steam = {
     enable = true;
@@ -130,4 +154,6 @@
     # Kill greetd and Gamescope if the GPU crashes and VRAM is lost
     ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{FLAGS}=="1", RUN+="${pkgs.systemd}/bin/systemctl restart greetd"
   '';
+  # GameCube controller 8BitDo GameCube NGC Mod Kit over D-Input
+  # environment.sessionVariables.SDL_GAMECONTROLLERCONFIG = "05000000c82d00006a28000000010000,8BitDo GameCube,a:b0,b:b3,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,leftstick:b13,lefttrigger:a5,leftx:a0,lefty:a1,paddle1:b9,paddle2:b8,rightshoulder:b10,rightstick:b14,righttrigger:a4,rightx:a2,righty:a3,start:b11,x:b1,y:b4,platform:Linux,";
 }
