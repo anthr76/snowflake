@@ -47,7 +47,6 @@
         ionutvmi.path-autocomplete
         luisfontes19.vscode-swissknife
         ms-kubernetes-tools.vscode-kubernetes-tools
-        shipitsmarter.sops-edit
         editorconfig.editorconfig
         shd101wyy.markdown-preview-enhanced
         bierner.emojisense
