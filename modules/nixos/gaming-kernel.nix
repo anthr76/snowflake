@@ -26,10 +26,6 @@
           gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
             patches = oldAttrs.patches ++ [
               ./0001-allow-gamescope-to-set-ctx-priority.patch
-              (pkgs.fetchpatch {
-                url = "https://patch-diff.githubusercontent.com/raw/ValveSoftware/gamescope/pull/1597.patch";
-                sha256 = "sha256-PbjyvSoAf2gPNQvqnLybYxzj68JW+jc7eBNUMwHfuZA=";
-              })
             ];
           });
         })

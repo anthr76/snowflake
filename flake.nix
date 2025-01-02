@@ -35,7 +35,7 @@
     nix-flatpak.url = "github:gmodena/nix-flatpak";
   };
 
-  outputs = { self, disko, gomod2nix, nix-darwin, nixpkgs, nixpkgs-unstable, home-manager, chaotic
+  outputs = { self, disko, gomod2nix, nix-darwin, nixpkgs, nixpkgs-unstable, home-manager, chaotic, hardware
     , jovian-nixos, nix-github-actions, nix-flatpak, ... }@inputs:
     let
       inherit (self) outputs;
@@ -90,6 +90,14 @@
             ./nixos/hosts/f80
           ];
         };
+        "lattice" = lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+          modules = [
+            chaotic.nixosModules.default
+            hardware.nixosModules.framework-16-7040-amd
+            ./nixos/hosts/lattice
+          ];
+        };
         "fw1-nwk3" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
@@ -117,6 +125,11 @@
           modules = [ ./home-manager/hosts/octo.nix ];
         };
         "anthony@f80" = lib.homeManagerConfiguration {
+          pkgs = pkgsFor.x86_64-linux;
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [ ./home-manager/hosts/f80.nix ];
+        };
+        "anthony@lattice" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [ ./home-manager/hosts/f80.nix ];
