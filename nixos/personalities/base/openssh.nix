@@ -42,8 +42,4 @@ in {
     enable = true;
     authorizedKeysFiles = ["/etc/ssh/authorized_keys.d/%u"];
   };
-  # Keep SSH_AUTH_SOCK when sudo'ing
-  security.sudo.extraConfig = ''
-    Defaults env_keep+=SSH_AUTH_SOCK
-  '';
 }
