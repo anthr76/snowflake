@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
   git-ssh-signingkey = pkgs.writeShellScriptBin "git-ssh-signingkey" ''
-    echo key::$(${pkgs.openssh}/bin/ssh-add -L | ${pkgs.gnugrep}/bin/grep -m 1 -E "pkcs11|Authentication")
+    echo key::$(${pkgs.openssh}/bin/ssh-add -L | ${pkgs.gnugrep}/bin/grep -m 1 -E "pkcs11|Authentication|nistp256")
   '';
 in {
   home.packages = with pkgs; [ git-ssh-signingkey git-extras pre-commit ];
