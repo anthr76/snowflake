@@ -38,16 +38,14 @@
   # boot.kernelPackages = pkgs.linuxPackages_testing;
   system.stateVersion = "23.05";
   # TODO: Find this on FW16
-  # environment.variables.DXVK_FILTER_DEVICE_NAME = "AMD Radeon RX 7900 XTX (RADV NAVI31)";
-  # Debugging Gamescope
-  environment.systemPackages = [ pkgs.gdb ];
+  environment.variables.DXVK_FILTER_DEVICE_NAME = "AMD Radeon RX 7700S (RADV NAVI33)";
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
   services.scx.enable = true;
   services.scx.scheduler = "scx_bpfland";
   fonts.fontconfig = {
-    antialias = false;
-    subpixel.rgba = "none";
-    hinting.style = "full";
+    antialias = true;
+    subpixel.rgba = "rgb";
+    hinting.style = "slight";
     defaultFonts.emoji = [
       "Noto Color Emoji"
     ];
