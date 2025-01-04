@@ -10,6 +10,7 @@ keys:
   - &f80 age17j2dw9kdpqntanmk9ndfw3gfu2cld22teuwzfuhnu8j7xpm2yf5se8d2f7
   - &fw1-nwk3 age1hfg2qhhgkun0jz3ez383slf3ruldxyhvcr4488nuhn6vuuaje4rqhp0h96
   - &fw1-nwk2 age1n84nrpcndeduskpx7psc5p3758vcp8ynme5qacdergyrkhhtremsdewm8g
+  - &lattice age1w0gxlxdt4p63ggundtdwvhar4kgkl5z09vmxxdg2r94f8hugsegq6nx2gw
 
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$
@@ -23,3 +24,4 @@ creation_rules:
       - *f80
       - *fw1-nwk3
       - *fw1-nwk2
+      - *lattice
