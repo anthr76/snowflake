@@ -23,4 +23,6 @@ in {
   services.pcscd = {
     enable = true;
   };
+  services.fwupd.enable = true;
+  services.fwupd.extraRemotes = [ "lvfs-testing" ];
 }
