@@ -19,3 +19,5 @@ nix shell nixpkgs#ssh-to-age -c sh -c "cat $temp/etc/ssh/ssh_host_ed25519_key.pu
 # nix run github:numtide/nixos-anywhere -- --extra-files "$temp" --flake ".#${MACHINE}" "root@${IP}" --no-reboot
 nix run github:numtide/nixos-anywhere -- --extra-files "$temp" --flake ".$MACHINE" "root@$IP"
 ```
+
+Note: If bootstrapping a LUKs machine make sure to `echo -n` the password or ensure there's no new-line.
