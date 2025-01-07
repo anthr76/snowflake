@@ -83,6 +83,9 @@
       nix = {
         enableLanguageServer = true;
         serverPath = "${pkgs.nixd}/bin/nixd";
+        hiddenLanguageServerErrors = [
+          "textDocument/definition"
+        ];
         serverSettings = {
           nixd = {
             formatting = {
