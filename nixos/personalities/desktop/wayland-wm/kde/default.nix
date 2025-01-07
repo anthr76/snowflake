@@ -5,6 +5,7 @@
   hardware.sane.enable = true;
   programs.kde-pim.enable = true;
   programs.partition-manager.enable = true;
+  programs.dconf.enable = true;
   security.pam.services = {
     login.kwallet.enable = true;
     kde = {
