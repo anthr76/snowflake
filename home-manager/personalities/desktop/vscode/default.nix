@@ -86,7 +86,7 @@
         serverSettings = {
           nixd = {
             formatting = {
-              command = "nixfmt";
+              command = "${pkgs.nixfmt-rfc-style}/bin/nixfmt";
             };
           };
         };
