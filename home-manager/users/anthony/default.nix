@@ -32,6 +32,7 @@
   };
 
   home.file.".ssh/lattice_tpm2.pub".text = (builtins.readFile ./lattice_tpm2.pub);
+  home.file.".ssh/f80_tpm2.pub".text = (builtins.readFile ./f80_tpm2.pub);
   home.file.".ssh/yubi.pub".text = (builtins.readFile ./yubi.pub);
 
   # Add stuff for your user as you see fit:

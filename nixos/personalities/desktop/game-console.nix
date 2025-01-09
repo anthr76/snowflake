@@ -109,6 +109,7 @@
       openssh.authorizedKeys.keys = [
         (builtins.readFile ../../../home-manager/users/anthony/yubi.pub)
         (builtins.readFile ../../../home-manager/users/anthony/lattice_tpm2.pub)
+        (builtins.readFile ../../../home-manager/users/anthony/f80_tpm2.pub)
       ];
     };
   };
