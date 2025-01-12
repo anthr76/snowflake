@@ -8,4 +8,5 @@
   lightworks_2023_02_02 = pkgs.callPackage ./lightworks_2023_02_02 { };
   yuki-iptv = pkgs.callPackage ./yuki-iptv { };
   rpc-bridge = pkgs.callPackage ./rpc-bridge { };
+  udpbroadcastrelay = pkgs.callPackage ./udpbroadcastrelay { };
 }

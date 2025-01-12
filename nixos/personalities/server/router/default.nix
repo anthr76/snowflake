@@ -66,13 +66,20 @@
     enable = true;
     hostName = "${config.networking.hostName}";
     allowInterfaces = [ "vlan100" "vlan101" ];
-    reflector = true;
     publish = {
       enable = true;
       addresses = true;
       domain = true;
       userServices = true;
     };
+  };
+  services.udpbroadcastrelay = {
+    enable = true;
+    package = pkgs.udpbroadcastrelay;
+    port = 5353;
+    id = 2;
+    interfaces = [ "vlan101" "vlan100" ];
+    multicast = "224.0.0.251";
   };
   services.miniupnpd = {
     enable = true;
