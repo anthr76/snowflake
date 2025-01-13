@@ -31,8 +31,8 @@ in
     settings = {
       tsig-keys = [
         {
-          name = "kea";
-          algorithm = "hmac-sha512";
+          name = "dhcp-update-key";
+          algorithm = "hmac-sha256";
           secret-file = "${config.sops.secrets."ddns-tsig-key".path}";
         }
       ];
@@ -40,7 +40,7 @@ in
         ddns-domains = [
           {
             name = "${config.networking.domain}.";
-            key-name = "kea";
+            key-name = "dhcp-update-key";
             dns-servers = [{
               hostname = "";
               ip-address = "${firstBindAddress}";
@@ -52,8 +52,8 @@ in
       reverse-ddns = {
         ddns-domains = [
           {
-            name = "168.192.in-addr.arpa.";
-            key-name = "kea";
+            name = "14.168.192.in-addr.arpa.";
+            key-name = "dhcp-update-key";
             dns-servers = [{
               hostname = "";
               ip-address = "${firstBindAddress}";
@@ -61,8 +61,8 @@ in
             }];
           }
           {
-            name = "10.in-addr.arpa";
-            key-name = "kea";
+            name = "99.40.10.in-addr.arpa";
+            key-name = "dhcp-update-key";
             dns-servers = [{
               hostname = "";
               ip-address = "${firstBindAddress}";

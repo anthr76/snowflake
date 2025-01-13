@@ -2,6 +2,7 @@
   lib,
   inputs,
   pkgs,
+  config,
   ...
 }:
 let
@@ -109,6 +110,10 @@ in
           name = "domain-name-servers";
           data = "10.40.99.1";
         }
+        {
+          name = "domain-search";
+          data = "nwk3.rabbito.tech,mole-bowfin.ts.net";
+        }
       ];
       subnet4 = [
         {
@@ -214,6 +219,7 @@ in
         master = true;
         extraConfig = ''
            allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.nwk3.rabbito.tech.jnl";
         '';
         file = pkgs.writeText "nwk3.rabbito.tech" (
           lib.strings.concatStrings [
@@ -229,6 +235,72 @@ in
               )
                               IN    NS      fw1.nwk3.rabbito.tech.
               fw1             IN    A       10.40.99.1
+            ''
+          ]
+        );
+      };
+      "14.168.192.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.14.168.192.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "14.168.192.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 14.168.192.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+            ''
+          ]
+        );
+      };
+      "13.168.192.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.13.168.192.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "13.168.192.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 13.168.192.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+            ''
+          ]
+        );
+      };
+      "99.40.10.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.99.40.10.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "99.40.10.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 99.40.10.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
             ''
           ]
         );
