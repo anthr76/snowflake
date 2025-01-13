@@ -1,4 +1,9 @@
-{ lib, inputs, pkgs, ... }:
+{
+  lib,
+  inputs,
+  pkgs,
+  ...
+}:
 let
   zoneSerial = toString inputs.self.lastModified;
 in
@@ -34,11 +39,56 @@ in
   '';
 
   networking.interfaces = {
-    vlan8 = { ipv4 = { addresses = [{ address = "192.168.17.1"; prefixLength = 24; }]; }; };
-    vlan10 = { ipv4 = { addresses = [{ address = "192.168.16.1"; prefixLength = 24; }]; }; };
-    vlan99 = { ipv4 = { addresses = [{ address = "10.40.99.1"; prefixLength = 24; }]; }; };
-    vlan100 = { ipv4 = { addresses = [{ address = "192.168.14.1"; prefixLength = 24; }]; }; };
-    vlan101 = { ipv4 = { addresses = [{ address = "192.168.13.1"; prefixLength = 24; }]; }; };
+    vlan8 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "192.168.17.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+    vlan10 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "192.168.16.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+    vlan99 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "10.40.99.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+    vlan100 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "192.168.14.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+    vlan101 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "192.168.13.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
   };
   services.tailscale.extraUpFlags = [
     "--advertise-routes=192.168.14.0/24,10.40.99.0/24,192.168.13.0/24"
@@ -162,21 +212,26 @@ in
     zones = {
       "nwk3.rabbito.tech." = {
         master = true;
-            file = pkgs.writeText "nwk3.rabbito.tech" (lib.strings.concatStrings [
-              ''
-                $ORIGIN nwk3.rabbito.tech.
-                $TTL    86400
-                @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
-                ${zoneSerial}           ; serial number
-                3600                    ; refresh
-                900                     ; retry
-                1209600                 ; expire
-                1800                    ; ttl
-                )
-                                IN    NS      fw1.nwk3.rabbito.tech.
-                fw1             IN    A       10.40.99.1
-              ''
-            ]);
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+        '';
+        file = pkgs.writeText "nwk3.rabbito.tech" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN nwk3.rabbito.tech.
+              $TTL    86400
+              @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk3.rabbito.tech.
+              fw1             IN    A       10.40.99.1
+            ''
+          ]
+        );
       };
     };
   };
