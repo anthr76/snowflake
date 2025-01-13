@@ -62,17 +62,6 @@
     vlan100 = { id=100; interface="lan"; };
     vlan101 = { id=101; interface="lan"; };
   };
-  services.avahi = {
-    enable = true;
-    hostName = "${config.networking.hostName}";
-    allowInterfaces = [ "vlan100" "vlan101" ];
-    publish = {
-      enable = true;
-      addresses = true;
-      domain = true;
-      userServices = true;
-    };
-  };
   services.udpbroadcastrelay = {
     enable = true;
     package = pkgs.udpbroadcastrelay;
