@@ -239,75 +239,143 @@ in
           ]
         );
       };
-      # "14.168.192.in-addr.arpa." = {
-      #   master = true;
-      #   extraConfig = ''
-      #      allow-update { key "dhcp-update-key"; };
-      #      journal "${config.services.bind.directory}/db.14.168.192.in-addr.arpa.jnl";
-      #   '';
-      #   file = pkgs.writeText "14.168.192.in-addr.arpa" (
-      #     lib.strings.concatStrings [
-      #       ''
-      #         $ORIGIN 14.168.192.in-addr.arpa.
-      #         $TTL    86400
-      #         @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
-      #         ${zoneSerial}           ; serial number
-      #         3600                    ; refresh
-      #         900                     ; retry
-      #         1209600                 ; expire
-      #         1800                    ; ttl
-      #         )
-      #                         IN    NS      fw1.nwk3.rabbito.tech.
-      #       ''
-      #     ]
-      #   );
-      # };
-      # "13.168.192.in-addr.arpa." = {
-      #   master = true;
-      #   extraConfig = ''
-      #      allow-update { key "dhcp-update-key"; };
-      #      journal "${config.services.bind.directory}/db.13.168.192.in-addr.arpa.jnl";
-      #   '';
-      #   file = pkgs.writeText "13.168.192.in-addr.arpa" (
-      #     lib.strings.concatStrings [
-      #       ''
-      #         $ORIGIN 13.168.192.in-addr.arpa.
-      #         $TTL    86400
-      #         @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
-      #         ${zoneSerial}           ; serial number
-      #         3600                    ; refresh
-      #         900                     ; retry
-      #         1209600                 ; expire
-      #         1800                    ; ttl
-      #         )
-      #                         IN    NS      fw1.nwk3.rabbito.tech.
-      #       ''
-      #     ]
-      #   );
-      # };
-      # "99.40.10.in-addr.arpa." = {
-      #   master = true;
-      #   extraConfig = ''
-      #      allow-update { key "dhcp-update-key"; };
-      #      journal "${config.services.bind.directory}/db.99.40.10.in-addr.arpa.jnl";
-      #   '';
-      #   file = pkgs.writeText "99.40.10.in-addr.arpa" (
-      #     lib.strings.concatStrings [
-      #       ''
-      #         $ORIGIN 99.40.10.in-addr.arpa.
-      #         $TTL    86400
-      #         @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
-      #         ${zoneSerial}           ; serial number
-      #         3600                    ; refresh
-      #         900                     ; retry
-      #         1209600                 ; expire
-      #         1800                    ; ttl
-      #         )
-      #                         IN    NS      fw1.nwk3.rabbito.tech.
-      #       ''
-      #     ]
-      #   );
-      # };
+      "14.168.192.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.14.168.192.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "14.168.192.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 14.168.192.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk3.rabbito.tech.
+            ''
+          ]
+        );
+      };
+      "13.168.192.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.13.168.192.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "13.168.192.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 13.168.192.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk3.rabbito.tech.
+            ''
+          ]
+        );
+      };
+      "16.168.192.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.16.168.192.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "16.168.192.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 16.168.192.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk3.rabbito.tech.
+            ''
+          ]
+        );
+      };
+      "99.40.10.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.99.40.10.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "99.40.10.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 99.40.10.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk3.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk3.rabbito.tech.
+              1               IN    PTR     fw1.nwk3.rabbito.tech.
+            ''
+          ]
+        );
+      };
+    };
+  };
+  services.kea.dhcp-ddns = {
+    settings = {
+      reverse-ddns = {
+        ddns-domains = [
+          {
+            name = "14.168.192.in-addr.arpa.";
+            key-name = "dhcp-update-key";
+            dns-servers = [{
+              hostname = "";
+              ip-address = "10.40.99.1";
+              port = 53;
+            }];
+          }
+          {
+            name = "13.168.192.in-addr.arpa.";
+            key-name = "dhcp-update-key";
+            dns-servers = [{
+              hostname = "";
+              ip-address = "10.40.99.1";
+              port = 53;
+            }];
+          }
+          {
+            name = "16.168.192.in-addr.arpa.";
+            key-name = "dhcp-update-key";
+            dns-servers = [{
+              hostname = "";
+              ip-address = "10.40.99.1";
+              port = 53;
+            }];
+          }
+          {
+            name = "99.40.10.in-addr.arpa";
+            key-name = "dhcp-update-key";
+            dns-servers = [{
+              hostname = "";
+              ip-address = "10.40.99.1";
+              port = 53;
+            }];
+          }
+        ];
+      };
     };
   };
 }

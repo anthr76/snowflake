@@ -49,28 +49,6 @@ in
           }
         ];
       };
-      # reverse-ddns = {
-      #   ddns-domains = [
-      #     {
-      #       name = "14.168.192.in-addr.arpa.";
-      #       key-name = "dhcp-update-key";
-      #       dns-servers = [{
-      #         hostname = "";
-      #         ip-address = "${firstBindAddress}";
-      #         port = 53;
-      #       }];
-      #     }
-      #     {
-      #       name = "99.40.10.in-addr.arpa";
-      #       key-name = "dhcp-update-key";
-      #       dns-servers = [{
-      #         hostname = "";
-      #         ip-address = "${firstBindAddress}";
-      #         port = 53;
-      #       }];
-      #     }
-      #   ];
-      # };
     };
   };
 
