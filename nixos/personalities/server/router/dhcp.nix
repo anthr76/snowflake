@@ -1,7 +1,20 @@
+{config, ...}:
 {
+
+  sops.secrets.ddns-tsig-key = {
+    # TODO: poor secret name
+    sopsFile = ../../../../secrets/users.yaml;
+  };
+
   services.kea.dhcp4 = {
     enable = true;
     settings = {
+      dhcp-ddns.enable-updates = true;
+      ddns-replace-client-name = "when-not-present";
+      ddns-update-on-renew = true;
+      ddns-override-client-update = true;
+      ddns-override-no-update = true;
+      ddns-qualifying-suffix = "${config.networking.domain}";
       lease-database = {
         name = "/var/lib/kea/dhcp4.leases";
         persist = true;
