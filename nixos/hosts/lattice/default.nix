@@ -40,8 +40,6 @@
   # TODO: Find this on FW16
   environment.variables.DXVK_FILTER_DEVICE_NAME = "AMD Radeon RX 7700S (RADV NAVI33)";
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
-  services.scx.enable = true;
-  services.scx.scheduler = "scx_bpfland";
   fonts.fontconfig = {
     antialias = true;
     subpixel.rgba = "rgb";

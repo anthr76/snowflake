@@ -49,8 +49,6 @@
   # Debugging Gamescope
   environment.systemPackages = [ pkgs.gdb ];
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
-  services.scx.enable = true;
-  services.scx.scheduler = "scx_bpfland";
   fonts.fontconfig = {
     antialias = false;
     subpixel.rgba = "none";

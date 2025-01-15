@@ -46,6 +46,8 @@
     };
     extraCompatPackages = with pkgs; [ proton-ge-bin ];
   };
+  services.scx.enable = true;
+  services.scx.scheduler = "scx_lavd";
   programs.gamescope = {
     enable = true;
     capSysNice = false;
