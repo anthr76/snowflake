@@ -14,12 +14,9 @@
         name = "cap_sys_nice_bgone";
         patch = ./cap_sys_nice_begone.patch;
       }
-      {
-        name = "blend_tf";
-        patch = ./blend_tf.patch;
-      }
     ];
     boot.kernelPackages = lib.mkForce pkgs.linuxPackages_cachyos;
+    programs.gamescope.capSysNice =  lib.mkForce false;
     nixpkgs = {
       overlays = [
       (final: prev: {
