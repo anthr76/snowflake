@@ -41,6 +41,8 @@
     may be monitored if unauthorized usage is suspected.
   '';
   boot.kernelPackages = pkgs.linuxPackages_cachyos-server;
+  services.scx.enable = true;
+  services.scx.scheduler = "scx_bpfland";
   systemd = {
     # Given that our systems are headless, emergency mode is useless.
     # We prefer the system to attempt to continue booting so
