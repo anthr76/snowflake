@@ -44,5 +44,8 @@
   };
 
   hardware.graphics = { enable = true; };
+  hardware.opengl.extraPackages = [
+    pkgs.mesa.opencl
+  ];
   services.hardware.bolt.enable = true;
 }

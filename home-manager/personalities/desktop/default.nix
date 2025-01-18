@@ -25,7 +25,8 @@
     })
     dxvk
     winetricks
-    lightworks_2023_02_02
+    lightworks
+    darktable
     shadps4
     yuki-iptv
   ];
