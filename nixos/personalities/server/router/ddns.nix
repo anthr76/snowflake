@@ -17,7 +17,7 @@ in
     owner = config.systemd.services.kea-dhcp-ddns-server.serviceConfig.User;
     group = config.systemd.services.kea-dhcp-ddns-server.serviceConfig.User;
   };
-  services.cfdyndns = {
+  services.cloudflare-dyndns = {
     enable = true;
     apiTokenFile = config.sops.secrets.cfApiToken.path;
   };

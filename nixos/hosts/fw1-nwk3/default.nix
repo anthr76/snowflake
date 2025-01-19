@@ -16,7 +16,7 @@ in
   ];
   networking.hostName = "fw1";
   networking.domain = "nwk3.rabbito.tech";
-  services.cfdyndns.records = [
+  services.cloudflare-dyndns.domains = [
     "fw-1.nwk3.rabbito.tech"
     "nwk3.rabbito.tech"
   ];

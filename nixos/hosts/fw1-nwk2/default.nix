@@ -1,4 +1,10 @@
-{ lib, inputs, pkgs, ... }:
+{
+  lib,
+  inputs,
+  pkgs,
+  config,
+  ...
+}:
 let
   zoneSerial = toString inputs.self.lastModified;
 in
@@ -10,7 +16,7 @@ in
   ];
   networking.hostName = "fw1";
   networking.domain = "nwk2.rabbito.tech";
-  services.cfdyndns.records = [
+  services.cloudflare-dyndns.domains = [
     "fw-1.nwk2.rabbito.tech"
     "nwk2.rabbito.tech"
   ];
@@ -34,11 +40,56 @@ in
   '';
 
   networking.interfaces = {
-    vlan8 = { ipv4 = { addresses = [{ address = "192.168.15.1"; prefixLength = 24; }]; }; };
-    vlan10 = { ipv4 = { addresses = [{ address = "192.168.7.1"; prefixLength = 24; }]; }; };
-    vlan99 = { ipv4 = { addresses = [{ address = "10.30.99.1"; prefixLength = 24; }]; }; };
-    vlan100 = { ipv4 = { addresses = [{ address = "192.168.11.1"; prefixLength = 24; }]; }; };
-    vlan101 = { ipv4 = { addresses = [{ address = "192.168.5.1"; prefixLength = 24; }]; }; };
+    vlan8 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "192.168.15.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+    vlan10 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "192.168.7.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+    vlan99 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "10.30.99.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+    vlan100 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "192.168.11.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+    vlan101 = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "192.168.5.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
   };
   services.tailscale.extraUpFlags = [
     "--advertise-routes=192.168.11.0/24,10.30.99.0/24,192.168.7.0/24"
@@ -162,21 +213,116 @@ in
     zones = {
       "nwk2.rabbito.tech." = {
         master = true;
-            file = pkgs.writeText "nwk2.rabbito.tech" (lib.strings.concatStrings [
-              ''
-                $ORIGIN nwk2.rabbito.tech.
-                $TTL    86400
-                @ IN SOA nwk2.rabbito.tech. admin.rabbito.tech (
-                ${zoneSerial}           ; serial number
-                3600                    ; refresh
-                900                     ; retry
-                1209600                 ; expire
-                1800                    ; ttl
-                )
-                                IN    NS      fw1.nwk2.rabbito.tech.
-                fw1             IN    A       10.30.99.1
-              ''
-            ]);
+        file = pkgs.writeText "nwk2.rabbito.tech" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN nwk2.rabbito.tech.
+              $TTL    86400
+              @ IN SOA nwk2.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk2.rabbito.tech.
+              fw1             IN    A       10.30.99.1
+            ''
+          ]
+        );
+      };
+      "11.168.192.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.11.168.192.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "11.168.192.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 11.168.192.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk2.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk2.rabbito.tech.
+            ''
+          ]
+        );
+      };
+      "7.168.192.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.7.168.192.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "7.168.192.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 7.168.192.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk2.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk2.rabbito.tech.
+            ''
+          ]
+        );
+      };
+      "5.58.192.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.5.168.192.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "5.168.192.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 5.168.192.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk2.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk2.rabbito.tech.
+            ''
+          ]
+        );
+      };
+      "99.30.10.in-addr.arpa." = {
+        master = true;
+        extraConfig = ''
+           allow-update { key "dhcp-update-key"; };
+           journal "${config.services.bind.directory}/db.99.30.10.in-addr.arpa.jnl";
+        '';
+        file = pkgs.writeText "99.30.10.in-addr.arpa" (
+          lib.strings.concatStrings [
+            ''
+              $ORIGIN 99.30.10.in-addr.arpa.
+              $TTL    86400
+              @ IN SOA nwk2.rabbito.tech. admin.rabbito.tech (
+              ${zoneSerial}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      fw1.nwk2.rabbito.tech.
+              1               IN    PTR     fw1.nwk2.rabbito.tech.
+            ''
+          ]
+        );
       };
     };
   };
