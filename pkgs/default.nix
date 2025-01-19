@@ -9,4 +9,5 @@
   yuki-iptv = pkgs.callPackage ./yuki-iptv { };
   rpc-bridge = pkgs.callPackage ./rpc-bridge { };
   udpbroadcastrelay = pkgs.callPackage ./udpbroadcastrelay { };
+  led_matrix_monitoring = pkgs.callPackage ./led_matrix_monitoring { };
 }
