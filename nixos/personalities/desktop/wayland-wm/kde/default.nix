@@ -2,6 +2,10 @@
   imports = [ ../../default.nix ];
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   environment.sessionVariables.GTK_USE_PORTAL = "1";
+  xdg.portal = {
+    xdgOpenUsePortal = true;
+    enable = true;
+  };
   hardware.sane.enable = true;
   programs.kde-pim.enable = true;
   programs.partition-manager.enable = true;
