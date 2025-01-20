@@ -10,6 +10,7 @@
     ./wayland-wm/common
     ./wayland-wm/kde
     ./obs.nix
+    ./syncthing.nix
   ];
   home.packages = with pkgs; [
     moonlight-qt
@@ -29,5 +30,6 @@
     darktable
     shadps4
     yuki-iptv
+    vorta
   ];
 }
