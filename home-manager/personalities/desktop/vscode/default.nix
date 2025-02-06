@@ -58,6 +58,7 @@
         bpruitt-goddard.mermaid-markdown-syntax-highlighting
         bashmish.es6-string-css
         github.vscode-pull-request-github
+        github.copilot-chat
       ];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
