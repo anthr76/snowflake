@@ -5,9 +5,7 @@
   programs.vscode = {
     enable = true;
     mutableExtensionsDir = false;
-    extensions = (
-      with (pkgs.nix-vscode-extensions.forVSCodeVersion pkgs.vscode.version).vscode-marketplace;
-      [
+    extensions = with (inputs.nix-vscode-extensions.extensions.${pkgs.system}.forVSCodeVersion pkgs.vscode.version).vscode-marketplace; [
         # Themes
         catppuccin.catppuccin-vsc
         thang-nm.catppuccin-perfect-icons
@@ -58,8 +56,7 @@
         bpruitt-goddard.mermaid-markdown-syntax-highlighting
         bashmish.es6-string-css
         github.vscode-pull-request-github
-      ]
-    );
+      ];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
       "[go]".toolsManagement.autoUpdate = true;
