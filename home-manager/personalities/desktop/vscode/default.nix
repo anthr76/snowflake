@@ -5,10 +5,7 @@
   programs.vscode = {
     enable = true;
     mutableExtensionsDir = false;
-    extensions = let
-      inherit (inputs.nix-vscode-extensions.extensions.${pkgs.system}) vscode-marketplace;
-    in
-      with vscode-marketplace; [
+    extensions = with (inputs.nix-vscode-extensions.extensions.${pkgs.system}.forVSCodeVersion pkgs.vscode.version).vscode-marketplace; [
         # Themes
         catppuccin.catppuccin-vsc
         thang-nm.catppuccin-perfect-icons
@@ -53,6 +50,7 @@
         yzhang.markdown-all-in-one
         streetsidesoftware.code-spell-checker
         github.copilot
+        github.copilot-chat
         mechatroner.rainbow-csv
         tobermory.es6-string-html
         bpruitt-goddard.mermaid-markdown-syntax-highlighting
