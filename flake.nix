@@ -33,10 +33,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-flatpak.url = "github:gmodena/nix-flatpak";
+    nixified-ai = {
+      url = "github:nixified-ai/flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, disko, gomod2nix, nix-darwin, nixpkgs, nixpkgs-unstable, home-manager, chaotic, hardware
-    , jovian-nixos, nix-github-actions, nix-flatpak, ... }@inputs:
+    , jovian-nixos, nix-github-actions, nix-flatpak, nixified-ai, ... }@inputs:
     let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;
@@ -87,6 +91,7 @@
           modules = [
             chaotic.nixosModules.default
             nix-flatpak.nixosModules.nix-flatpak
+            nixified-ai.nixosModules.comfyui
             ./nixos/hosts/f80
           ];
         };

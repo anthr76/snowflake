@@ -1,4 +1,4 @@
-{ config, inputs, lib, modulesPath, pkgs, ... }: {
+{ config, inputs, lib, modulesPath, pkgs, comfyui, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
