@@ -114,6 +114,10 @@ in
           name = "domain-search";
           data = "nwk3.rabbito.tech,mole-bowfin.ts.net";
         }
+        {
+          name = "vendor-encapsulated-options";
+          data = "10.45.0.6";
+        }
       ];
       subnet4 = [
         {
@@ -235,6 +239,7 @@ in
               )
                               IN    NS      fw1.nwk3.rabbito.tech.
               fw1             IN    A       10.40.99.1
+              unifi           IN    CNAME   unifi.scr1.rabbito.tech.
             ''
           ]
         );
