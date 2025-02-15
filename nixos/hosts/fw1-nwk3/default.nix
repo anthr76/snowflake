@@ -114,10 +114,6 @@ in
           name = "domain-search";
           data = "nwk3.rabbito.tech,mole-bowfin.ts.net";
         }
-        {
-          name = "vendor-encapsulated-options";
-          data = "10.45.0.6";
-        }
       ];
       subnet4 = [
         {
