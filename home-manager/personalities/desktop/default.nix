@@ -31,5 +31,6 @@
     shadps4
     yuki-iptv
     vorta
+    prismlauncher
   ];
 }

@@ -50,7 +50,6 @@
         yzhang.markdown-all-in-one
         streetsidesoftware.code-spell-checker
         github.copilot
-        github.copilot-chat
         mechatroner.rainbow-csv
         tobermory.es6-string-html
         bpruitt-goddard.mermaid-markdown-syntax-highlighting

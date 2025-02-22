@@ -38,6 +38,7 @@
     kdePackages.discover
     amdgpu_top
     steam-rom-manager
+    prismlauncher
     # Gamecube / Wii
     dolphin-emu
     # PSX
@@ -141,6 +142,9 @@
     devices.steamdeck.enableKernelPatches = true;
     steamos.useSteamOSConfig = true;
     hardware.has.amd.gpu = true;
+    decky-loader = {
+        enable = true;
+    };
     steam = {
       enable = true;
       autoStart = true;

@@ -29,16 +29,16 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
-    xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
-      version = "git.74dd867";
-      src = final.fetchFromGitHub {
-        owner = "atar-axis";
-        repo = "xpadneo";
-        rev = "ed569629dbf0ef0033386a54826aff6da2af2a9f";
-        sha256 = "";
-        fetchSubmodules = true;
-      };
-    });
+    # xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
+    #   version = "git.74dd867";
+    #   src = final.fetchFromGitHub {
+    #     owner = "atar-axis";
+    #     repo = "xpadneo";
+    #     rev = "ed569629dbf0ef0033386a54826aff6da2af2a9f";
+    #     sha256 = "";
+    #     fetchSubmodules = true;
+    #   };
+    # });
     gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
       patches = oldAttrs.patches ++ [
         ./gamescope-native-res.patch
