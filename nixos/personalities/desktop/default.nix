@@ -49,4 +49,5 @@
     pkgs.mesa.opencl
   ];
   services.hardware.bolt.enable = true;
+  services.flatpak.enable = true;
 }

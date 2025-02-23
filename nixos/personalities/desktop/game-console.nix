@@ -69,6 +69,7 @@
     enable = true;
     package = pkgs.steam.override {
       extraPkgs = pkgs: with pkgs; [ liberation_ttf wqy_zenhei ];
+      extraLibraries = pkgs: [ pkgs.xorg.libxcb ];
     };
     extest.enable = true;
     extraCompatPackages = with pkgs; [ proton-ge-bin ];
@@ -124,6 +125,16 @@
       enable = true;
       wifi.backend = "iwd";
     };
+  };
+  hardware = {
+      graphics = {
+          enable = true;
+          enable32Bit = true;
+      };
+      amdgpu.amdvlk = {
+          enable = true;
+          support32Bit.enable = true;
+      };
   };
   hardware.bluetooth.enable = true;
   hardware.bluetooth.input = {

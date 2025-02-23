@@ -15,7 +15,8 @@
   home.packages = with pkgs; [
     moonlight-qt
     syncthing
-    zoom-us
+    # Currently broken and using with flatpak for now.
+    # zoom-us
     system76-keyboard-configurator
     podman-desktop
     mumble
