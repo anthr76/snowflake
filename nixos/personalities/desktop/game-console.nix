@@ -163,13 +163,6 @@
       desktopSession = "plasma";
     };
   };
-  services.udev.extraRules = ''
-    # If a GPU crash is caused by a specific process, kill the PID
-    ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{PID}!="0", RUN+="${pkgs.util-linux}/bin/kill -9 %E{PID}"
-
-    # Kill greetd and Gamescope if the GPU crashes and VRAM is lost
-    ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{FLAGS}=="1", RUN+="${pkgs.systemd}/bin/systemctl restart greetd"
-  '';
   # GameCube controller 8BitDo GameCube NGC Mod Kit over D-Input
   # environment.sessionVariables.SDL_GAMECONTROLLERCONFIG = "05000000c82d00006a28000000010000,8BitDo GameCube,a:b0,b:b3,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,leftstick:b13,lefttrigger:a5,leftx:a0,lefty:a1,paddle1:b9,paddle2:b8,rightshoulder:b10,rightstick:b14,righttrigger:a4,rightx:a2,righty:a3,start:b11,x:b1,y:b4,platform:Linux,";
 }
