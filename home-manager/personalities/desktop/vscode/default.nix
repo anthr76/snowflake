@@ -35,9 +35,6 @@
         fnando.linter
         dbaeumer.vscode-eslint
         charliermarsh.ruff
-        # Remote development
-        ms-vscode-remote.remote-containers
-        ms-vscode-remote.remote-ssh
         # Other
         gruntfuggly.todo-tree
         ionutvmi.path-autocomplete
