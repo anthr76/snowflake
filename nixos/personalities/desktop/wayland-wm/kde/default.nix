@@ -30,7 +30,7 @@
     ladspaPlugins
     kdePackages.skanlite
     mpv
-    xwaylandvideobridge
+    kdePackages.xwaylandvideobridge
   ];
   services = {
     xserver = {
