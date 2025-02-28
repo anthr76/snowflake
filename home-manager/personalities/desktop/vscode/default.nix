@@ -25,7 +25,6 @@
         github.vscode-github-actions
         ms-vscode.cpptools-extension-pack
         unifiedjs.vscode-mdx
-        ms-python.vscode-pylance
         ms-python.black-formatter
         nickgo.cuelang
         # Formatters
