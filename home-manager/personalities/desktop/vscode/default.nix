@@ -11,7 +11,6 @@
         thang-nm.catppuccin-perfect-icons
         # Language support
         golang.go
-        hashicorp.terraform
         jnoortheen.nix-ide
         mrmlnc.vscode-json5
         ms-azuretools.vscode-docker
@@ -25,7 +24,6 @@
         github.vscode-github-actions
         ms-vscode.cpptools-extension-pack
         unifiedjs.vscode-mdx
-        ms-python.vscode-pylance
         ms-python.black-formatter
         nickgo.cuelang
         # Formatters
@@ -36,9 +34,6 @@
         fnando.linter
         dbaeumer.vscode-eslint
         charliermarsh.ruff
-        # Remote development
-        ms-vscode-remote.remote-containers
-        ms-vscode-remote.remote-ssh
         # Other
         gruntfuggly.todo-tree
         ionutvmi.path-autocomplete

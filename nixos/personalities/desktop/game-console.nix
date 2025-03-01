@@ -177,9 +177,6 @@
       desktopSession = "plasma";
     };
   };
-  boot.extraModprobeConfig = ''
-    options hid_xpadneo disable_shift_mode=1
-  '';
   # services.udev.extraRules = ''
   #   # If a GPU crash is caused by a specific process, kill the PID
   #   ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{PID}!="0", RUN+="${pkgs.util-linux}/bin/kill -9 %E{PID}"

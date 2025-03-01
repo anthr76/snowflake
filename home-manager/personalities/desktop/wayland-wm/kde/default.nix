@@ -2,7 +2,7 @@
   imports = [ ../../darkman.nix ];
   home.pointerCursor = {
     name = "breeze_cursors";
-    package = pkgs.breeze-icons;
+    package = pkgs.kdePackages.breeze-icons;
     #   x11.enable = true;
     #   gtk.enable = true;
   };
