@@ -49,7 +49,7 @@
         bpruitt-goddard.mermaid-markdown-syntax-highlighting
         bashmish.es6-string-css
         github.vscode-pull-request-github
-      ] ++ [pkgs.vscode-extensions.github.copilot-chat vscode-extensions.github.copilot];
+      ] ++ [pkgs.vscode-extensions.github.copilot-chat pkgs.vscode-extensions.github.copilot];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
       "[go]".toolsManagement.autoUpdate = true;
