@@ -39,7 +39,7 @@
     };
   };
 
-  outputs = { self, disko, gomod2nix, nix-darwin, nixpkgs, nixpkgs-unstable, home-manager, chaotic, hardware
+  outputs = { self, disko, gomod2nix, nix-darwin, nixpkgs, home-manager, chaotic, hardware
     , jovian-nixos, nix-github-actions, nix-flatpak, nixified-ai, ... }@inputs:
     let
       inherit (self) outputs;
