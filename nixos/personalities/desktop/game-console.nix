@@ -21,8 +21,8 @@
     config = { allowUnfree = true; };
   };
   gaming-kernel.enable = false;
-  services.scx.enable = true;
-  services.scx.scheduler = "scx_lavd";
+  # services.scx.enable = true;
+  # services.scx.scheduler = "scx_lavd";
   # chaotic.hdr.enable = true;
   # chaotic.hdr.specialisation.enable	= false;
   # chaotic.mesa-git.enable = true;
@@ -164,7 +164,7 @@
   #   hardware.has.amd.gpu = true;
   # };
   jovian = {
-    devices.steamdeck.enableKernelPatches = false;
+    devices.steamdeck.enableKernelPatches = true;
     steamos.useSteamOSConfig = true;
     hardware.has.amd.gpu = true;
     decky-loader = {
