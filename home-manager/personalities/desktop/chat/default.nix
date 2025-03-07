@@ -1,6 +1,6 @@
 { pkgs, ... }: {
   home.packages = with pkgs; [
-    unstable.telegram-desktop
+    telegram-desktop
     fractal-next
     slack
     element-desktop

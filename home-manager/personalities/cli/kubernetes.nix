@@ -6,7 +6,7 @@
     kubelogin-oidc
     kubernetes-helm
     stern
-    unstable.fluxcd
+    fluxcd
     kubevirt
   ];
   programs.fish.functions = {
