@@ -22,7 +22,7 @@
     mumble
     murmur
     (wineWowPackages.waylandFull.override {
-      wineRelease = "staging";
+      wineRelease = "stable";
       mingwSupport = true;
     })
     dxvk
