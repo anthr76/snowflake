@@ -12,6 +12,10 @@
       text = ''
         # Managed with Home Manager
         unqualified-search-registries = ["docker.io"]
+        # Development registry
+        [[registry]]
+        location = "localhost:5005"
+        insecure = true
       '';
     };
     containers = {
