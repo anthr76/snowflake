@@ -1,5 +1,11 @@
 { pkgs, ... }: {
   home.packages = with pkgs; [ skopeo ];
+  services.podman = {
+    enable = true;
+  };
+  home.sessionVariables = {
+    DOCKER_HOST = "unix://$(${pkgs.podman}/bin/podman system info -f json | ${pkgs.jq}/bin/jq -r .host.remoteSocket.path)";
+  };
   xdg.configFile = {
     registries = {
       target = "containers/registries.conf.d/001-home-manager.conf";
