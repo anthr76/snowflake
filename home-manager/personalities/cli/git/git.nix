@@ -21,6 +21,10 @@ in {
       init.defaultBranch = "main";
       gpg.format = "ssh";
       gpg.ssh.defaultKeyCommand = "git-ssh-signingkey";
+      url = {
+        "ssh://git@github.com" = { insteadOf = "https://github.com"; };
+        "ssh://git@hf.co" = { insteadOf = "https://huggingface.co"; };
+      };
     };
   };
 }
