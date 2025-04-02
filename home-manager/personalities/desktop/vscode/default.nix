@@ -52,6 +52,7 @@
         tilt-dev.tiltfile
         vscjava.vscode-java-pack
         mathiasfrohlich.kotlin
+        fwcd.kotlin
 
       ] ++ [pkgs.vscode-extensions.github.copilot-chat pkgs.vscode-extensions.github.copilot];
     userSettings = {
@@ -59,6 +60,9 @@
       "[go]".toolsManagement.autoUpdate = true;
       "[nix]".editor.defaultFormatter = "jnoortheen.nix-ide";
       "[terraform]".editor.defaultFormatter = "hashicorp.terraform";
+      kotlin.java.home = "${pkgs.jdk}/lib/openjdk";
+      kotlin.languageServer.path = "${pkgs.kotlin-language-server}/bin/kotlin-language-server";
+      kotlin.debugAdapter.path = "${pkgs.kotlin-debug-adapter}/bin/kotlin-debug-adapter";
       git = {
         autofetch = true;
         confirmSync = false;
