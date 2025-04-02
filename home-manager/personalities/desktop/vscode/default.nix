@@ -50,6 +50,8 @@
         bashmish.es6-string-css
         github.vscode-pull-request-github
         tilt-dev.tiltfile
+        vscjava.vscode-java-pack
+
       ] ++ [pkgs.vscode-extensions.github.copilot-chat pkgs.vscode-extensions.github.copilot];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
