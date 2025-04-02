@@ -51,6 +51,7 @@
         github.vscode-pull-request-github
         tilt-dev.tiltfile
         vscjava.vscode-java-pack
+        mathiasfrohlich.kotlin
 
       ] ++ [pkgs.vscode-extensions.github.copilot-chat pkgs.vscode-extensions.github.copilot];
     userSettings = {
