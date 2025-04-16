@@ -53,7 +53,6 @@
         vscjava.vscode-java-pack
         mathiasfrohlich.kotlin
         fwcd.kotlin
-        github.copilot-workspace
 
       ] ++ [pkgs.vscode-extensions.github.copilot-chat pkgs.vscode-extensions.github.copilot];
     userSettings = {
