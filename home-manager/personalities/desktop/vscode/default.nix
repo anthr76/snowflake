@@ -53,6 +53,7 @@
         "github.copilot-chat"
         "github.copilot"
         "github.copilot-workspace"
+        "eamodio.gitlens"
     ];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
