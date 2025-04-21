@@ -5,57 +5,64 @@
   programs.vscode = {
     enable = true;
     mutableExtensionsDir = false;
-    extensions = with (inputs.nix-vscode-extensions.extensions.${pkgs.system}.forVSCodeVersion pkgs.vscode.version).vscode-marketplace; [
-        # Themes
-        catppuccin.catppuccin-vsc
-        thang-nm.catppuccin-perfect-icons
-        # Language support
-        golang.go
-        jnoortheen.nix-ide
-        mrmlnc.vscode-json5
-        ms-azuretools.vscode-docker
-        ms-python.python
-        redhat.ansible
-        redhat.vscode-yaml
-        tamasfe.even-better-toml
-        helm-ls.helm-ls
-        ms-vscode.makefile-tools
-        grafana.vscode-jsonnet
-        github.vscode-github-actions
-        ms-vscode.cpptools-extension-pack
-        unifiedjs.vscode-mdx
-        ms-python.black-formatter
-        nickgo.cuelang
-        # Formatters
-        esbenp.prettier-vscode
-        darkriszty.markdown-table-prettify
-        # Linters
-        davidanson.vscode-markdownlint
-        fnando.linter
-        dbaeumer.vscode-eslint
-        charliermarsh.ruff
-        # Other
-        gruntfuggly.todo-tree
-        ionutvmi.path-autocomplete
-        luisfontes19.vscode-swissknife
-        ms-kubernetes-tools.vscode-kubernetes-tools
-        editorconfig.editorconfig
-        shd101wyy.markdown-preview-enhanced
-        bierner.emojisense
-        yzhang.markdown-all-in-one
-        streetsidesoftware.code-spell-checker
-        mechatroner.rainbow-csv
-        tobermory.es6-string-html
-        bpruitt-goddard.mermaid-markdown-syntax-highlighting
-        bashmish.es6-string-css
-        github.vscode-pull-request-github
-        tilt-dev.tiltfile
-      ] ++ [pkgs.vscode-extensions.github.copilot-chat pkgs.vscode-extensions.github.copilot];
+    enableExtensionUpdateCheck = false;
+    enableUpdateCheck = false;
+    extensions = pkgs.nix4vscode.forVscode [
+        "catppuccin.catppuccin-vsc"
+        "thang-nm.catppuccin-perfect-icons"
+        "golang.go"
+        "jnoortheen.nix-ide"
+        "mrmlnc.vscode-json5"
+        "ms-azuretools.vscode-docker"
+        "ms-python.python"
+        "redhat.ansible"
+        "redhat.vscode-yaml"
+        "tamasfe.even-better-toml"
+        "helm-ls.helm-ls"
+        "ms-vscode.makefile-tools"
+        "grafana.vscode-jsonnet"
+        "github.vscode-github-actions"
+        "ms-vscode.cpptools-extension-pack"
+        "unifiedjs.vscode-mdx"
+        "ms-python.black-formatter"
+        "nickgo.cuelang"
+        "esbenp.prettier-vscode"
+        "darkriszty.markdown-table-prettify"
+        "davidanson.vscode-markdownlint"
+        "fnando.linter"
+        "dbaeumer.vscode-eslint"
+        "charliermarsh.ruff"
+        "gruntfuggly.todo-tree"
+        "ionutvmi.path-autocomplete"
+        "luisfontes19.vscode-swissknife"
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
+        "editorconfig.editorconfig"
+        "shd101wyy.markdown-preview-enhanced"
+        "bierner.emojisense"
+        "yzhang.markdown-all-in-one"
+        "streetsidesoftware.code-spell-checker"
+        "mechatroner.rainbow-csv"
+        "tobermory.es6-string-html"
+        "bpruitt-goddard.mermaid-markdown-syntax-highlighting"
+        "bashmish.es6-string-css"
+        "github.vscode-pull-request-github"
+        "tilt-dev.tiltfile"
+        "vscjava.vscode-java-pack"
+        "mathiasfrohlich.kotlin"
+        "fwcd.kotlin"
+        "github.copilot-chat"
+        "github.copilot"
+        "github.copilot-workspace"
+        "eamodio.gitlens"
+    ];
     userSettings = {
       "[go]".editor.defaultFormatter = "golang.go";
       "[go]".toolsManagement.autoUpdate = true;
       "[nix]".editor.defaultFormatter = "jnoortheen.nix-ide";
       "[terraform]".editor.defaultFormatter = "hashicorp.terraform";
+      kotlin.java.home = "${pkgs.jdk}/lib/openjdk";
+      kotlin.languageServer.path = "${pkgs.kotlin-language-server}/bin/kotlin-language-server";
+      kotlin.debugAdapter.path = "${pkgs.kotlin-debug-adapter}/bin/kotlin-debug-adapter";
       git = {
         autofetch = true;
         confirmSync = false;

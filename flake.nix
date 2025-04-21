@@ -24,9 +24,9 @@
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
-    nix-vscode-extensions = {
-      url = "github:nix-community/nix-vscode-extensions";
-      inputs.nixpkgs.follows = "nixpkgs";
+    nix4vscode = {
+        url = "github:nix-community/nix4vscode";
+        inputs.nixpkgs.follows = "nixpkgs";
     };
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
@@ -39,7 +39,7 @@
     };
   };
 
-  outputs = { self, disko, gomod2nix, nix-darwin, nixpkgs, home-manager, chaotic, hardware
+  outputs = { self, disko, gomod2nix, nix4vscode, nix-darwin, nixpkgs, home-manager, chaotic, hardware
     , jovian-nixos, nix-github-actions, nix-flatpak, nixified-ai, ... }@inputs:
     let
       inherit (self) outputs;
@@ -52,6 +52,7 @@
           config.allowUnfree = true;
           overlays = [
             gomod2nix.overlays.default
+            nix4vscode.overlays.forVscode
           ];
         });
       withPrefix = prefix:

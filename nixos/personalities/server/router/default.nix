@@ -62,8 +62,14 @@
     vlan100 = { id=100; interface="lan"; };
     vlan101 = { id=101; interface="lan"; };
   };
-  services.udpbroadcastrelay = {
+  services.avahi = {
     enable = true;
+    reflector = true;
+    nssmdns4 = true;
+    nssmdns6 = true;
+  };
+  services.udpbroadcastrelay = {
+    enable = false;
     package = pkgs.udpbroadcastrelay;
     port = 5353;
     id = 2;
