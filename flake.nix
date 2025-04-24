@@ -127,23 +127,10 @@
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [ ./home-manager/hosts/lattice.nix ];
         };
-        "anthony@nicoles-mbp" = lib.homeManagerConfiguration {
-          pkgs = pkgsFor.x86_64-darwin;
-          extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/hosts/nicoles-mbp.nix ];
-        };
         "anthony@generic" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [ ./home-manager/hosts/generic.nix ];
-        };
-      };
-
-      darwinConfigurations = {
-        "nicoles-mbp" = nix-darwin.lib.darwinSystem {
-          pkgs = pkgsFor.x86_64-darwin;
-          specialArgs = { inherit inputs outputs; };
-          modules = [ nix-darwin/hosts/nicoles-mbp ];
         };
       };
 
