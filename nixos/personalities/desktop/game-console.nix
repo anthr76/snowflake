@@ -7,7 +7,7 @@
     ../../personalities/base/openssh.nix
     ../../personalities/base/nix.nix
     ../../personalities/base/tmpfs.nix
-    ./sunshine.nix
+    # ./sunshine.nix
     ./audio.nix
     inputs.jovian-nixos.nixosModules.default
   ] ++ (builtins.attrValues outputs.nixosModules);
@@ -76,6 +76,7 @@
     extraCompatPackages = with pkgs; [ proton-ge-bin ];
   };
 
+  services.xserver.displayManager.startx.enable = lib.mkForce false;
   boot = {
     plymouth = {
       enable = true;
@@ -126,16 +127,16 @@
       wifi.backend = "iwd";
     };
   };
-  hardware = {
-      graphics = {
-          enable = true;
-          enable32Bit = true;
-      };
-      amdgpu.amdvlk = {
-          enable = true;
-          support32Bit.enable = true;
-      };
-  };
+  # hardware = {
+  #     graphics = {
+  #         enable = true;
+  #         enable32Bit = true;
+  #     };
+  #     amdgpu.amdvlk = {
+  #         enable = true;
+  #         support32Bit.enable = true;
+  #     };
+  # };
   hardware.bluetooth.enable = true;
   hardware.bluetooth.input = {
     General = {

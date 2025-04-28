@@ -7,6 +7,7 @@
     inputs.hardware.nixosModules.common-pc-ssd
     ./disks.nix
     ../../personalities/desktop/game-console.nix
+    ../../personalities/server/tailscale.nix
   ];
 
   boot.initrd.availableKernelModules =
@@ -22,7 +23,7 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "cdgc";
-  # networking.domain = "nwk3.rabbito.tech";
+  networking.domain = "nwk3.rabbito.tech";
   system.stateVersion = "23.11";
   environment.systemPackages = [ pkgs.gdb ];
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
