@@ -14,19 +14,15 @@
     sops-nix.url = "github:mic92/sops-nix";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
-    # SSH Agent
-    nixpkgs-pr-169155.url =
-      "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
-    # TODO: Document this PR
-    nixpkgs-pr-269415.url =
-      "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
+    nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
+    nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     nix4vscode = {
-        url = "github:nix-community/nix4vscode";
-        inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/nix4vscode";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
@@ -39,8 +35,9 @@
     };
   };
 
-  outputs = { self, disko, gomod2nix, nix4vscode, nix-darwin, nixpkgs, home-manager, chaotic, hardware
-    , jovian-nixos, nix-github-actions, nix-flatpak, nixified-ai, ... }@inputs:
+  outputs = { self, disko, gomod2nix, nix4vscode, nix-darwin, nixpkgs
+           , home-manager, chaotic, hardware, jovian-nixos
+           , nix-github-actions, nix-flatpak, nixified-ai, ... }@inputs:
     let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;
@@ -54,38 +51,33 @@
             gomod2nix.overlays.default
             nix4vscode.overlays.forVscode
           ];
-        });
+        }
+      );
       withPrefix = prefix:
         lib.mapAttrs' (name: value: {
-          # Also remove special characters
           name = lib.replaceStrings [ "." "@" ] [ "_" "_" ] "${prefix}${name}";
           inherit value;
         });
     in {
       githubActions = nix-github-actions.lib.mkGithubMatrix {
-        # aarch64-linux is not supported by GitHub
         checks = nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks;
         attrPrefix = "";
       };
-      packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
-      devShells = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
-      overlays = import ./overlays { inherit inputs outputs; };
-      nixosModules = import ./modules/nixos;
-      homeManagerModules = import ./modules/home-manager;
+
+      packages    = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
+      devShells   = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
+      overlays    = import ./overlays { inherit inputs outputs; };
+      nixosModules        = import ./modules/nixos;
+      homeManagerModules  = import ./modules/home-manager;
+
       nixosConfigurations = {
         "bkp1" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
-          modules = [
-            ./nixos/hosts/bkp1
-            chaotic.nixosModules.default
-          ];
+          modules = [ ./nixos/hosts/bkp1 chaotic.nixosModules.default ];
         };
         "octo" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
-          modules = [
-            chaotic.nixosModules.default
-            ./nixos/hosts/octo
-          ];
+          modules = [ chaotic.nixosModules.default ./nixos/hosts/octo ];
         };
         "cdgc" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
@@ -113,19 +105,14 @@
         };
         "fw1-nwk3" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
-          modules = [
-            ./nixos/hosts/fw1-nwk3
-            chaotic.nixosModules.default
-          ];
+          modules = [ ./nixos/hosts/fw1-nwk3 chaotic.nixosModules.default ];
         };
         "fw1-nwk2" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
-          modules = [
-            ./nixos/hosts/fw1-nwk2
-            chaotic.nixosModules.default
-          ];
+          modules = [ ./nixos/hosts/fw1-nwk2 chaotic.nixosModules.default ];
         };
       };
+
       homeConfigurations = {
         "anthony@bkp1" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
@@ -145,12 +132,7 @@
         "anthony@lattice" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/hosts/f80.nix ];
-        };
-        "anthony@nicoles-mbp" = lib.homeManagerConfiguration {
-          pkgs = pkgsFor.x86_64-darwin;
-          extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/hosts/nicoles-mbp.nix ];
+          modules = [ ./home-manager/hosts/lattice.nix ];
         };
         "anthony@generic" = lib.homeManagerConfiguration {
           pkgs = pkgsFor.x86_64-linux;
@@ -158,31 +140,29 @@
           modules = [ ./home-manager/hosts/generic.nix ];
         };
       };
-      darwinConfigurations = {
-        "nicoles-mbp" = nix-darwin.lib.darwinSystem {
-          modules = [
-            nix-darwin/hosts/nicoles-mbp
-          ];
-          pkgs = pkgsFor.x86_64-darwin;
-          specialArgs = { inherit inputs outputs; };
-       };
-      };
 
-      # Run `nix flake check`
       checks = forEachSystem (pkgs:
-        # add all the supported packages to checks
-        (withPrefix "pkgs-"
-          (lib.filterAttrs (_: x: lib.elem pkgs.system x.meta.platforms)
-            self.packages.${pkgs.system}))
-        # add the NixOS configurations with the same system
-        // (withPrefix "nixos-"
-          (lib.mapAttrs (_: x: x.config.system.build.toplevel)
-            (lib.filterAttrs (_: x: x.pkgs.system == pkgs.system)
-              self.nixosConfigurations)))
-        # add the Home Manager configurations with the same system
-        // (withPrefix "home-" (lib.mapAttrs (_: x: x.activation-script)
-          (lib.filterAttrs (_: x: x.pkgs.system == pkgs.system)
-            self.homeConfigurations))));
+        let
+          pkgsSet = withPrefix "pkgs-" (
+            lib.filterAttrs (name: x:
+              x.meta?platforms
+              && lib.elem pkgs.system x.meta.platforms
+            ) self.packages.${pkgs.system}
+          );
 
+          nixosSet = withPrefix "nixos-" (
+            lib.mapAttrs (name: x: x.config.system.build.toplevel)
+              (lib.filterAttrs (name: x: x.pkgs.system == pkgs.system)
+                self.nixosConfigurations)
+          );
+
+          homeSet = withPrefix "home-" (
+            lib.mapAttrs (name: x: x.activation-script)
+              (lib.filterAttrs (name: x: x.pkgs.system == pkgs.system)
+                self.homeConfigurations)
+          );
+        in
+          pkgsSet // nixosSet // homeSet
+      );
     };
 }
