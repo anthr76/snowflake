@@ -87,6 +87,13 @@
             ./nixos/hosts/octo
           ];
         };
+        "cdgc" = lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+          modules = [
+            chaotic.nixosModules.default
+            ./nixos/hosts/cdgc
+          ];
+        };
         "f80" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [
