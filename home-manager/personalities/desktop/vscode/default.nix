@@ -1,7 +1,7 @@
 { pkgs, inputs, config, ...}:
 {
   # TODO: See if we can just include in a overlay for vscode.
-  home.packages = [ pkgs.helm-ls ];
+  home.packages = [ pkgs.helm-ls pkgs.github-mcp-server ];
   programs.vscode = {
     enable = true;
     mutableExtensionsDir = false;
