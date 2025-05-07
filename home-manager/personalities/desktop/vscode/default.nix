@@ -156,6 +156,26 @@
           renderIndentGuides = "none";
         };
       };
+      mcp = {
+        inputs = [
+          {
+            type = "promptString";
+            id = "github_token";
+            description = "GitHub Personal Access Token";
+            password = true;
+          }
+        ];
+        servers ={
+          "github" = {
+            type = "stdio";
+            command = "${pkgs.github-mcp-server}/bin/github-mcp-server";
+            args = [];
+            env = {
+              "GITHUB_PERSONAL_ACCESS_TOKEN" = "\${input:github_token}";
+            };
+          };
+        };
+      };
       "workbench.iconTheme" = "catppuccin-perfect-macchiato";
       "extensions.autoUpdate" = false;
       update = {
