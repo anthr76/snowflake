@@ -156,8 +156,12 @@
           renderIndentGuides = "none";
         };
       };
+      chat = {
+        mcp = {
+          enabled = true;
+        };
+      };
       mcp = {
-        enabled = true;
         inputs = [
           {
             type = "promptString";
