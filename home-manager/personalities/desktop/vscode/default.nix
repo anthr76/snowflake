@@ -157,6 +157,7 @@
         };
       };
       mcp = {
+        enabled = true;
         inputs = [
           {
             type = "promptString";
