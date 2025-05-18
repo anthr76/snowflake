@@ -8,14 +8,17 @@ in
   };
   sops.secrets."bind-ddns-tsig-file" = {
     sopsFile = ../../../../secrets/users.yaml;
-    owner = config.systemd.services.bind.serviceConfig.User;
-    group = config.systemd.services.bind.serviceConfig.User;
+    # owner = config.systemd.services.bind.serviceConfig.User;
+    # group = config.systemd.services.bind.serviceConfig.User;
+    mode = "0644";
   };
   sops.secrets."ddns-tsig-key" = {
     # TODO: poor secret name
     sopsFile = ../../../../secrets/users.yaml;
-    owner = config.systemd.services.kea-dhcp-ddns-server.serviceConfig.User;
-    group = config.systemd.services.kea-dhcp-ddns-server.serviceConfig.User;
+    # owner = config.systemd.services.kea-dhcp-ddns-server.serviceConfig.User;
+    # group = config.systemd.services.kea-dhcp-ddns-server.serviceConfig.User;
+    # TODO: Figure out why this is broken
+   mode = "0644";
   };
   services.cloudflare-dyndns = {
     enable = true;
