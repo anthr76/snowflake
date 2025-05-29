@@ -20,6 +20,7 @@
     openssl
     cfssl
     sops
+    nh
   ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
             distrobox
         ]);
