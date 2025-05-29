@@ -9,6 +9,7 @@
     # TODO: poor secret name
     sopsFile = ../../../secrets/users.yaml;
   };
+  i18n.defaultLocale = "en_US.UTF-8";
 
   boot.initrd.availableKernelModules = [
     "nvme"
