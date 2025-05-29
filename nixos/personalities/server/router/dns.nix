@@ -52,12 +52,13 @@
     # TODO: nix repl this.
     # Parsed Example 192.168.1.0/24
     cacheNetworks = [
-      # Vlan 8,10,99,100,101 NWK2
+      # Vlan 8,10,99,100,101,lan NWK3
       (builtins.elemAt outputs.nixosConfigurations.fw1-nwk3.config.services.kea.dhcp4.settings.subnet4 0).subnet
       (builtins.elemAt outputs.nixosConfigurations.fw1-nwk3.config.services.kea.dhcp4.settings.subnet4 1).subnet
       (builtins.elemAt outputs.nixosConfigurations.fw1-nwk3.config.services.kea.dhcp4.settings.subnet4 2).subnet
       (builtins.elemAt outputs.nixosConfigurations.fw1-nwk3.config.services.kea.dhcp4.settings.subnet4 3).subnet
       (builtins.elemAt outputs.nixosConfigurations.fw1-nwk3.config.services.kea.dhcp4.settings.subnet4 4).subnet
+      (builtins.elemAt outputs.nixosConfigurations.fw1-nwk3.config.services.kea.dhcp4.settings.subnet4 5).subnet
       # Vlan 8,10,99,100,101 NWK2
       (builtins.elemAt outputs.nixosConfigurations.fw1-nwk2.config.services.kea.dhcp4.settings.subnet4 0).subnet
       (builtins.elemAt outputs.nixosConfigurations.fw1-nwk2.config.services.kea.dhcp4.settings.subnet4 1).subnet

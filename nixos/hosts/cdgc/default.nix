@@ -27,4 +27,10 @@
   system.stateVersion = "23.11";
   environment.systemPackages = [ pkgs.gdb ];
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
+  system.autoUpgrade = {
+    enable = true;
+    flake = "github:anthr76/snowflake/stable";
+    operation = "boot";
+    persistent = true;
+  };
 }
