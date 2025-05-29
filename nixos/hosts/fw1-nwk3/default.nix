@@ -40,6 +40,16 @@ in
   '';
 
   networking.interfaces = {
+    lan = {
+      ipv4 = {
+        addresses = [
+          {
+            address = "192.168.1.1";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
     vlan8 = {
       ipv4 = {
         addresses = [
@@ -98,6 +108,7 @@ in
     settings = {
       interfaces-config = {
         interfaces = [
+          "lan/192.168.1.1"
           "vlan8/192.168.17.1"
           "vlan10/192.168.16.1"
           "vlan99/10.40.99.1"
@@ -117,77 +128,77 @@ in
       ];
       subnet4 = [
         {
+          subnet = "192.168.1.0/24";
+          id = 1;
           pools = [
-            {
-              pool = "192.168.17.20 - 192.168.17.240";
-            }
+            { pool = "192.168.1.20 - 192.168.1.240"; }
           ];
+          option-data = [
+            { name = "routers"; data = "192.168.1.1"; }
+          ];
+          client-class = "ubnt"; # Only apply vendor option to this subnet
+        }
+        {
           subnet = "192.168.17.0/24";
           id = 17;
+          pools = [
+            { pool = "192.168.17.20 - 192.168.17.240"; }
+          ];
           option-data = [
-            {
-              name = "routers";
-              data = "192.168.17.1";
-            }
+            { name = "routers"; data = "192.168.17.1"; }
           ];
         }
         {
-          pools = [
-            {
-              pool = "192.168.16.20 - 192.168.16.240";
-            }
-          ];
           subnet = "192.168.16.0/24";
           id = 16;
+          pools = [
+            { pool = "192.168.16.20 - 192.168.16.240"; }
+          ];
           option-data = [
-            {
-              name = "routers";
-              data = "192.168.16.1";
-            }
+            { name = "routers"; data = "192.168.16.1"; }
           ];
         }
         {
-          pools = [
-            {
-              pool = "10.40.99.20 - 10.40.99.240";
-            }
-          ];
           subnet = "10.40.99.0/24";
           id = 99;
-          option-data = [
-            {
-              name = "routers";
-              data = "10.40.99.1";
-            }
+          pools = [
+            { pool = "10.40.99.20 - 10.40.99.240"; }
           ];
+          option-data = [
+            { name = "routers"; data = "10.40.99.1"; }
+          ];
+          client-class = "ubnt"; # Only apply vendor option to this subnet
         }
         {
-          pools = [
-            {
-              pool = "192.168.14.20 - 192.168.14.240";
-            }
-          ];
           subnet = "192.168.14.0/24";
           id = 14;
+          pools = [
+            { pool = "192.168.14.20 - 192.168.14.240"; }
+          ];
           option-data = [
-            {
-              name = "routers";
-              data = "192.168.14.1";
-            }
+            { name = "routers"; data = "192.168.14.1"; }
           ];
         }
         {
-          pools = [
-            {
-              pool = "192.168.13.20 - 192.168.13.240";
-            }
-          ];
           subnet = "192.168.13.0/24";
           id = 13;
+          pools = [
+            { pool = "192.168.13.20 - 192.168.13.240"; }
+          ];
+          option-data = [
+            { name = "routers"; data = "192.168.13.1"; }
+          ];
+        }
+      ];
+      client-classes = [
+        {
+          name = "ubnt";
+          test = "substring(option[60].text, 0, 4) == 'ubnt'";
           option-data = [
             {
-              name = "routers";
-              data = "192.168.13.1";
+              name = "vendor-encapsulated-options";
+              csv-format = false;
+              data = "01040a2d0006"; # Option 1 (Unifi IP): 10.45.0.6
             }
           ];
         }
