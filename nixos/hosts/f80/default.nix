@@ -28,6 +28,12 @@
   ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.kernelParams = [ "initcall_blacklist=simpledrm_platform_driver_init" ];
+  hardware.wirelessRegulatoryDatabase = true;
+  boot.extraModprobeConfig = ''
+    options cfg80211 internal_regdb=y
+    options cfg80211 crda_support=y
+    options cfg80211 ieee80211_regdom="US"
+  '';
   hardware.enableAllFirmware = true;
 
   disko.devices = import ./disks.nix {
@@ -40,6 +46,16 @@
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "f80";
   networking.domain = "nwk3.rabbito.tech";
+  hardware.enableRedistributableFirmware = true;
+  # https://github.com/morrownr/USB-WiFi/blob/main/home/How_to_Install_Firmware_for_Mediatek_based_USB_WiFi_adapters.md
+  # hardware.firmware = [
+  #   (pkgs.runCommand "mt7922-firmware" {} ''
+  #     mkdir -p "$out/lib/firmware/mediatek"
+  #     cp '${pkgs.firmwareLinuxNonfree}'/lib/firmware/mediatek/WIFI_MT7922_patch_mcu_1_1_hdr.* "$out/lib/firmware/mediatek"
+  #     cp '${pkgs.firmwareLinuxNonfree}'/lib/firmware/mediatek/WIFI_RAM_CODE_MT7922_1.* "$out/lib/firmware/mediatek"
+  #     cp '${pkgs.firmwareLinuxNonfree}'/lib/firmware/mediatek/BT_RAM_CODE_MT7922_1_1_hdr.* "$out/lib/firmware/mediatek"
+  #   '')
+  # ];
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
   # boot.kernelPackages = pkgs.linuxPackages_testing;

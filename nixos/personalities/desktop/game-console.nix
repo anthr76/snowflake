@@ -1,6 +1,7 @@
 # This is a steamOS steam console like setup.
 # Lots of duplication here between we defined things, but since this is a console things need to be insecure and different.
-{ pkgs, outputs, inputs, config, lib, ... }: {
+{ pkgs, outputs, inputs, config, lib, ... }:
+{
   imports = [
     ../../personalities/base/bootloader.nix
     ../../personalities/base/sops.nix
@@ -177,6 +178,15 @@
       desktopSession = "plasma";
     };
   };
+  environment.etc."xdg/gamescope-session/environment".text = ''
+    STEAM_EXTRA_COMPAT_TOOLS_PATHS = "${pkgs.proton-ge-bin.steamcompattool}"
+    # We don't support adopting a drive, yet.
+    STEAM_ALLOW_DRIVE_ADOPT = "0"
+    # Ejecting doesn't work, either.
+    STEAM_ALLOW_DRIVE_UNMOUNT = "1"
+    steamargs = ("-steamos3" "-steampal" "-gamepadui")
+  ''
+  ;
   # services.udev.extraRules = ''
   #   # If a GPU crash is caused by a specific process, kill the PID
   #   ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{PID}!="0", RUN+="${pkgs.util-linux}/bin/kill -9 %E{PID}"
