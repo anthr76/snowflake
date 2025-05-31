@@ -13,7 +13,6 @@
     [ "amdgpu" "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ "kvm-amd" ];
-  hardware.enableAllFirmware = true;
   services.xserver.videoDrivers = [ "amdgpu" ];
   boot.extraModulePackages = [ ];
   time.timeZone = "America/New_York";
@@ -26,4 +25,5 @@
   system.stateVersion = "23.11";
   environment.systemPackages = [ pkgs.gdb ];
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
+  hardware.enableAllFirmware = true;
 }
