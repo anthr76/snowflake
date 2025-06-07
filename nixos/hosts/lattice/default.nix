@@ -49,4 +49,10 @@
       "Noto Color Emoji"
     ];
   };
+  hardware.wirelessRegulatoryDatabase = true;
+  boot.extraModprobeConfig = ''
+    options cfg80211 internal_regdb=y
+    options cfg80211 crda_support=y
+    options cfg80211 ieee80211_regdom="US"
+  '';
 }
