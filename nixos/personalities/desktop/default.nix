@@ -46,6 +46,7 @@
   hardware.amdgpu.opencl.enable = true;
   hardware.graphics.extraPackages = [
     pkgs.mesa.opencl
+    pkgs.rocmPackages.clr.icd
   ];
   services.hardware.bolt.enable = true;
   services.flatpak.enable = true;
