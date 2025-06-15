@@ -7,6 +7,7 @@
     enable = true;
   };
   hardware.sane.enable = true;
+  virtualisation.waydroid.enable = true;
   programs.kde-pim.enable = true;
   programs.partition-manager.enable = true;
   programs.dconf.enable = true;
