@@ -23,7 +23,7 @@
   ];
   boot.kernelModules = [ "kvm-amd" ];
   hardware.enableAllFirmware = true;
-
+  hardware.enableRedistributableFirmware = true;
   disko.devices = import ./disks.nix {
     disks = [ "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_24035A801792" ];
     luksCreds = config.sops.secrets.e39-luks-password.path;
@@ -38,6 +38,9 @@
     lib.mkDefault config.hardware.enableRedistributableFirmware;
   # boot.kernelPackages = pkgs.linuxPackages_testing;
   system.stateVersion = "23.05";
+  hardware.firmware = [
+    pkgs.linux-firmware-atkfix
+  ];
   # TODO: Find this on FW16
   environment.variables.DXVK_FILTER_DEVICE_NAME = "AMD Radeon RX 7700S (RADV NAVI33)";
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
@@ -55,4 +58,9 @@
     options cfg80211 crda_support=y
     options cfg80211 ieee80211_regdom="US"
   '';
+  networking.wireless.iwd.settings = {
+    General = {
+      ControlPortOverNL80211 = false;
+    };
+  };
 }

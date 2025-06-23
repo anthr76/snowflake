@@ -44,6 +44,16 @@
         ./gamescope-native-res.patch
       ];
     });
+    # linux-firmware-atkfix = prev.linux-firmware.overrideAttrs (oldAttrs: {
+    #   # TODO: Fix when new firmware release is cut
+    #   # https://bugzilla.kernel.org/show_bug.cgi?id=220108
+    #   # # Upgrade linux-firmware, the ath12k firmware is broken on the latest official version.
+    #   version = "20250410";
+    #   src = final.fetchzip {
+    #     url = "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-20250410.tar.xz ";
+    #     hash = "sha256-aQdEl9+7zbNqWSII9hjRuPePvSfWVql5u5TIrGsa+Ao=";
+    #   };
+    # });
     discord = prev.discord.overrideAttrs (oldAttrs: {
       withOpenASAR = true;
       withVencord = true;
