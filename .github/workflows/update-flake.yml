@@ -30,7 +30,7 @@ jobs:
           nixbuild_token: ${{ secrets.NIXBUILD_AUTH_TOKEN }}
           generate_summary_for: 'workflow'
       - name: Update flake.lock
-        uses: DeterminateSystems/update-flake-lock@a2bbe0274e3a0c4194390a1e445f734c597ebc37 # v24
+        uses: DeterminateSystems/update-flake-lock@9070c8924674eb79cc49246b8b6f2e14f4378eb0 # v26
         with:
           pr-title: "chore(deps): update flake.lock"
           pr-labels: |
