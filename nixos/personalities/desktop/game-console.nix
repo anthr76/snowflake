@@ -178,15 +178,22 @@
       desktopSession = "plasma";
     };
   };
-  environment.etc."xdg/gamescope-session/environment".text = ''
-    STEAM_EXTRA_COMPAT_TOOLS_PATHS = "${pkgs.proton-ge-bin.steamcompattool}"
+  jovian.steam.environment = {
+    STEAM_EXTRA_COMPAT_TOOLS_PATHS = "${pkgs.proton-ge-bin.steamcompattool}";
     # We don't support adopting a drive, yet.
-    STEAM_ALLOW_DRIVE_ADOPT = "0"
+    STEAM_ALLOW_DRIVE_ADOPT = "0";
     # Ejecting doesn't work, either.
-    STEAM_ALLOW_DRIVE_UNMOUNT = "1"
-    steamargs = ("-steamos3" "-steampal" "-gamepadui")
-  ''
-  ;
+    STEAM_ALLOW_DRIVE_UNMOUNT = "1";
+    steamargs = ''("-steamos3" "-steampal" "-gamepadui")'';
+  };
+  # environment.etc."xdg/gamescope-session/environment".text = ''
+  #   STEAM_EXTRA_COMPAT_TOOLS_PATHS = "${pkgs.proton-ge-bin.steamcompattool}"
+  #   # We don't support adopting a drive, yet.
+  #   STEAM_ALLOW_DRIVE_ADOPT = "0"
+  #   # Ejecting doesn't work, either.
+  #   STEAM_ALLOW_DRIVE_UNMOUNT = "1"
+  #   steamargs = ("-steamos3" "-steampal" "-gamepadui")
+  # '';
   # services.udev.extraRules = ''
   #   # If a GPU crash is caused by a specific process, kill the PID
   #   ACTION=="change", ENV{DEVNAME}=="/dev/dri/card0", ENV{RESET}=="1", ENV{PID}!="0", RUN+="${pkgs.util-linux}/bin/kill -9 %E{PID}"
