@@ -18,7 +18,8 @@
     # Currently broken and using with flatpak for now.
     # zoom-us
     system76-keyboard-configurator
-    uhk-agent
+    # Currently broken
+    # uhk-agent
     podman-desktop
     mumble
     murmur
