@@ -99,7 +99,7 @@
                 command = ["${pkgs.alejandra}/bin/alejandra"];
               };
               nix = {
-                maxMemoryMB = 4096;
+                maxMemoryMB = 8096;
                 flake = {
                   autoEvalInputs = true;
                 };
