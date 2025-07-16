@@ -21,9 +21,8 @@
         "jnoortheen.nix-ide"
         "mrmlnc.vscode-json5"
         "ms-azuretools.vscode-docker"
-        # TODO: Failing to build in nixpkgs at the moment
-        # "ms-python.python"
-        # "ms-python.black-formatter"
+        "ms-python.python"
+        "ms-python.black-formatter"
         "redhat.ansible"
         "redhat.vscode-yaml"
         "tamasfe.even-better-toml"
