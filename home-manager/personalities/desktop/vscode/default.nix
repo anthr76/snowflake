@@ -21,7 +21,9 @@
         "jnoortheen.nix-ide"
         "mrmlnc.vscode-json5"
         "ms-azuretools.vscode-docker"
-        "ms-python.python"
+        # TODO: Failing to build in nixpkgs at the moment
+        # "ms-python.python"
+        # "ms-python.black-formatter"
         "redhat.ansible"
         "redhat.vscode-yaml"
         "tamasfe.even-better-toml"
@@ -31,7 +33,6 @@
         "github.vscode-github-actions"
         "ms-vscode.cpptools-extension-pack"
         "unifiedjs.vscode-mdx"
-        "ms-python.black-formatter"
         "nickgo.cuelang"
         "esbenp.prettier-vscode"
         "darkriszty.markdown-table-prettify"
