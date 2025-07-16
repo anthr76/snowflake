@@ -26,6 +26,9 @@ buildPythonPackage rec {
     pulsectl-asyncio
   ];
 
+  build-system = [ setuptools ];
+  pyproject = true;
+
   doCheck = false;
 
   meta = with lib; {
