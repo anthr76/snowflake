@@ -50,4 +50,11 @@
   ];
   services.hardware.bolt.enable = true;
   services.flatpak.enable = true;
+  # TODO: Remove after testing with UHK agent
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
+
+  hardware.keyboard.uhk.enable = true;
 }
