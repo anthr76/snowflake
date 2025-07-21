@@ -10,6 +10,9 @@
     sopsFile = ../../../secrets/users.yaml;
   };
   i18n.defaultLocale = "en_US.UTF-8";
+  # TODO: This was causing a eval failure
+  # Ensure it's upstreammed
+  hardware.framework.enableKmod = false;
 
   boot.initrd.availableKernelModules = [
     "nvme"
