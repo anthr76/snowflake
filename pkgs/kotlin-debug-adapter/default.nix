@@ -7,7 +7,6 @@
   makeWrapper,
   maven,
 }:
-
 stdenv.mkDerivation rec {
   pname = "kotlin-debug-adapter";
   version = "0.4.4";

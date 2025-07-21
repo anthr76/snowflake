@@ -7,8 +7,8 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "marjohn56";
     repo = "udpbroadcastrelay";
-    rev = "07d747947047f4c01a3b7dd26bb15beafffeadff";
-    sha256 = "sha256-tFkn4hWky77UdXzgZWCf5aaiFKeQl3E/71EVh8kXO/I=";
+    rev = "8ebaa9b2690eb61a236184f6f6bf7eb773da4fd9";
+    sha256 = "sha256-sZ4K0W608enGmugFVebt2HRpY7eUPItFVwjMLVjRnRs=";
   };
 
 

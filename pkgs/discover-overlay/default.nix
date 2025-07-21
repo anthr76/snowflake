@@ -1,6 +1,20 @@
-{ buildPythonPackage, fetchFromGitHub, gobject-introspection, gtk-layer-shell, gtk3
-, lib, wrapGAppsHook, pillow, pygobject3, pyxdg, requests, setuptools
-, websocket-client, xlib, pulsectl-asyncio }:
+{
+  buildPythonPackage,
+  fetchFromGitHub,
+  gobject-introspection,
+  gtk-layer-shell,
+  gtk3,
+  lib,
+  wrapGAppsHook,
+  pillow,
+  pygobject3,
+  pyxdg,
+  requests,
+  setuptools,
+  websocket-client,
+  xlib,
+  pulsectl-asyncio,
+}:
 buildPythonPackage rec {
   pname = "discover-overlay";
   version = "0.7.8";
@@ -11,7 +25,7 @@ buildPythonPackage rec {
     rev = "v0.7.8";
     sha256 = "sha256-0b0uZDa9Q3pQ6X65C+E31dMpdTPt4vvHDEqFEtRoedg=";
   };
-  nativeBuildInputs = [ wrapGAppsHook gobject-introspection ];
+  nativeBuildInputs = [wrapGAppsHook gobject-introspection];
   propagatedBuildInputs = [
     gobject-introspection
     gtk-layer-shell
@@ -26,7 +40,7 @@ buildPythonPackage rec {
     pulsectl-asyncio
   ];
 
-  build-system = [ setuptools ];
+  build-system = [setuptools];
   pyproject = true;
 
   doCheck = false;

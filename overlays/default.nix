@@ -95,7 +95,7 @@
         ++ [
           (final.fetchpatch {
             url = "https://patch-diff.githubusercontent.com/raw/AOMediaCodec/libavif/pull/2848.patch";
-            sha256 = "";
+            sha256 = "sha256-0Vt05fRQF1c/ftZ2vPMbyEiOt49RnEzio/zXDUq2rE8=";
           })
         ];
     });

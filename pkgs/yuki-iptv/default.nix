@@ -8,16 +8,15 @@
   lib,
   mpv-unwrapped,
   python3,
-  stdenv
+  stdenv,
 }:
-
 stdenv.mkDerivation rec {
   pname = "yuki-iptv";
-  version = "0.0.15";
+  version = "0.0.19";
 
   src = fetchurl {
     url = "https://codeberg.org/liya/yuki-iptv/archive/${version}.tar.gz";
-    sha256 = "sha256-8u8KoabExVqyj8ohGUl28SqIJYGfNLNl/tyHM9gwX88=";
+    sha256 = "sha256-G8a+E7a6H/a4jiq+sbNA1wzIkGEhjogtrxBhcZqEtA8=";
   };
 
   buildInputs = [
@@ -58,7 +57,7 @@ stdenv.mkDerivation rec {
       --replace "python3" "${python3}/bin/python3"
 
     substituteInPlace usr/lib/yuki-iptv/thirdparty/mpv.py \
-      --replace "ctypes.util.find_library('mpv')" "'${lib.makeLibraryPath [ mpv-unwrapped ]}/libmpv.so'"
+      --replace "ctypes.util.find_library('mpv')" "'${lib.makeLibraryPath [mpv-unwrapped]}/libmpv.so'"
   '';
 
   installPhase = ''
