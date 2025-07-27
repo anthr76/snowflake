@@ -24,6 +24,7 @@
     murmur
     (wineWowPackages.waylandFull.override {
       wineRelease = "stable";
+      vulkanSupport = true;
       mingwSupport = true;
     })
     dxvk
