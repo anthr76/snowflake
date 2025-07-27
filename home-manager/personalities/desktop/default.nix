@@ -22,13 +22,7 @@
     podman-desktop
     mumble
     murmur
-    (wineWowPackages.waylandFull.override {
-      wineRelease = "stable";
-      vulkanSupport = true;
-      mingwSupport = true;
-    })
-    dxvk
-    winetricks
+    bottles
     lightworks
     darktable
     shadps4
