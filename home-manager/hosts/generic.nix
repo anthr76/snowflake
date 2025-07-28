@@ -5,13 +5,10 @@
   systemd.user.services.auto-home-update = {
     Unit = {
       Description = "Automatic Home Manager update via nh";
-      After = [ "network-online.target" ];
     };
     Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.nh}/bin/nh home switch --no-nom -c anthony@generic github:anthr76/snowflake/stable";
-      Restart = "on-failure";
-      RestartSec = "300";
     };
   };
 
