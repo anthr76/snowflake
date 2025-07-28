@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   imports = [
     ./fish.nix
     ./zoxide.nix
@@ -12,16 +12,18 @@
     ./containers.nix
     ./bat.nix
     ./direnv.nix
+    ./nh.nix
   ];
-  home.packages = with pkgs; [
-    ripgrep
-    fd
-    jq
-    openssl
-    cfssl
-    sops
-    nh
-  ] ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
-            distrobox
-        ]);
+  home.packages = with pkgs;
+    [
+      ripgrep
+      fd
+      jq
+      openssl
+      cfssl
+      sops
+    ]
+    ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
+      distrobox
+    ]);
 }

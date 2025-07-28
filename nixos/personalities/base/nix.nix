@@ -1,14 +1,17 @@
-{ inputs, lib, pkgs, config, ... }: {
+{
+  inputs,
+  lib,
+  pkgs,
+  config,
+  ...
+}: {
   nix = {
     # This will additionally add your inputs to the system's legacy channels
     # Making legacy nix commands consistent as well, awesome!
-    nixPath = [ "nixpkgs=${inputs.nixpkgs.outPath}" ];
-    registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
+    nixPath = ["nixpkgs=${inputs.nixpkgs.outPath}"];
+    registry = lib.mapAttrs (_: value: {flake = value;}) inputs;
     gc = {
       automatic = true;
-      dates = "weekly";
-      # Keep the last 3 generations
-      options = "--delete-older-than +3";
     };
     settings = {
       substituters = [
@@ -32,20 +35,22 @@
         "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
         "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
       ];
-      trusted-users = [ "root" "@wheel" ];
+      trusted-users = ["root" "@wheel"];
       builders-use-substitutes = true;
       auto-optimise-store = lib.mkDefault true;
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = ["nix-command" "flakes"];
       warn-dirty = false;
       flake-registry = ""; # Disable global flake registry
     };
     distributedBuilds = true;
-    buildMachines = [{
-      hostName = "eu.nixbuild.net";
-      system = "x86_64-linux";
-      maxJobs = 100;
-      supportedFeatures = [ "benchmark" "big-parallel" ];
-    }];
+    buildMachines = [
+      {
+        hostName = "eu.nixbuild.net";
+        system = "x86_64-linux";
+        maxJobs = 100;
+        supportedFeatures = ["benchmark" "big-parallel"];
+      }
+    ];
   };
   programs.ssh.extraConfig = ''
     Host eu.nixbuild.net
@@ -57,9 +62,8 @@
 
   programs.ssh.knownHosts = {
     nixbuild = {
-      hostNames = [ "eu.nixbuild.net" ];
-      publicKey =
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
+      hostNames = ["eu.nixbuild.net"];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
     };
   };
   sops.secrets.nixbuild-ssh-key = {
@@ -78,11 +82,19 @@
   };
   # For nixos-rebuild build-vm
   virtualisation.vmVariant = {
-      virtualisation.sharedDirectories = {
-          keys = {
-              source = "/etc/ssh";
-              target = "/etc/ssh";
-          };
+    virtualisation.sharedDirectories = {
+      keys = {
+        source = "/etc/ssh";
+        target = "/etc/ssh";
       };
+    };
+  };
+  programs.nh = {
+    enable = true;
+    flake = "github:anthr76/snowflake";
+    clean = {
+      enable = true;
+      extraArgs = "--keep 5";
+    };
   };
 }
