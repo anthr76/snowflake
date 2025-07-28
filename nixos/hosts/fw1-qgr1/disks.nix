@@ -4,7 +4,7 @@
       main = {
         type = "disk";
         device =
-          "/dev/disk/by-id/nvme-Sabrent_Rocket_4.0_500GB_03F10711184419353987";
+          "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_500GB_S466NX0M780072N";
         content = {
           type = "gpt";
           partitions = {
@@ -34,24 +34,6 @@
                   };
                 };
                 mountpoint = "/partition-root";
-              };
-            };
-          };
-        };
-      };
-      data = {
-        type = "disk";
-        device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_23410U801207";
-        content = {
-          type = "gpt";
-          partitions = {
-            data = {
-              size = "100%";
-              content = {
-                type = "btrfs";
-                extraArgs = [ "-f" ];
-                subvolumes = { "/data" = { mountpoint = "/data"; }; };
-                mountpoint = "/partition-data";
               };
             };
           };

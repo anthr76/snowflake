@@ -74,4 +74,29 @@
     "net.core.default_qdisc" = "fq";
     "net.ipv4.tcp_congestion_control" = "bbr";
   };
+
+  # Show failed systemd units on login
+  programs.bash.interactiveShellInit = ''
+    # Show failed systemd units if any
+    if systemctl --failed --quiet --no-legend | grep -q .; then
+      echo -e "\n\033[1;31mFailed systemd units:\033[0m"
+      systemctl --failed --no-legend
+      echo ""
+    fi
+  '';
+  programs.fish.interactiveShellInit = ''
+    # Show failed systemd units if any
+    if systemctl --failed --quiet --no-legend | string length -q
+      echo -e "\n\033[1;31mFailed systemd units:\033[0m"
+      systemctl --failed --no-legend
+      echo ""
+    end
+  '';  programs.zsh.interactiveShellInit = ''
+    # Show failed systemd units if any
+    if systemctl --failed --quiet --no-legend | grep -q .; then
+      echo -e "\n\033[1;31mFailed systemd units:\033[0m"
+      systemctl --failed --no-legend
+      echo ""
+    fi
+  '';
 }

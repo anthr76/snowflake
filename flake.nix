@@ -34,11 +34,15 @@
       url = "github:nixified-ai/flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, disko, gomod2nix, nix4vscode, nix-darwin, nixpkgs
            , home-manager, chaotic, hardware, jovian-nixos
-           , nix-github-actions, nix-flatpak, nixified-ai, ... }@inputs:
+           , nix-github-actions, nix-flatpak, nixified-ai, nixos-generators, ... }@inputs:
     let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;
@@ -65,7 +69,21 @@
         attrPrefix = "";
       };
 
-      packages    = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
+      packages    = forEachSystem (pkgs: import ./pkgs { inherit pkgs; } // {
+        # Installer ISO built with nixos-generators
+        installer-iso = nixos-generators.nixosGenerate {
+          system = pkgs.system;
+          modules = [ ./nixos/iso ];
+          format = "install-iso";
+        };
+
+        # VM image for testing the ISO
+        installer-vm = nixos-generators.nixosGenerate {
+          system = pkgs.system;
+          modules = [ ./nixos/iso ];
+          format = "vm";
+        };
+      });
       devShells   = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
       overlays    = import ./overlays { inherit inputs outputs; };
       nixosModules        = import ./modules/nixos;
@@ -111,6 +129,10 @@
         "fw1-nwk2" = lib.nixosSystem {
           specialArgs = { inherit inputs outputs; };
           modules = [ ./nixos/hosts/fw1-nwk2 chaotic.nixosModules.default ];
+        };
+        "fw1-qgr1" = lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+          modules = [ ./nixos/hosts/fw1-qgr1 chaotic.nixosModules.default ];
         };
       };
 

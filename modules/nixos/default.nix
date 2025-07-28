@@ -6,4 +6,5 @@
   # my-module = import ./my-module.nix;
   gaming-kernel = import ./gaming-kernel.nix;
   udpbroadcastrelay = import ./udpbroadcastrelay.nix;
+  router = import ./router.nix;
 }
