@@ -10,9 +10,6 @@
     # Making legacy nix commands consistent as well, awesome!
     nixPath = ["nixpkgs=${inputs.nixpkgs.outPath}"];
     registry = lib.mapAttrs (_: value: {flake = value;}) inputs;
-    gc = {
-      automatic = true;
-    };
     settings = {
       substituters = [
         "https://hyprland.cachix.org"
