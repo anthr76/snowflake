@@ -60,6 +60,7 @@
         "github.copilot-chat"
         "github.copilot"
         "eamodio.gitlens"
+        "hashicorp.terraform"
       ];
       userSettings = {
         "[go]".editor.defaultFormatter = "golang.go";
