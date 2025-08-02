@@ -29,22 +29,22 @@
 
   system.stateVersion = "25.11";
 
-
   boot.kernelParams = ["console=ttyS0,115200" "console=tty1"];
   services.getty.extraArgs = ["--keep-baud" "115200,38400,9600"];
 
   systemd = {
     enableEmergencyMode = false;
-    watchdog = {
-      runtimeTime = "20s";
-      rebootTime = "30s";
+    settings = {
+      Manager = {
+        RebootWatchdogSec = "30s";
+        RuntimeWatchdogSec = "20s";
+      };
     };
     sleep.extraConfig = ''
       AllowSuspend=no
       AllowHibernation=no
     '';
   };
-
 
   environment.systemPackages = with pkgs; [
     wget
@@ -64,7 +64,7 @@
     enable = true;
     settings = {
       PermitRootLogin = "yes";
-      PasswordAuthentication = lib.mkForce true;  # Enable password auth too
+      PasswordAuthentication = lib.mkForce true; # Enable password auth too
     };
   };
 

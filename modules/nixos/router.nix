@@ -43,7 +43,8 @@ let
       master = true;
       extraConfig = ''
         allow-update { key "dhcp-update-key"; };
-        journal "${config.services.bind.directory}/db.${mkReverseDnsZone vlan.subnet}jnl";
+        journal "db.${mkReverseDnsZone vlan.subnet}jnl";
+        notify no;
       '';
       file = pkgs.writeText (mkReverseDnsZone vlan.subnet) ''
         $ORIGIN ${mkReverseDnsZone vlan.subnet}
@@ -395,10 +396,16 @@ in {
       };
     };
 
+    systemd.tmpfiles.rules = [
+      "d /var/lib/bind 0775 named named -"
+      "Z /var/lib/bind 0775 named named -"
+    ];
+
     services.bind = {
       enable = true;
       forward = "only";
       forwarders = [ "127.0.0.1" ];
+      directory = "/var/lib/bind";
       listenOn = [
         (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router
       ];
@@ -412,6 +419,7 @@ in {
       ];
       extraOptions = ''
         dnssec-validation no;
+        notify no;
       '';
 
       extraConfig = ''
@@ -444,7 +452,8 @@ in {
           master = true;
           extraConfig = ''
              allow-update { key "dhcp-update-key"; };
-             journal "${config.services.bind.directory}/db.${cfg.domain}.jnl";
+             journal "db.${cfg.domain}.jnl";
+             notify no;
           '';
           file = pkgs.writeText cfg.domain ''
             $ORIGIN ${cfg.domain}.
