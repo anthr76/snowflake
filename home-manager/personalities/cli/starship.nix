@@ -1,14 +1,25 @@
-{ 
-    programs.starship = { 
+{
+    programs.starship = {
         enable = true;
-        settings.kubernetes = {
-            disabled = false;
-            contexts = [
-                {
-                context_pattern = "^teleport\.[\w\.]+-(?P<cluster>[\w-]+)$";
-                context_alias = "$cluster";
-                }
-            ];
+        settings = {
+            hostname = {
+                disabled = true;
+            };
+            custom.fqdn = {
+                command = "hostname -f";
+                when = "test -n \"$SSH_CLIENT\"";
+                format = "🌐 [$output]($style) ";
+                style = "bold green";
+            };
+            kubernetes = {
+                disabled = false;
+                contexts = [
+                    {
+                    context_pattern = "^teleport\.[\w\.]+-(?P<cluster>[\w-]+)$";
+                    context_alias = "$cluster";
+                    }
+                ];
+            };
         };
-    }; 
+    };
 }
