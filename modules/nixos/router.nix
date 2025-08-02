@@ -420,6 +420,9 @@ in {
       extraOptions = ''
         dnssec-validation no;
         notify no;
+        dump-file "/var/lib/bind/cache_dump.db";
+        statistics-file "/var/lib/bind/named_stats.txt";
+        memstatistics-file "/var/lib/bind/named_mem_stats.txt";
       '';
 
       extraConfig = ''
