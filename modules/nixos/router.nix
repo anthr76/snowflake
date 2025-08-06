@@ -45,6 +45,8 @@ let
         allow-update { key "dhcp-update-key"; };
         journal "db.${mkReverseDnsZone vlan.subnet}jnl";
         notify no;
+        ixfr-from-differences yes;
+        max-journal-size 1m;
       '';
       file = pkgs.writeText (mkReverseDnsZone vlan.subnet) ''
         $ORIGIN ${mkReverseDnsZone vlan.subnet}
@@ -399,7 +401,78 @@ in {
     systemd.tmpfiles.rules = [
       "d /var/lib/bind 0775 named named -"
       "Z /var/lib/bind 0775 named named -"
+      "f /var/log/bind-maintenance.log 0644 named named -"
     ];
+
+    # Service to clean BIND journal files on startup to prevent DDNS corruption
+    systemd.services.bind-journal-cleanup = {
+      description = "Clean BIND journal files to prevent DDNS corruption";
+      before = [ "bind.service" ];
+      wantedBy = [ "bind.service" ];
+      serviceConfig = {
+        Type = "oneshot";
+        User = "named";
+        Group = "named";
+        ExecStart = pkgs.writeShellScript "clean-bind-journals" ''
+          # Remove all journal files to prevent corruption issues
+          find /var/lib/bind -name "*.jnl" -delete
+          # Remove any backup zone files that might cause conflicts
+          find /var/lib/bind -name "*.bak" -delete
+        '';
+      };
+    };
+
+    # Timer to periodically clean up BIND journals (weekly)
+    systemd.timers.bind-journal-maintenance = {
+      description = "Periodic BIND journal maintenance";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnCalendar = "weekly";
+        Persistent = true;
+        RandomizedDelaySec = "1h";
+      };
+    };
+
+    systemd.services.bind-journal-maintenance = {
+      description = "Periodic BIND journal maintenance";
+      serviceConfig = {
+        Type = "oneshot";
+        User = "named";
+        Group = "named";
+        ExecStart = pkgs.writeShellScript "maintain-bind-journals" ''
+          set -euo pipefail
+
+          # Check if BIND is running before attempting maintenance
+          if ! systemctl is-active --quiet bind.service; then
+            echo "$(date): BIND is not running, skipping maintenance" >> /var/log/bind-maintenance.log
+            exit 0
+          fi
+
+          # Compact journal files by forcing zone sync
+          if ${pkgs.bind}/bin/rndc sync -clean 2>/dev/null; then
+            echo "$(date): Successfully synced zones" >> /var/log/bind-maintenance.log
+          else
+            echo "$(date): Warning: rndc sync failed, continuing with cleanup" >> /var/log/bind-maintenance.log
+          fi
+
+          # Remove old journal files larger than 1MB (they should be smaller due to max-journal-size)
+          DELETED=$(find /var/lib/bind -name "*.jnl" -size +1M -delete -print | wc -l)
+          if [ "$DELETED" -gt 0 ]; then
+            echo "$(date): Removed $DELETED oversized journal files" >> /var/log/bind-maintenance.log
+          fi
+
+          # Log maintenance activity
+          echo "$(date): BIND journal maintenance completed successfully" >> /var/log/bind-maintenance.log
+        '';
+        # Add some additional safeguards
+        PrivateTmp = true;
+        ProtectSystem = "strict";
+        ReadWritePaths = [ "/var/lib/bind" "/var/log" ];
+        NoNewPrivileges = true;
+      };
+      after = [ "bind.service" ];
+      requisite = [ "bind.service" ];  # More strict than requires - won't start if bind isn't running
+    };
 
     services.bind = {
       enable = true;
@@ -423,6 +496,14 @@ in {
         dump-file "/var/lib/bind/cache_dump.db";
         statistics-file "/var/lib/bind/named_stats.txt";
         memstatistics-file "/var/lib/bind/named_mem_stats.txt";
+
+        # Journal and zone transfer settings to prevent corruption
+        max-journal-size 1m;
+        ixfr-from-differences yes;
+
+        # Improved error handling for DDNS
+        request-expire yes;
+        serial-query-rate 20;
       '';
 
       extraConfig = ''
@@ -457,6 +538,8 @@ in {
              allow-update { key "dhcp-update-key"; };
              journal "db.${cfg.domain}.jnl";
              notify no;
+             ixfr-from-differences yes;
+             max-journal-size 1m;
           '';
           file = pkgs.writeText cfg.domain ''
             $ORIGIN ${cfg.domain}.
@@ -488,7 +571,7 @@ in {
       after = [
         "network-online.target"
         "dnscrypt-proxy2.service"
-        "named.service"
+        "bind.service"
         "systemd-resolved.service"
       ];
       wants = [
@@ -503,6 +586,27 @@ in {
     services.kea.dhcp-ddns = {
       enable = true;
       settings = {
+        # Improved logging and error handling
+        loggers = [
+          {
+            name = "kea-dhcp-ddns.d2-to-dns";
+            output_options = [
+              {
+                output = "stdout";
+                maxver = 10;
+                maxsize = 1048576;
+              }
+            ];
+            severity = "INFO";
+            debuglevel = 0;
+          }
+        ];
+
+        # DNS update retry settings
+        dns-server-timeout = 1000;  # 1 second timeout
+        ncr-protocol = "UDP";
+        ncr-format = "JSON";
+
         tsig-keys = [
           {
             name = "dhcp-update-key";
@@ -534,6 +638,26 @@ in {
             }];
           }) cfg.vlans;
         };
+      };
+    };
+
+    # Ensure kea-dhcp-ddns waits for BIND to be ready and journals cleaned
+    systemd.services.kea-dhcp-ddns = {
+      after = [
+        "bind.service"
+        "bind-journal-cleanup.service"
+        "network-online.target"
+      ];
+      wants = [
+        "bind.service"
+        "network-online.target"
+      ];
+      serviceConfig = {
+        # Add a small delay to ensure BIND is fully ready
+        ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
+        # Restart on failure to recover from DNS issues
+        Restart = "on-failure";
+        RestartSec = "10s";
       };
     };
 

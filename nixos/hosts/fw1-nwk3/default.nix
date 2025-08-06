@@ -91,7 +91,7 @@
       }
       {
         id = 101;
-        name = "guests";
+        name = "iot";
         subnet = "192.168.13.0/24";
         router = "192.168.13.1";
       }
