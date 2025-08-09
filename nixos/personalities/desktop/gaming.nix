@@ -13,7 +13,7 @@
       gamemode
     ];
     package = pkgs.steam.override {
-      extraEnv = { STEAM_FORCE_DESKTOPUI_SCALING = "2"; };
+      extraEnv = { STEAM_FORCE_DESKTOPUI_SCALING = "1.5"; };
       extraLibraries = pkgs: [ pkgs.xorg.libxcb ];
     };
     extraCompatPackages = with pkgs; [ proton-ge-bin ];
