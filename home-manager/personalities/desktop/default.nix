@@ -1,4 +1,8 @@
-{ pkgs, inputs, ... }: {
+{
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     ./vscode
     ./fonts.nix
@@ -29,5 +33,9 @@
     yuki-iptv
     vorta
     prismlauncher
+  ];
+  #TODO:https://github.com/NixOS/nixpkgs/pull/429473
+  nixpkgs.config.permittedInsecurePackages = [
+    "libsoup-2.74.3"
   ];
 }
