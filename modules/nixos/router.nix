@@ -681,6 +681,9 @@ in {
       reflector = true;
       nssmdns4 = true;
       nssmdns6 = true;
+      allowInterfaces = map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
+        ++ optional cfg.enableOob cfg.oobInterface
+        ++ optional cfg.enableLan cfg.lanInterface;
     };
 
     services.miniupnpd = {
