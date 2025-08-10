@@ -31,7 +31,7 @@
     extraPackages32 = [ pkgs.pkgsi686Linux.gamescope-wsi ];
   };
   services.pulseaudio.support32Bit = true;
-  environment.systemPackages = [ pkgs.vulkan-tools pkgs.amdgpu_top ];
+  environment.systemPackages = [ pkgs.vulkan-tools pkgs.amdgpu_top pkgs.lsfg-vk-ui pkgs.lsfg-vk ];
   programs.gamemode = {
     enable = true;
     settings = {
