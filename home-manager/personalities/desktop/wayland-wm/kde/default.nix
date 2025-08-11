@@ -1,11 +1,7 @@
 { pkgs, ... }: {
   imports = [ ../../darkman.nix ];
-  home.pointerCursor = {
-    name = "breeze_cursors";
-    package = pkgs.kdePackages.breeze-icons;
-    #   x11.enable = true;
-    #   gtk.enable = true;
-  };
+  catppuccin.cursors.enable = true;
+  catppuccin.fcitx5.enable = true;
   services.darkman = {
     darkModeScripts = {
       kde-global = ''

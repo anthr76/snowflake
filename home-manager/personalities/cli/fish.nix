@@ -15,10 +15,12 @@
       gitignore = "curl -sL https://www.gitignore.io/api/$argv";
     };
   };
+  catppuccin.fish.enable = true;
   programs.fzf = {
     enable = true;
     enableFishIntegration = true;
   };
+  catppuccin.fzf.enable = true;
 
   programs.atuin = {
     enable = true;
@@ -33,5 +35,6 @@
       style = "compact";
     };
   };
+  catppuccin.atuin.enable = true;
 
 }

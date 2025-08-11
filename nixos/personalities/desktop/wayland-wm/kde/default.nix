@@ -1,5 +1,10 @@
-{ pkgs, lib, config, ... }: {
-  imports = [ ../../default.nix ];
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: {
+  imports = [../../default.nix];
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   environment.sessionVariables.GTK_USE_PORTAL = "1";
   xdg.portal = {
@@ -17,8 +22,8 @@
       allowNullPassword = true;
       kwallet.enable = true;
     };
-    kde-fingerprint = lib.mkIf config.services.fprintd.enable { fprintAuth = true; };
-    kde-smartcard = lib.mkIf config.security.pam.p11.enable { p11Auth = true; };
+    kde-fingerprint = lib.mkIf config.services.fprintd.enable {fprintAuth = true;};
+    kde-smartcard = lib.mkIf config.security.pam.p11.enable {p11Auth = true;};
   };
 
   hardware.bluetooth.enable = true;
@@ -48,5 +53,5 @@
       wayland.compositor = "kwin";
     };
   };
-
+  catppuccin.sddm.enable = true;
 }

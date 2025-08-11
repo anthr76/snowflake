@@ -18,4 +18,5 @@
       gamemode = true;
     };
   };
+  catppuccin.mangohud.enable = true;
 }

@@ -3,4 +3,5 @@
     enable = true;
     enableFishIntegration = true;
   };
+  catppuccin.lsd.enable = true;
 }

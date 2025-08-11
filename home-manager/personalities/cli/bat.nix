@@ -1,13 +1,10 @@
 { pkgs, ... }: {
   programs.bat = {
     enable = true;
-    # Fix: batman is broken
-    # extraPackages = [ pkgs.bat-extras.batman ];
-    config = {
-      theme = "Coldark-Dark";
-    };
+    extraPackages = [ pkgs.bat-extras.batman ];
   };
   home.shellAliases = {
     "cat" = "bat -pp";
   };
+  catppuccin.bat.enable = true;
 }

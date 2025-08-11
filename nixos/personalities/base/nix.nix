@@ -23,6 +23,8 @@
         "https://nix-gaming.cachix.org"
         # NixifedAI
         "https://ai.cachix.org"
+        # catppuccin
+        "https://catppuccin.cachix.org"
       ];
       trusted-public-keys = [
         "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
@@ -31,6 +33,7 @@
         "snowflake.cachix.org-1:p9pP30w7PFDuzkJ2v4TQ446cXLUglrnBUhN6tUzp2sA="
         "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
         "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
+        "catppuccin.cachix.org-1:noG/4HkbhJb+lUAdKrph6LaozJvAeEEZj4N732IysmU="
       ];
       trusted-users = ["root" "@wheel"];
       builders-use-substitutes = true;

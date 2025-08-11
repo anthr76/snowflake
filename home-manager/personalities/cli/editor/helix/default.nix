@@ -1,10 +1,10 @@
 {inputs, pkgs, ...}:
 {
+  catppuccin.helix.enable = true;
   programs.helix = {
     enable = true;
     defaultEditor = true;
     settings = {
-      theme = "catppuccin_mocha";
       keys.normal = {
         space.space = "file_picker";
         space.w = ":w";

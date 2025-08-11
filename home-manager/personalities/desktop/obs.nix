@@ -5,4 +5,5 @@
       obs-vkcapture
     ];
   };
+  catppuccin.obs.enable = true;
 }

@@ -37,4 +37,5 @@
       };
     };
   };
+  catppuccin.thunderbird.enable = true;
 }

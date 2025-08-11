@@ -4,7 +4,9 @@ let
     echo key::$(${pkgs.openssh}/bin/ssh-add -L | ${pkgs.gnugrep}/bin/grep -m 1 -E "pkcs11|Authentication|nistp256")
   '';
 in {
-  home.packages = with pkgs; [ git-ssh-signingkey git-extras pre-commit ];
+  home.packages = with pkgs; [ git-ssh-signingkey git-extras pre-commit lazygit ];
+  catppuccin.delta.enable = true;
+  catppuccin.lazygit.enable = true;
   # TODO: This needs to be modularized..
   programs.git = {
     enable = true;

@@ -9,4 +9,6 @@
     wayland-push-to-talk-fix
     discover-overlay
   ];
+  catppuccin.element-desktop.enable = true;
+
 }

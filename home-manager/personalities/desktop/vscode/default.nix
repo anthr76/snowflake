@@ -8,6 +8,11 @@
     pkgs.helm-ls
     pkgs.github-mcp-server
   ];
+  catppuccin.vscode.profiles.default = {
+    enable = true;
+    icons.enable = true;
+
+  };
   programs.vscode = {
     enable = true;
     mutableExtensionsDir = false;
@@ -15,8 +20,6 @@
       enableUpdateCheck = false;
       enableExtensionUpdateCheck = false;
       extensions = pkgs.nix4vscode.forVscode [
-        "catppuccin.catppuccin-vsc"
-        "thang-nm.catppuccin-perfect-icons"
         "golang.go"
         "jnoortheen.nix-ide"
         "mrmlnc.vscode-json5"
@@ -161,8 +164,6 @@
           autoDetectColorScheme = false;
         };
         workbench = {
-          colorTheme = "Catppuccin Mocha";
-          iconTheme = "catppuccin-perfect-macchiato";
           sideBar = {
             location = "left";
           };
@@ -171,7 +172,6 @@
             renderIndentGuides = "none";
           };
         };
-        "workbench.iconTheme" = "catppuccin-perfect-macchiato";
         "extensions.autoUpdate" = false;
         update = {
           mode = "manual";
