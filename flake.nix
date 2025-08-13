@@ -40,6 +40,8 @@
     };
     catppuccin.url = "github:catppuccin/nix";
     catppuccin.inputs.nixpkgs.follows = "nixpkgs";
+    apple-color-emoji.url = "github:samuelngs/apple-emoji-linux";
+    apple-color-emoji.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
