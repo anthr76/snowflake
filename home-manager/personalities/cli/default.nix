@@ -13,6 +13,7 @@
     ./bat.nix
     ./direnv.nix
     ./nh.nix
+    ./crush.nix
   ];
   home.packages = with pkgs;
     [

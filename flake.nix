@@ -42,6 +42,8 @@
     catppuccin.inputs.nixpkgs.follows = "nixpkgs";
     apple-color-emoji.url = "github:samuelngs/apple-emoji-linux";
     apple-color-emoji.inputs.nixpkgs.follows = "nixpkgs";
+    nix-ai-tools.url = "github:numtide/nix-ai-tools";
+    nix-ai-tools.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {

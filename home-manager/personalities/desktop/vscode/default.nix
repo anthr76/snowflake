@@ -63,11 +63,26 @@
         "hashicorp.terraform"
         "ms-vscode-remote.remote-ssh"
       ];
+      userMcp = {
+        servers = {
+          github = {
+            type = "http";
+            url = "https://api.githubcopilot.com/mcp/";
+          };
+          nixos = {
+            type = "stdio";
+            command = "nix";
+            args = ["run" "github:utensils/mcp-nixos" "--"];
+          };
+        };
+      };
       userSettings = {
         "[go]".editor.defaultFormatter = "golang.go";
         "[go]".toolsManagement.autoUpdate = true;
         "[nix]".editor.defaultFormatter = "jnoortheen.nix-ide";
         "[terraform]".editor.defaultFormatter = "hashicorp.terraform";
+        "[yaml]".editor.defaultFormatter = "esbenp.prettier-vscode";
+        "[yml]".editor.defaultFormatter = "esbenp.prettier-vscode";
         kotlin.java.home = "${pkgs.jdk}/lib/openjdk";
         kotlin.languageServer.path = "${pkgs.kotlin-language-server}/bin/kotlin-language-server";
         kotlin.debugAdapter.path = "${pkgs.kotlin-debug-adapter}/bin/kotlin-debug-adapter";
@@ -178,6 +193,9 @@
         github = {
           copilot = {
             chat = {
+              agent = {
+                thinkingTool = true;
+              };
               codesearch.enabled = true;
               edits = {
                 temporalContext.enabled = true;
