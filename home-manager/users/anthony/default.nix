@@ -1,9 +1,12 @@
 # This is your home-manager configuration file
 # Use this to configure your home environment (it replaces ~/.config/nixpkgs/home.nix)
-
-{ outputs, lib, ... }: {
-
-  imports = [ ../../personalities/global ];
+{
+  outputs,
+  lib,
+  inputs,
+  ...
+}: {
+  imports = [../../personalities/global inputs.sops-nix.homeManagerModules.sops];
   nixpkgs = {
     # You can add overlays here
     overlays = [
@@ -26,13 +29,13 @@
       # Disable if you don't want unfree packages
       allowUnfree = true;
       # Workaround for https://github.com/nix-community/home-manager/issues/2942
-      allowUnfreePredicate = (_: true);
+      allowUnfreePredicate = _: true;
     };
   };
 
-  home.file.".ssh/lattice_tpm2.pub".text = (builtins.readFile ./lattice_tpm2.pub);
-  home.file.".ssh/f80_tpm2.pub".text = (builtins.readFile ./f80_tpm2.pub);
-  home.file.".ssh/yubi.pub".text = (builtins.readFile ./yubi.pub);
+  home.file.".ssh/lattice_tpm2.pub".text = builtins.readFile ./lattice_tpm2.pub;
+  home.file.".ssh/f80_tpm2.pub".text = builtins.readFile ./f80_tpm2.pub;
+  home.file.".ssh/yubi.pub".text = builtins.readFile ./yubi.pub;
 
   # Add stuff for your user as you see fit:
   # home.packages = with pkgs; [ steam ];

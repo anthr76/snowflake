@@ -6,12 +6,10 @@
   # TODO: See if we can just include in a overlay for vscode.
   home.packages = [
     pkgs.helm-ls
-    pkgs.github-mcp-server
   ];
   catppuccin.vscode.profiles.default = {
     enable = true;
     icons.enable = true;
-
   };
   programs.vscode = {
     enable = true;
@@ -26,7 +24,6 @@
         "ms-azuretools.vscode-docker"
         "ms-python.python"
         "ms-python.black-formatter"
-        "redhat.ansible"
         "redhat.vscode-yaml"
         "tamasfe.even-better-toml"
         "helm-ls.helm-ls"
@@ -64,6 +61,7 @@
         "github.copilot"
         "eamodio.gitlens"
         "hashicorp.terraform"
+        "ms-vscode-remote.remote-ssh"
       ];
       userSettings = {
         "[go]".editor.defaultFormatter = "golang.go";
@@ -176,6 +174,16 @@
         update = {
           mode = "manual";
           showReleaseNotes = false;
+        };
+        github = {
+          copilot = {
+            chat = {
+              codesearch.enabled = true;
+              edits = {
+                temporalContext.enabled = true;
+              };
+            };
+          };
         };
       };
     };
