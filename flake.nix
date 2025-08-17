@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.05";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-darwin.url = "github:LnL7/nix-darwin";
@@ -179,7 +179,10 @@
       "anthony@lattice" = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {inherit inputs outputs;};
-        modules = [./home-manager/hosts/lattice.nix];
+        modules = [
+          ./home-manager/hosts/lattice.nix
+          catppuccin.homeModules.catppuccin
+        ];
       };
       "anthony@generic" = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;

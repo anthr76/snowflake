@@ -44,7 +44,8 @@
     # Gamecube / Wii
     dolphin-emu
     # PSX
-    duckstation
+    # TODO: Find replacement for PS1
+    # duckstation
     # Dreamcast
     flycast
     # Saturn

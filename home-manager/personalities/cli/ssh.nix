@@ -1,8 +1,11 @@
-{ outputs, lib, ... }:
+{ outputs, lib, pkgs, ... }:
 let hostnames = builtins.attrNames outputs.nixosConfigurations;
 in {
   # TODO: Enable in new release.
   # services.ssh-agent.enable = true;
+  home.packages = with pkgs; [
+    openssh
+  ];
   programs.ssh = {
     enable = true;
     matchBlocks = {

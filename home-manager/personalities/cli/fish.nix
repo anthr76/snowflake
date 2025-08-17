@@ -3,8 +3,8 @@
   programs.fish = {
     enable = true;
     shellAliases = {
-      yssh = "ssh-add -s ${pkgs.yubico-piv-tool}/lib/libykcs11.so";
-      tssh = if pkgs.stdenv.isLinux then "ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so" else "echo Not supported.";
+      yssh = "${pkgs.openssh}/bin/ssh-add -s ${pkgs.yubico-piv-tool}/lib/libykcs11.so";
+      tssh = if pkgs.stdenv.isLinux then "${pkgs.openssh}/bin/ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so" else "echo Not supported.";
     };
     functions = {
       fish_greeting = "";
