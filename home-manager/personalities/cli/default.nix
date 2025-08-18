@@ -23,6 +23,7 @@
       openssl
       cfssl
       sops
+      devenv
     ]
     ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
       distrobox
