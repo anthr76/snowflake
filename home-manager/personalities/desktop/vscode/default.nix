@@ -74,6 +74,11 @@
             command = "nix";
             args = ["run" "github:utensils/mcp-nixos" "--"];
           };
+          gk = {
+            type = "stdio";
+            command = "${pkgs.gk-cli}/bin/gk";
+            args = ["mcp"];
+          };
         };
       };
       userSettings = {
