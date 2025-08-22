@@ -12,7 +12,7 @@
     inputs.disko.nixosModules.disko
   ];
   networking.hostName = "fw1";
-  networking.domain = "qgr1.rabbito.tech";
+  networking.domain = "scr1.rabbito.tech";
   system.stateVersion = "23.11";
   nixpkgs.hostPlatform = "x86_64-linux";
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
@@ -22,11 +22,11 @@
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   services.router = {
     enable = true;
-    domain = "qgr1.rabbito.tech";
+    domain = "scr1.rabbito.tech";
     udevRules = ''
-      SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="a8:b8:e0:05:a1:71", NAME="lan"
-      SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="a8:b8:e0:05:a1:73", NAME="wan"
-      SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="a8:b8:e0:05:a1:74", NAME="oob"
+      SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:7c:14:f8:4a:d5", NAME="lan"
+      SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:7c:14:f8:4a:d0", NAME="wan"
+      SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="a0:ce:c8:54:3d:cd", NAME="oob"
     '';
     enableLan = true;
     lanInterface = "lan";
@@ -38,8 +38,8 @@
     oobAddress = "10.10.10.1";
 
     cloudflaredomains = [
-      "fw1.qgr1.rabbito.tech"
-      "qgr1.rabbito.tech"
+      "fw1.scr1.rabbito.tech"
+      "scr1.rabbito.tech"
     ];
     # TODO: Fixup
     tailscaleRoutes = [

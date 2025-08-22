@@ -151,9 +151,9 @@
         specialArgs = {inherit inputs outputs;};
         modules = [./nixos/hosts/fw1-nwk2 chaotic.nixosModules.default];
       };
-      "fw1-qgr1" = lib.nixosSystem {
+      "fw1-scr1" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
-        modules = [./nixos/hosts/fw1-qgr1 chaotic.nixosModules.default];
+        modules = [./nixos/hosts/fw1-scr1 chaotic.nixosModules.default];
       };
     };
 

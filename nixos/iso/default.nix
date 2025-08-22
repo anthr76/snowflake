@@ -31,6 +31,11 @@
 
   boot.kernelParams = ["console=ttyS0,115200" "console=tty1"];
   services.getty.extraArgs = ["--keep-baud" "115200,38400,9600"];
+  systemd.services."serial-getty@ttyS0" = {
+    enable = true;
+    wantedBy = ["getty.target"];
+    serviceConfig.Restart = "always";
+  };
 
   systemd = {
     enableEmergencyMode = false;
