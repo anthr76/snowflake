@@ -33,6 +33,7 @@
     yuki-iptv
     vorta
     prismlauncher
+    minicom
   ];
   #TODO:https://github.com/NixOS/nixpkgs/pull/429473
   nixpkgs.config.permittedInsecurePackages = [
