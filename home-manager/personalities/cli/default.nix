@@ -13,6 +13,7 @@
     ./bat.nix
     ./direnv.nix
     ./nh.nix
+    ./crush.nix
   ];
   home.packages = with pkgs;
     [
@@ -22,6 +23,7 @@
       openssl
       cfssl
       sops
+      devenv
     ]
     ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
       distrobox

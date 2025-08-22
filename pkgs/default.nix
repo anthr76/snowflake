@@ -5,7 +5,6 @@
   # example = pkgs.callPackage ./example { };
   wayland-push-to-talk-fix = pkgs.callPackage ./wayland-push-to-talk-fix { };
   discover-overlay = pkgs.python3Packages.callPackage ./discover-overlay { };
-  lightworks_2023_02_02 = pkgs.callPackage ./lightworks_2023_02_02 { };
   yuki-iptv = pkgs.callPackage ./yuki-iptv { };
   rpc-bridge = pkgs.callPackage ./rpc-bridge { };
   udpbroadcastrelay = pkgs.callPackage ./udpbroadcastrelay { };
