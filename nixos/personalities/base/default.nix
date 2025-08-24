@@ -5,7 +5,7 @@
     ./nix.nix
     ./users.nix
     ./openssh.nix
-    ./podman.nix
+    ./docker.nix
     ./zram.nix
     ./polkit.nix
     ./bootloader.nix

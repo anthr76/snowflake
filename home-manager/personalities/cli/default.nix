@@ -9,7 +9,6 @@
     ./starship.nix
     ./viddy.nix
     ./lsd.nix
-    ./containers.nix
     ./bat.nix
     ./direnv.nix
     ./nh.nix
