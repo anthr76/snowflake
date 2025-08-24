@@ -8,7 +8,7 @@ in {
     anthony = {
       isNormalUser = true;
       shell = pkgs.fish;
-      extraGroups = [ "wheel" ]
+      extraGroups = [ "wheel" "dialout" ]
         ++ ifTheyExist [ "tss" "networkmanager" "scanner" "lp" "gamemode" "docker"];
       hashedPasswordFile = config.sops.secrets.anthony-password.path;
       openssh.authorizedKeys.keys = [

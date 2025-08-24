@@ -4,7 +4,7 @@
       main = {
         type = "disk";
         device =
-          "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_500GB_S466NX0M780072N";
+          "/dev/disk/by-id/nvme-YSO256GTLCW-E3C-2_511241209057000444";
         content = {
           type = "gpt";
           partitions = {

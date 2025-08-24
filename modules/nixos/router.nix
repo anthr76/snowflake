@@ -1,69 +1,90 @@
-{ config, lib, pkgs, inputs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
+with lib; let
   cfg = config.services.router;
 
   # Helper function to generate subnet configurations
-  mkSubnet = { id, subnet, router, pool ? null }:
-    let
-      # Extract network part and calculate default pool range
-      parts = splitString "." (head (splitString "/" subnet));
-      network = concatStringsSep "." (take 3 parts);
-      defaultPool = "${network}.20 - ${network}.240";
-    in {
-      inherit subnet id;
-      pools = [ { pool = if pool != null then pool else defaultPool; } ];
-      option-data = [
-        { name = "routers"; data = router; }
-      ];
-    };  # Helper function to generate reverse DNS zone name
-  mkReverseDnsZone = subnet:
-    let
-      parts = splitString "." (head (splitString "/" subnet));
-      reverseParts = if (head parts) == "10" then
+  mkSubnet = {
+    id,
+    subnet,
+    router,
+    pool ? null,
+  }: let
+    # Extract network part and calculate default pool range
+    parts = splitString "." (head (splitString "/" subnet));
+    network = concatStringsSep "." (take 3 parts);
+    defaultPool = "${network}.20 - ${network}.240";
+  in {
+    inherit subnet id;
+    pools = [
+      {
+        pool =
+          if pool != null
+          then pool
+          else defaultPool;
+      }
+    ];
+    option-data = [
+      {
+        name = "routers";
+        data = router;
+      }
+    ];
+  }; # Helper function to generate reverse DNS zone name
+  mkReverseDnsZone = subnet: let
+    parts = splitString "." (head (splitString "/" subnet));
+    reverseParts =
+      if (head parts) == "10"
+      then
         # Handle 10.x.x.x networks
-        [ (elemAt parts 2) (elemAt parts 1) (head parts) ]
+        [(elemAt parts 2) (elemAt parts 1) (head parts)]
       else
         # Handle 192.168.x.x networks
-        [ (elemAt parts 2) (elemAt parts 1) (head parts) ];
-    in "${concatStringsSep "." reverseParts}.in-addr.arpa.";
+        [(elemAt parts 2) (elemAt parts 1) (head parts)];
+  in "${concatStringsSep "." reverseParts}.in-addr.arpa.";
 
   # Generate DHCP subnets
-  dhcpSubnets = map (vlan:
-    mkSubnet {
-      inherit (vlan) id subnet router;
-      pool = vlan.dhcpPool or null;
-    }
-  ) cfg.vlans;  # Generate reverse DNS zones
+  dhcpSubnets =
+    map (
+      vlan:
+        mkSubnet {
+          inherit (vlan) id subnet router;
+          pool = vlan.dhcpPool or null;
+        }
+    )
+    cfg.vlans; # Generate reverse DNS zones
   reverseDnsZones = listToAttrs (map (vlan: {
-    name = mkReverseDnsZone vlan.subnet;
-    value = {
-      master = true;
-      extraConfig = ''
-        allow-update { key "dhcp-update-key"; };
-        journal "db.${mkReverseDnsZone vlan.subnet}jnl";
-        notify no;
-        ixfr-from-differences yes;
-        max-journal-size 1m;
-      '';
-      file = pkgs.writeText (mkReverseDnsZone vlan.subnet) ''
-        $ORIGIN ${mkReverseDnsZone vlan.subnet}
-        $TTL    86400
-        @ IN SOA ${cfg.domain}. admin.rabbito.tech (
-        ${toString inputs.self.lastModified}           ; serial number
-        3600                    ; refresh
-        900                     ; retry
-        1209600                 ; expire
-        1800                    ; ttl
-        )
-                        IN    NS      ${config.networking.hostName}.${cfg.domain}.
-        ${optionalString (vlan.id == 99) "1               IN    PTR     ${config.networking.hostName}.${cfg.domain}."}
-      '';
-    };
-  }) cfg.vlans);
-
+      name = mkReverseDnsZone vlan.subnet;
+      value = {
+        master = true;
+        extraConfig = ''
+          allow-update { key "dhcp-update-key"; };
+          journal "db.${mkReverseDnsZone vlan.subnet}jnl";
+          notify no;
+          ixfr-from-differences yes;
+          max-journal-size 1m;
+        '';
+        file = pkgs.writeText (mkReverseDnsZone vlan.subnet) ''
+          $ORIGIN ${mkReverseDnsZone vlan.subnet}
+          $TTL    86400
+          @ IN SOA ${cfg.domain}. admin.rabbito.tech (
+          ${toString inputs.self.lastModified}           ; serial number
+          3600                    ; refresh
+          900                     ; retry
+          1209600                 ; expire
+          1800                    ; ttl
+          )
+                          IN    NS      ${config.networking.hostName}.${cfg.domain}.
+          ${optionalString (vlan.id == 99) "1               IN    PTR     ${config.networking.hostName}.${cfg.domain}."}
+        '';
+      };
+    })
+    cfg.vlans);
 in {
   options.services.router = {
     enable = mkEnableOption "Router Configuration";
@@ -175,7 +196,7 @@ in {
       type = types.listOf types.str;
       default = [];
       description = "Additional routes to advertise via Tailscale";
-      example = [ "192.168.14.0/24" "10.40.99.0/24" ];
+      example = ["192.168.14.0/24" "10.40.99.0/24"];
     };
 
     cloudflaredomains = mkOption {
@@ -197,7 +218,7 @@ in {
       description = "Additional DNS forward zones";
       example = {
         "example.com" = {
-          forwarders = [ "8.8.8.8" "1.1.1.1" ];
+          forwarders = ["8.8.8.8" "1.1.1.1"];
         };
       };
     };
@@ -222,7 +243,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # SOPS secrets configuration
     sops.secrets.cfApiToken = {
       sopsFile = ../../secrets/users.yaml;
     };
@@ -231,6 +251,7 @@ in {
       mode = "0644";
     };
     sops.secrets."ddns-tsig-key" = {
+      # TODO: poor secret name
       sopsFile = ../../secrets/users.yaml;
       mode = "0644";
     };
@@ -255,8 +276,8 @@ in {
     };
 
     # Ensure network-online.target is enabled for proper dependency ordering
-    systemd.targets.network-online.wantedBy = [ "multi-user.target" ];
-    systemd.services.NetworkManager-wait-online.enable = false;  # We don't use NetworkManager
+    systemd.targets.network-online.wantedBy = ["multi-user.target"];
+    systemd.services.NetworkManager-wait-online.enable = false; # We don't use NetworkManager
 
     services.udev.extraRules = cfg.udevRules;
 
@@ -270,42 +291,53 @@ in {
     }) (filter (v: v.enabled) cfg.vlans));
 
     # Configure VLAN interfaces
-    networking.interfaces = {
-      ${cfg.wanInterface} = {
-        useDHCP = true;
-      };
-    } // (optionalAttrs cfg.enableLan {
-      ${cfg.lanInterface} = {
-        ipv4.addresses = [{
-          address = cfg.lanAddress;
-          prefixLength = toInt (last (splitString "/" cfg.lanSubnet));
-        }];
-      };
-    }) // (optionalAttrs cfg.enableOob {
-      ${cfg.oobInterface} = {
-        ipv4.addresses = [{
-          address = cfg.oobAddress;
-          prefixLength = toInt (last (splitString "/" cfg.oobSubnet));
-        }];
-      };
-    }) // (listToAttrs (map (vlan: {
-      name = "vlan${toString vlan.id}";
-      value = {
-        ipv4.addresses = [{
-          address = vlan.router;
-          prefixLength = toInt (last (splitString "/" vlan.subnet));
-        }];
-      };
-    }) (filter (v: v.enabled) cfg.vlans)));
+    networking.interfaces =
+      {
+        ${cfg.wanInterface} = {
+          useDHCP = true;
+        };
+      }
+      // (optionalAttrs cfg.enableLan {
+        ${cfg.lanInterface} = {
+          ipv4.addresses = [
+            {
+              address = cfg.lanAddress;
+              prefixLength = toInt (last (splitString "/" cfg.lanSubnet));
+            }
+          ];
+        };
+      })
+      // (optionalAttrs cfg.enableOob {
+        ${cfg.oobInterface} = {
+          ipv4.addresses = [
+            {
+              address = cfg.oobAddress;
+              prefixLength = toInt (last (splitString "/" cfg.oobSubnet));
+            }
+          ];
+        };
+      })
+      // (listToAttrs (map (vlan: {
+        name = "vlan${toString vlan.id}";
+        value = {
+          ipv4.addresses = [
+            {
+              address = vlan.router;
+              prefixLength = toInt (last (splitString "/" vlan.subnet));
+            }
+          ];
+        };
+      }) (filter (v: v.enabled) cfg.vlans)));
 
     # Configure NAT
     networking.nat = {
       enable = true;
       externalInterface = cfg.wanInterface;
-      internalInterfaces = map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
+      internalInterfaces =
+        map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface
         ++ optional cfg.enableLan cfg.lanInterface;
-    };    # Configure Tailscale
+    }; # Configure Tailscale
     services.tailscale.extraUpFlags = mkIf (cfg.tailscaleRoutes != []) [
       "--advertise-routes=${concatStringsSep "," cfg.tailscaleRoutes}"
     ];
@@ -330,27 +362,31 @@ in {
         valid-lifetime = 4000;
 
         interfaces-config = {
-          interfaces = map (vlan: "vlan${toString vlan.id}/${vlan.router}") (filter (v: v.enabled) cfg.vlans)
+          interfaces =
+            map (vlan: "vlan${toString vlan.id}/${vlan.router}") (filter (v: v.enabled) cfg.vlans)
             ++ optional cfg.enableOob "${cfg.oobInterface}/${cfg.oobAddress}"
             ++ optional cfg.enableLan "${cfg.lanInterface}/${cfg.lanAddress}";
         };
 
-        option-data = [
-          {
-            name = "domain-name-servers";
-            data = (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router;
-          }
-          {
-            name = "domain-search";
-            data = "${cfg.domain},mole-bowfin.ts.net";
-          }
-        ] ++ cfg.customDhcpOptions;
+        option-data =
+          [
+            {
+              name = "domain-name-servers";
+              data = (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router;
+            }
+            {
+              name = "domain-search";
+              data = "${cfg.domain},mole-bowfin.ts.net";
+            }
+          ]
+          ++ cfg.customDhcpOptions;
 
-        subnet4 = dhcpSubnets
+        subnet4 =
+          dhcpSubnets
           ++ optionals cfg.enableOob [
             {
               subnet = cfg.oobSubnet;
-              id = 200;  # Use ID 200 for OOB to avoid conflicts with VLANs
+              id = 200; # Use ID 200 for OOB to avoid conflicts with VLANs
               pools = [
                 {
                   pool = let
@@ -360,14 +396,17 @@ in {
                 }
               ];
               option-data = [
-                { name = "routers"; data = cfg.oobAddress; }
+                {
+                  name = "routers";
+                  data = cfg.oobAddress;
+                }
               ];
             }
           ]
           ++ optionals cfg.enableLan [
             {
               subnet = cfg.lanSubnet;
-              id = 201;   # Use ID 201 for LAN
+              id = 201; # Use ID 201 for LAN
               pools = [
                 {
                   pool = let
@@ -377,7 +416,10 @@ in {
                 }
               ];
               option-data = [
-                { name = "routers"; data = cfg.lanAddress; }
+                {
+                  name = "routers";
+                  data = cfg.lanAddress;
+                }
               ];
             }
           ];
@@ -388,7 +430,7 @@ in {
     services.dnscrypt-proxy2 = {
       enable = true;
       settings = {
-        listen_addresses = [ "127.0.0.1:53" ];
+        listen_addresses = ["127.0.0.1:53"];
         allowed_names = {
           allowed_names_file = pkgs.writeText "allow_list.txt" ''
             # Rabbit Cloud
@@ -407,8 +449,8 @@ in {
     # Service to clean BIND journal files on startup to prevent DDNS corruption
     systemd.services.bind-journal-cleanup = {
       description = "Clean BIND journal files to prevent DDNS corruption";
-      before = [ "bind.service" ];
-      wantedBy = [ "bind.service" ];
+      before = ["bind.service"];
+      wantedBy = ["bind.service"];
       serviceConfig = {
         Type = "oneshot";
         User = "named";
@@ -425,7 +467,7 @@ in {
     # Timer to periodically clean up BIND journals (weekly)
     systemd.timers.bind-journal-maintenance = {
       description = "Periodic BIND journal maintenance";
-      wantedBy = [ "timers.target" ];
+      wantedBy = ["timers.target"];
       timerConfig = {
         OnCalendar = "weekly";
         Persistent = true;
@@ -467,29 +509,31 @@ in {
         # Add some additional safeguards
         PrivateTmp = true;
         ProtectSystem = "strict";
-        ReadWritePaths = [ "/var/lib/bind" "/var/log" ];
+        ReadWritePaths = ["/var/lib/bind" "/var/log"];
         NoNewPrivileges = true;
       };
-      after = [ "bind.service" ];
-      requisite = [ "bind.service" ];  # More strict than requires - won't start if bind isn't running
+      after = ["bind.service"];
+      requisite = ["bind.service"]; # More strict than requires - won't start if bind isn't running
     };
 
     services.bind = {
       enable = true;
       forward = "only";
-      forwarders = [ "127.0.0.1" ];
+      forwarders = ["127.0.0.1"];
       directory = "/var/lib/bind";
       listenOn = [
         (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router
       ];
-      cacheNetworks = map (vlan: vlan.subnet) cfg.vlans ++ [
-        # Additional networks that may need caching
-        "192.168.12.0/24"
-        "192.168.6.0/24"
-        "192.168.4.0/24"
-        "10.20.99.0/24"
-        "10.5.0.0/24"
-      ];
+      cacheNetworks =
+        map (vlan: vlan.subnet) cfg.vlans
+        ++ [
+          # Additional networks that may need caching
+          "192.168.12.0/24"
+          "192.168.6.0/24"
+          "192.168.4.0/24"
+          "10.20.99.0/24"
+          "10.5.0.0/24"
+        ];
       extraOptions = ''
         dnssec-validation no;
         notify no;
@@ -514,49 +558,52 @@ in {
             forwarders { 100.100.100.100; };
         };
         # Legacy zones
-        zone "scr1.rabbito.tech" {
-            type forward;
-            forwarders { 10.5.0.7; 10.5.0.8; };
-        };
-        zone "kutara.io" {
-            type forward;
-            forwarders { 10.5.0.7; 10.5.0.8; };
-        };
+        # zone "scr1.rabbito.tech" {
+        #     type forward;
+        #     forwarders { 10.5.0.7; 10.5.0.8; };
+        # };
+        # zone "kutara.io" {
+        #     type forward;
+        #     forwarders { 10.5.0.7; 10.5.0.8; };
+        # };
         ${concatStringsSep "\n" (mapAttrsToList (zone: config: ''
-          zone "${zone}" {
-              type forward;
-              forwarders { ${concatStringsSep "; " config.forwarders}; };
-          };
-        '') cfg.forwardZones)}
+            zone "${zone}" {
+                type forward;
+                forwarders { ${concatStringsSep "; " config.forwarders}; };
+            };
+          '')
+          cfg.forwardZones)}
         ${cfg.customBindConfig}
       '';
 
-      zones = {
-        "${cfg.domain}." = {
-          master = true;
-          extraConfig = ''
-             allow-update { key "dhcp-update-key"; };
-             journal "db.${cfg.domain}.jnl";
-             notify no;
-             ixfr-from-differences yes;
-             max-journal-size 1m;
-          '';
-          file = pkgs.writeText cfg.domain ''
-            $ORIGIN ${cfg.domain}.
-            $TTL    86400
-            @ IN SOA ${cfg.domain}. admin.rabbito.tech (
-            ${toString inputs.self.lastModified}           ; serial number
-            3600                    ; refresh
-            900                     ; retry
-            1209600                 ; expire
-            1800                    ; ttl
-            )
-                            IN    NS      ${config.networking.hostName}.${cfg.domain}.
-            ${config.networking.hostName}             IN    A       ${(findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router}
-            unifi           IN    CNAME   unifi.scr1.rabbito.tech.
-          '';
-        };
-      } // reverseDnsZones;
+      zones =
+        {
+          "${cfg.domain}." = {
+            master = true;
+            extraConfig = ''
+              allow-update { key "dhcp-update-key"; };
+              journal "db.${cfg.domain}.jnl";
+              notify no;
+              ixfr-from-differences yes;
+              max-journal-size 1m;
+            '';
+            file = pkgs.writeText cfg.domain ''
+              $ORIGIN ${cfg.domain}.
+              $TTL    86400
+              @ IN SOA ${cfg.domain}. admin.rabbito.tech (
+              ${toString inputs.self.lastModified}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      ${config.networking.hostName}.${cfg.domain}.
+              ${config.networking.hostName}             IN    A       ${(findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router}
+              unifi           IN    CNAME   unifi.scr1.rabbito.tech.
+            '';
+          };
+        }
+        // reverseDnsZones;
     };
 
     # Configure DDNS
@@ -603,7 +650,7 @@ in {
         ];
 
         # DNS update retry settings
-        dns-server-timeout = 1000;  # 1 second timeout
+        dns-server-timeout = 1000; # 1 second timeout
         ncr-protocol = "UDP";
         ncr-format = "JSON";
 
@@ -619,24 +666,30 @@ in {
             {
               name = "${cfg.domain}.";
               key-name = "dhcp-update-key";
-              dns-servers = [{
-                hostname = "";
-                ip-address = (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router;
-                port = 53;
-              }];
+              dns-servers = [
+                {
+                  hostname = "";
+                  ip-address = (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router;
+                  port = 53;
+                }
+              ];
             }
           ];
         };
         reverse-ddns = {
-          ddns-domains = map (vlan: {
-            name = mkReverseDnsZone vlan.subnet;
-            key-name = "dhcp-update-key";
-            dns-servers = [{
-              hostname = "";
-              ip-address = (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router;
-              port = 53;
-            }];
-          }) cfg.vlans;
+          ddns-domains =
+            map (vlan: {
+              name = mkReverseDnsZone vlan.subnet;
+              key-name = "dhcp-update-key";
+              dns-servers = [
+                {
+                  hostname = "";
+                  ip-address = (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router;
+                  port = 53;
+                }
+              ];
+            })
+            cfg.vlans;
         };
       };
     };
@@ -664,13 +717,15 @@ in {
     # Configure firewall
     networking.firewall = {
       enable = true;
-      trustedInterfaces = [ "tailscale0" ] ++ map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
+      trustedInterfaces =
+        ["tailscale0"]
+        ++ map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface
         ++ optional cfg.enableLan cfg.lanInterface;
       interfaces = {
         ${cfg.wanInterface} = {
-          allowedTCPPorts = [ 22 ];
-          allowedUDPPorts = [ ];
+          allowedTCPPorts = [22];
+          allowedUDPPorts = [];
         };
       };
     };
@@ -681,7 +736,8 @@ in {
       reflector = true;
       nssmdns4 = true;
       nssmdns6 = true;
-      allowInterfaces = map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
+      allowInterfaces =
+        map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface
         ++ optional cfg.enableLan cfg.lanInterface;
     };
@@ -691,7 +747,8 @@ in {
       upnp = false;
       natpmp = true;
       externalInterface = cfg.wanInterface;
-      internalIPs = map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
+      internalIPs =
+        map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface
         ++ optional cfg.enableLan cfg.lanInterface;
     };

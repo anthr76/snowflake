@@ -12,7 +12,7 @@ keys:
   - &fw1-nwk2 age1n84nrpcndeduskpx7psc5p3758vcp8ynme5qacdergyrkhhtremsdewm8g
   - &lattice age1w0gxlxdt4p63ggundtdwvhar4kgkl5z09vmxxdg2r94f8hugsegq6nx2gw
   - &cdgc age19s90gaf8wlqyms20mtqsgn5jkqfmnquuf5q45tcrwn4pmkunqc9sfvcu4u
-  - &fw1-qgr1 age1tj35653s07t0qtkpqx07k6qsezwvqq97h3l7p55n798ygucx758sw7fd5y
+  - &fw1-scr1 age1qhhv0axhjgpf4gthcehaqfcu0p367l2yvvxn0y2244evlg4asc6sk6z87v
 
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$
@@ -28,4 +28,4 @@ creation_rules:
       - *fw1-nwk2
       - *lattice
       - *cdgc
-      - *fw1-qgr1
+      - *fw1-scr1
