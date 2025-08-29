@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   # WIP
   programs.crush = {
-    enable = true;
+    enable = false;
 
     # Language Server configurations
     lsp = {
