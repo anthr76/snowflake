@@ -26,7 +26,7 @@
     udevRules = ''
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:7c:14:f8:4a:d5", NAME="lan"
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:7c:14:f8:4a:d0", NAME="wan"
-      SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="a0:ce:c8:54:3d:cd", NAME="oob"
+      SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:7c:14:f8:4a:d1", NAME="oob"
     '';
     enableLan = true;
     lanInterface = "lan";
