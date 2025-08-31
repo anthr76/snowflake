@@ -9,7 +9,7 @@ in {
       isNormalUser = true;
       shell = pkgs.fish;
       extraGroups = [ "wheel" "dialout" ]
-        ++ ifTheyExist [ "tss" "networkmanager" "scanner" "lp" "gamemode" ];
+        ++ ifTheyExist [ "tss" "networkmanager" "scanner" "lp" "gamemode" "docker"];
       hashedPasswordFile = config.sops.secrets.anthony-password.path;
       openssh.authorizedKeys.keys = [
         (builtins.readFile ../../../home-manager/users/anthony/yubi.pub)
