@@ -7,4 +7,6 @@
   gaming-kernel = import ./gaming-kernel.nix;
   udpbroadcastrelay = import ./udpbroadcastrelay.nix;
   router = import ./router.nix;
+  haproxy-k8s = import ./haproxy-k8s.nix;
+  bgp = import ./bgp.nix;
 }
