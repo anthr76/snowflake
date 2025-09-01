@@ -37,6 +37,13 @@
     oobSubnet = "10.10.10.0/24";
     oobAddress = "10.10.10.1";
 
+    # RFC 2136 / external-dns support
+    rfc2136 = {
+      enable = true;
+      externalDnsZones = ["scr1.rabbito.tech" "kutara.io"];
+      defaultTtl = 1;
+    };
+
     cloudflaredomains = [
       "fw1.scr1.rabbito.tech"
       "scr1.rabbito.tech"
@@ -133,9 +140,8 @@
         type = "A";
         value = "192.168.8.1";
       }
-      # TODO: Fix this hack
       {
-        name = "unifi";
+        name = "cluster-0-ie";
         type = "A";
         value = "10.45.0.80";
       }

@@ -133,6 +133,53 @@ with lib; let
   # Generate custom DNS zones
   customDnsZones = listToAttrs (mapAttrsToList mkCustomZone cfg.customDnsZones);
 
+  # Helper variables for RFC 2136 / external-dns configuration
+  _rfc2136Config = rec {
+    # Always use the existing DHCP TSIG key for simplicity
+    tsigKeyName = "dhcp-update-key";
+    tsigSecretPath = config.sops.secrets."ddns-tsig-key".path;
+
+    # Determine bind address - default to management VLAN router IP
+    bindAddress = if cfg.rfc2136.bindAddress != ""
+      then cfg.rfc2136.bindAddress
+      else (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router;
+
+    # Filter out zones that are the same as the main domain - we'll handle those separately
+    additionalExternalDnsZones = filter (zoneName: zoneName != cfg.domain) cfg.rfc2136.externalDnsZones;
+
+    # Check if the main domain is included in external DNS zones
+    mainDomainInExternalDns = elem cfg.domain cfg.rfc2136.externalDnsZones;
+
+    # Generate external-dns zone configurations only for additional zones (not main domain)
+    externalDnsZones = listToAttrs (map (zoneName: {
+      name = "${zoneName}.";
+      value = {
+        master = true;
+        slaves = ["key ${tsigKeyName}"];
+        extraConfig = ''
+          allow-update { key "${tsigKeyName}"; };
+          journal "db.${zoneName}.jnl";
+          notify no;
+          ixfr-from-differences yes;
+          max-journal-size 1m;
+        '';
+        file = pkgs.writeText "${zoneName}.zone" ''
+          $ORIGIN ${zoneName}.
+          $TTL    ${toString cfg.rfc2136.defaultTtl}
+          @ IN SOA ${zoneName}. admin.rabbito.tech (
+          ${toString inputs.self.lastModified}           ; serial number
+          3600                    ; refresh
+          900                     ; retry
+          1209600                 ; expire
+          ${toString cfg.rfc2136.defaultTtl}             ; minimum ttl
+          )
+                          IN    NS      ${config.networking.hostName}.${cfg.domain}.
+          ; External-DNS managed records will be dynamically added here
+        '';
+      };
+    }) additionalExternalDnsZones);
+  };
+
 in {
   options.services.router = {
     enable = mkEnableOption "Router Configuration";
@@ -518,6 +565,36 @@ in {
       default = "";
       description = "Additional BIND configuration";
     };
+
+    # RFC 2136 / external-dns configuration
+    rfc2136 = {
+      enable = mkEnableOption "RFC 2136 support for external-dns";
+
+      externalDnsZones = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = "DNS zones that external-dns should manage";
+        example = ["scr1.rabbito.tech" "kutara.io"];
+      };
+
+      bindAddress = mkOption {
+        type = types.str;
+        default = "";
+        description = "IP address for external-dns to connect to BIND. Defaults to management VLAN router IP";
+      };
+
+      port = mkOption {
+        type = types.int;
+        default = 53;
+        description = "Port for external-dns to connect to BIND";
+      };
+
+      defaultTtl = mkOption {
+        type = types.int;
+        default = 300;
+        description = "Default TTL for external-dns managed records";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -535,9 +612,7 @@ in {
     };
 
     # Override the default router configuration
-    networking.networkmanager.enable = lib.mkForce false;
-
-    # Add router-specific packages
+    networking.networkmanager.enable = lib.mkForce false;    # Add router-specific packages
     environment.systemPackages = with pkgs; [
       ethtool
       tcpdump
@@ -853,10 +928,6 @@ in {
             forwarders { 100.100.100.100; };
         };
         # Legacy zones
-        # zone "scr1.rabbito.tech" {
-        #     type forward;
-        #     forwarders { 10.5.0.7; 10.5.0.8; };
-        # };
         # zone "kutara.io" {
         #     type forward;
         #     forwarders { 10.5.0.7; 10.5.0.8; };
@@ -900,7 +971,8 @@ in {
           };
         }
         // reverseDnsZones
-        // customDnsZones;
+        // customDnsZones
+        // (optionalAttrs cfg.rfc2136.enable _rfc2136Config.externalDnsZones);
     };
 
     # Configure DDNS
