@@ -189,7 +189,10 @@
       "anthony@generic" = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {inherit inputs outputs;};
-        modules = [./home-manager/hosts/generic.nix];
+        modules = [
+          ./home-manager/hosts/generic.nix
+          catppuccin.homeModules.catppuccin
+        ];
       };
     };
 
