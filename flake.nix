@@ -113,6 +113,10 @@
     homeManagerModules = import ./modules/home-manager;
 
     nixosConfigurations = {
+      "bkp1" = lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [./nixos/hosts/bkp1 chaotic.nixosModules.default];
+      };
       "octo" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [chaotic.nixosModules.default ./nixos/hosts/octo];
@@ -156,6 +160,11 @@
     };
 
     homeConfigurations = {
+      "anthony@bkp1" = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        extraSpecialArgs = {inherit inputs outputs;};
+        modules = [./home-manager/hosts/bkp1.nix];
+      };
       "steam@octo" = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {inherit inputs outputs;};
@@ -180,10 +189,7 @@
       "anthony@generic" = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {inherit inputs outputs;};
-        modules = [
-          catppuccin.homeModules.catppuccin
-          ./home-manager/hosts/generic.nix
-        ];
+        modules = [./home-manager/hosts/generic.nix];
       };
     };
 
