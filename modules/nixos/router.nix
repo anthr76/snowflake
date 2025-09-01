@@ -944,7 +944,7 @@ in {
 
       zones =
         {
-          "${cfg.domain}." = {
+          "${cfg.domain}." = ({
             master = true;
             extraConfig = ''
               allow-update { key "dhcp-update-key"; };
@@ -968,7 +968,9 @@ in {
               ${optionalString (dnsRecordsText != "") "\n; Custom DNS records"}
               ${dnsRecordsText}
             '';
-          };
+          } // (optionalAttrs (cfg.rfc2136.enable && _rfc2136Config.mainDomainInExternalDns) {
+            slaves = ["key ${_rfc2136Config.tsigKeyName}"];
+          }));
         }
         // reverseDnsZones
         // customDnsZones
