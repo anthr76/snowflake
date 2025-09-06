@@ -79,6 +79,13 @@
             command = "${pkgs.gk-cli}/bin/gk";
             args = ["mcp"];
           };
+          mcp-k8s-go = {
+            type = "stdio";
+            command = "${pkgs.mcp-k8s-go}/bin/mcp-k8s-go";
+            env = {
+              "KUBECONFIG" = "\${env:KUBECONFIG}";
+            };
+          };
         };
       };
       userSettings = {
@@ -157,7 +164,7 @@
           };
           tabSize = 2;
         };
-        "terminal.intergrated.inheritEnv" = true;
+        "terminal.integrated.inheritEnv" = true;
         explorer = {
           compactFolders = false;
           confirmDelete = false;
@@ -200,6 +207,9 @@
             chat = {
               agent = {
                 thinkingTool = true;
+              };
+              mcp = {
+                autostart = "newAndOutdated";
               };
               codesearch.enabled = true;
               edits = {

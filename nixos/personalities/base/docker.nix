@@ -1,4 +1,4 @@
-{
+{config, ...}: {
   virtualisation = {
     docker = {
       enable = true;
@@ -6,4 +6,8 @@
       rootless.enable = false;
     };
   };
+  networking.firewall.trustedInterfaces =
+    if config.virtualisation.docker.enable
+    then ["docker0"]
+    else [];
 }
