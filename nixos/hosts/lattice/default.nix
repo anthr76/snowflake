@@ -49,9 +49,6 @@
     lib.mkDefault config.hardware.enableRedistributableFirmware;
   # boot.kernelPackages = pkgs.linuxPackages_testing;
   system.stateVersion = "23.05";
-  hardware.firmware = [
-    pkgs.linux-firmware-atkfix
-  ];
   # TODO: Find this on FW16
   environment.variables.DXVK_FILTER_DEVICE_NAME = "AMD Radeon RX 7700S (RADV NAVI33)";
   chaotic.nyx.overlay.onTopOf = "user-pkgs";
