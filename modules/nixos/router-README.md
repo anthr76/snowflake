@@ -135,6 +135,175 @@ This module provides a standardized configuration for Rabbito network routers wi
 }
 ```
 
+### Static DHCP Reservations
+
+Static DHCP reservations ensure that specific devices always receive the same IP address. You can configure reservations at multiple levels:
+
+1. **Per-VLAN reservations**: Configured within each VLAN
+2. **Global reservations**: Applied across all subnets
+3. **Network-specific reservations**: For LAN and OOB networks
+
+```nix
+{
+  services.router = {
+    enable = true;
+    domain = "example.rabbito.tech";
+
+    # Global static reservations (apply to any subnet)
+    globalStaticReservations = [
+      {
+        hostname = "gateway";
+        mac = "aa:bb:cc:dd:ee:ff";
+        ip = "192.168.1.1";
+      }
+    ];
+
+    # LAN network static reservations
+    lanStaticReservations = [
+      {
+        hostname = "main-server";
+        mac = "11:22:33:44:55:66";
+        ip = "192.168.1.10";
+      }
+    ];
+
+    # OOB network static reservations
+    oobStaticReservations = [
+      {
+        hostname = "switch-mgmt";
+        mac = "77:88:99:aa:bb:cc";
+        ip = "10.10.10.10";
+      }
+    ];
+
+    vlans = [
+      {
+        id = 10;
+        name = "servers";
+        subnet = "192.168.10.0/24";
+        router = "192.168.10.1";
+
+        # Per-VLAN static reservations
+        staticReservations = [
+          {
+            hostname = "database-server";
+            mac = "12:34:56:78:9a:bc";
+            ip = "192.168.10.50";
+          }
+          {
+            hostname = "web-server";
+            mac = "de:ad:be:ef:ca:fe";
+            ip = "192.168.10.51";
+          }
+        ];
+      }
+    ];
+  };
+}
+```
+
+### Custom DNS Records
+
+The router module supports adding custom DNS records to your domain zone, as well as creating entirely separate DNS zones. This is useful for internal services, custom hostnames, and service discovery.
+
+#### Adding Records to Main Domain
+
+```nix
+{
+  services.router = {
+    enable = true;
+    domain = "example.rabbito.tech";
+
+    # Custom DNS records for the main domain
+    dnsRecords = [
+      # A records for servers
+      {
+        name = "webserver";
+        type = "A";
+        value = "192.168.10.50";
+        ttl = 3600;
+      }
+      {
+        name = "database";
+        type = "A";
+        value = "192.168.10.51";
+      }
+
+      # CNAME aliases
+      {
+        name = "www";
+        type = "CNAME";
+        value = "webserver";
+      }
+      {
+        name = "db";
+        type = "CNAME";
+        value = "database";
+      }
+
+      # MX record for mail
+      {
+        name = "mail";
+        type = "MX";
+        value = "mail.example.com.";
+        priority = 10;
+      }
+
+      # TXT records for verification
+      {
+        name = "_verification";
+        type = "TXT";
+        value = "v=spf1 include:_spf.google.com ~all";
+      }
+    ];
+  };
+}
+```
+
+#### Creating Custom DNS Zones
+
+```nix
+{
+  services.router = {
+    enable = true;
+    domain = "example.rabbito.tech";
+
+    # Custom internal zones
+    customDnsZones = {
+      "internal.local" = {
+        ttl = 300; # 5 minute TTL for internal records
+        soaEmail = "admin.internal.local";
+        records = [
+          { name = "server1"; type = "A"; value = "10.0.0.10"; }
+          { name = "server2"; type = "A"; value = "10.0.0.11"; }
+          { name = "lb"; type = "A"; value = "10.0.0.100"; }
+          { name = "api"; type = "CNAME"; value = "lb"; }
+        ];
+      };
+
+      "k8s.local" = {
+        records = [
+          { name = "master"; type = "A"; value = "192.168.8.10"; }
+          { name = "worker1"; type = "A"; value = "192.168.8.11"; }
+          { name = "worker2"; type = "A"; value = "192.168.8.12"; }
+          { name = "ingress"; type = "A"; value = "192.168.8.100"; }
+        ];
+      };
+    };
+  };
+}
+```
+
+#### Supported Record Types
+
+- **A**: IPv4 address record
+- **AAAA**: IPv6 address record
+- **CNAME**: Canonical name (alias) record
+- **MX**: Mail exchange record (requires `priority`)
+- **TXT**: Text record for verification/configuration
+- **SRV**: Service record (requires `priority`)
+- **PTR**: Pointer record for reverse DNS
+
 ## Configuration Options
 
 ### Required Options
@@ -153,6 +322,7 @@ Each VLAN must specify:
 
 Optional VLAN settings:
 - `dhcpPool`: Custom DHCP pool range (default: .20-.240)
+- `staticReservations`: List of static DHCP reservations for this VLAN
 - `clientClass`: DHCP client class for vendor-specific options
 - `enabled`: Whether this VLAN is enabled (default: true)
 
@@ -161,12 +331,20 @@ Optional VLAN settings:
 - `managementNetwork`: Management network subnet
 - `lanInterface`: LAN interface name (default: "lan")
 - `wanInterface`: WAN interface name (default: "wan")
+- `oobInterface`: Out-of-band management interface name (default: "oob")
+- `enableOob`: Enable OOB management interface (default: true)
+- `enableLan`: Enable LAN interface with IP assignment (default: true)
 - `udevRules`: Custom udev rules for interface naming
 - `cloudflaredomains`: Domains to update via Cloudflare DDNS
 - `tailscaleRoutes`: Routes to advertise via Tailscale
 - `forwardZones`: DNS forward zones for other networks
 - `customDhcpOptions`: Additional DHCP options
 - `customBindConfig`: Additional BIND DNS configuration
+- `globalStaticReservations`: Global static DHCP reservations
+- `lanStaticReservations`: Static reservations for LAN network
+- `oobStaticReservations`: Static reservations for OOB network
+- `dnsRecords`: Custom DNS records for the main domain zone
+- `customDnsZones`: Additional DNS zones with custom records
 
 ## Migration from Legacy Configuration
 

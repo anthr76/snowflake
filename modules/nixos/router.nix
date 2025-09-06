@@ -14,6 +14,7 @@ with lib; let
     subnet,
     router,
     pool ? null,
+    staticReservations ? [],
   }: let
     # Extract network part and calculate default pool range
     parts = splitString "." (head (splitString "/" subnet));
@@ -29,6 +30,11 @@ with lib; let
           else defaultPool;
       }
     ];
+    reservations = map (res: {
+      hostname = res.hostname;
+      hw-address = res.mac;
+      ip-address = res.ip;
+    }) staticReservations;
     option-data = [
       {
         name = "routers";
@@ -53,7 +59,7 @@ with lib; let
     map (
       vlan:
         mkSubnet {
-          inherit (vlan) id subnet router;
+          inherit (vlan) id subnet router staticReservations;
           pool = vlan.dhcpPool or null;
         }
     )
@@ -85,6 +91,95 @@ with lib; let
       };
     })
     cfg.vlans);
+
+  # Helper function to format DNS records for BIND zone file
+  formatDnsRecord = record: let
+    ttlPart = if record.ttl != null then "${toString record.ttl}" else "";
+    priorityPart = if record.priority != null then "${toString record.priority} " else "";
+    recordLine = "${record.name} ${ttlPart} IN ${record.type} ${priorityPart}${record.value}";
+  in recordLine;
+
+  # Generate DNS records text for zone file
+  dnsRecordsText = concatStringsSep "\n" (map formatDnsRecord cfg.dnsRecords);
+
+  # Helper function to generate custom DNS zones
+  mkCustomZone = zoneName: zoneConfig: {
+    name = "${zoneName}.";
+    value = {
+      master = true;
+      extraConfig = ''
+        allow-update { key "dhcp-update-key"; };
+        journal "db.${zoneName}.jnl";
+        notify no;
+        ixfr-from-differences yes;
+        max-journal-size 1m;
+      '';
+      file = pkgs.writeText zoneName ''
+        $ORIGIN ${zoneName}.
+        $TTL    ${toString zoneConfig.ttl}
+        @ IN SOA ${zoneName}. ${zoneConfig.soaEmail} (
+        ${toString inputs.self.lastModified}           ; serial number
+        3600                    ; refresh
+        900                     ; retry
+        1209600                 ; expire
+        1800                    ; ttl
+        )
+                        IN    NS      ${config.networking.hostName}.${cfg.domain}.
+        ${concatStringsSep "\n" (map formatDnsRecord zoneConfig.records)}
+      '';
+    };
+  };
+
+  # Generate custom DNS zones
+  customDnsZones = listToAttrs (mapAttrsToList mkCustomZone cfg.customDnsZones);
+
+  # Helper variables for RFC 2136 / external-dns configuration
+  _rfc2136Config = rec {
+    # Always use the existing DHCP TSIG key for simplicity
+    tsigKeyName = "dhcp-update-key";
+    tsigSecretPath = config.sops.secrets."ddns-tsig-key".path;
+
+    # Determine bind address - default to management VLAN router IP
+    bindAddress = if cfg.rfc2136.bindAddress != ""
+      then cfg.rfc2136.bindAddress
+      else (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router;
+
+    # Filter out zones that are the same as the main domain - we'll handle those separately
+    additionalExternalDnsZones = filter (zoneName: zoneName != cfg.domain) cfg.rfc2136.externalDnsZones;
+
+    # Check if the main domain is included in external DNS zones
+    mainDomainInExternalDns = elem cfg.domain cfg.rfc2136.externalDnsZones;
+
+    # Generate external-dns zone configurations only for additional zones (not main domain)
+    externalDnsZones = listToAttrs (map (zoneName: {
+      name = "${zoneName}.";
+      value = {
+        master = true;
+        slaves = ["key ${tsigKeyName}"];
+        extraConfig = ''
+          allow-update { key "${tsigKeyName}"; };
+          journal "db.${zoneName}.jnl";
+          notify no;
+          ixfr-from-differences yes;
+          max-journal-size 1m;
+        '';
+        file = pkgs.writeText "${zoneName}.zone" ''
+          $ORIGIN ${zoneName}.
+          $TTL    ${toString cfg.rfc2136.defaultTtl}
+          @ IN SOA ${zoneName}. admin.rabbito.tech (
+          ${toString inputs.self.lastModified}           ; serial number
+          3600                    ; refresh
+          900                     ; retry
+          1209600                 ; expire
+          ${toString cfg.rfc2136.defaultTtl}             ; minimum ttl
+          )
+                          IN    NS      ${config.networking.hostName}.${cfg.domain}.
+          ; External-DNS managed records will be dynamically added here
+        '';
+      };
+    }) additionalExternalDnsZones);
+  };
+
 in {
   options.services.router = {
     enable = mkEnableOption "Router Configuration";
@@ -131,6 +226,29 @@ in {
       description = "Out-of-Band management IP address";
     };
 
+    oobStaticReservations = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          hostname = mkOption {
+            type = types.str;
+            description = "Hostname for the reservation";
+          };
+
+          mac = mkOption {
+            type = types.str;
+            description = "MAC address for the reservation";
+          };
+
+          ip = mkOption {
+            type = types.str;
+            description = "IP address for the reservation";
+          };
+        };
+      });
+      default = [];
+      description = "Static DHCP reservations for the OOB network";
+    };
+
     enableLan = mkOption {
       type = types.bool;
       default = true;
@@ -147,6 +265,29 @@ in {
       type = types.str;
       default = "192.168.1.1";
       description = "LAN IP address";
+    };
+
+    lanStaticReservations = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          hostname = mkOption {
+            type = types.str;
+            description = "Hostname for the reservation";
+          };
+
+          mac = mkOption {
+            type = types.str;
+            description = "MAC address for the reservation";
+          };
+
+          ip = mkOption {
+            type = types.str;
+            description = "IP address for the reservation";
+          };
+        };
+      });
+      default = [];
+      description = "Static DHCP reservations for the LAN network";
     };
 
     vlans = mkOption {
@@ -179,6 +320,39 @@ in {
             default = null;
             description = "Custom DHCP pool range";
             example = "192.168.100.50 - 192.168.100.200";
+          };
+
+          staticReservations = mkOption {
+            type = types.listOf (types.submodule {
+              options = {
+                hostname = mkOption {
+                  type = types.str;
+                  description = "Hostname for the reservation";
+                  example = "server1";
+                };
+
+                mac = mkOption {
+                  type = types.str;
+                  description = "MAC address for the reservation";
+                  example = "aa:bb:cc:dd:ee:ff";
+                };
+
+                ip = mkOption {
+                  type = types.str;
+                  description = "IP address for the reservation";
+                  example = "192.168.100.10";
+                };
+              };
+            });
+            default = [];
+            description = "Static DHCP reservations for this VLAN";
+            example = [
+              {
+                hostname = "server1";
+                mac = "aa:bb:cc:dd:ee:ff";
+                ip = "192.168.100.10";
+              }
+            ];
           };
 
           enabled = mkOption {
@@ -235,10 +409,191 @@ in {
       description = "Additional DHCP options";
     };
 
+    globalStaticReservations = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          hostname = mkOption {
+            type = types.str;
+            description = "Hostname for the reservation";
+            example = "server1";
+          };
+
+          mac = mkOption {
+            type = types.str;
+            description = "MAC address for the reservation";
+            example = "aa:bb:cc:dd:ee:ff";
+          };
+
+          ip = mkOption {
+            type = types.str;
+            description = "IP address for the reservation";
+            example = "192.168.100.10";
+          };
+        };
+      });
+      default = [];
+      description = "Global static DHCP reservations (not tied to a specific VLAN)";
+      example = [
+        {
+          hostname = "router";
+          mac = "11:22:33:44:55:66";
+          ip = "192.168.1.1";
+        }
+      ];
+    };
+
+    dnsRecords = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          name = mkOption {
+            type = types.str;
+            description = "Record name (hostname)";
+            example = "webserver";
+          };
+
+          type = mkOption {
+            type = types.enum ["A" "AAAA" "CNAME" "MX" "TXT" "SRV" "PTR"];
+            description = "DNS record type";
+            example = "A";
+          };
+
+          value = mkOption {
+            type = types.str;
+            description = "Record value";
+            example = "192.168.1.100";
+          };
+
+          ttl = mkOption {
+            type = types.nullOr types.int;
+            default = null;
+            description = "TTL in seconds (optional, uses zone default if not specified)";
+            example = 3600;
+          };
+
+          priority = mkOption {
+            type = types.nullOr types.int;
+            default = null;
+            description = "Priority for MX/SRV records";
+            example = 10;
+          };
+        };
+      });
+      default = [];
+      description = "Custom DNS records for the main domain zone";
+      example = [
+        {
+          name = "webserver";
+          type = "A";
+          value = "192.168.1.100";
+          ttl = 3600;
+        }
+        {
+          name = "mail";
+          type = "MX";
+          value = "mail.example.com.";
+          priority = 10;
+        }
+        {
+          name = "www";
+          type = "CNAME";
+          value = "webserver";
+        }
+      ];
+    };
+
+    customDnsZones = mkOption {
+      type = types.attrsOf (types.submodule {
+        options = {
+          records = mkOption {
+            type = types.listOf (types.submodule {
+              options = {
+                name = mkOption {
+                  type = types.str;
+                  description = "Record name";
+                };
+                type = mkOption {
+                  type = types.enum ["A" "AAAA" "CNAME" "MX" "TXT" "SRV" "PTR"];
+                  description = "DNS record type";
+                };
+                value = mkOption {
+                  type = types.str;
+                  description = "Record value";
+                };
+                ttl = mkOption {
+                  type = types.nullOr types.int;
+                  default = null;
+                  description = "TTL in seconds";
+                };
+                priority = mkOption {
+                  type = types.nullOr types.int;
+                  default = null;
+                  description = "Priority for MX/SRV records";
+                };
+              };
+            });
+            default = [];
+            description = "DNS records for this zone";
+          };
+
+          soaEmail = mkOption {
+            type = types.str;
+            default = "admin.rabbito.tech";
+            description = "SOA email address";
+          };
+
+          ttl = mkOption {
+            type = types.int;
+            default = 86400;
+            description = "Default TTL for the zone";
+          };
+        };
+      });
+      default = {};
+      description = "Custom DNS zones with their records";
+      example = {
+        "internal.local" = {
+          records = [
+            { name = "server1"; type = "A"; value = "10.0.0.10"; }
+            { name = "www"; type = "CNAME"; value = "server1"; }
+          ];
+        };
+      };
+    };
+
     customBindConfig = mkOption {
       type = types.str;
       default = "";
       description = "Additional BIND configuration";
+    };
+
+    # RFC 2136 / external-dns configuration
+    rfc2136 = {
+      enable = mkEnableOption "RFC 2136 support for external-dns";
+
+      externalDnsZones = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = "DNS zones that external-dns should manage";
+        example = ["scr1.rabbito.tech" "kutara.io"];
+      };
+
+      bindAddress = mkOption {
+        type = types.str;
+        default = "";
+        description = "IP address for external-dns to connect to BIND. Defaults to management VLAN router IP";
+      };
+
+      port = mkOption {
+        type = types.int;
+        default = 53;
+        description = "Port for external-dns to connect to BIND";
+      };
+
+      defaultTtl = mkOption {
+        type = types.int;
+        default = 300;
+        description = "Default TTL for external-dns managed records";
+      };
     };
   };
 
@@ -257,9 +612,7 @@ in {
     };
 
     # Override the default router configuration
-    networking.networkmanager.enable = lib.mkForce false;
-
-    # Add router-specific packages
+    networking.networkmanager.enable = lib.mkForce false;    # Add router-specific packages
     environment.systemPackages = with pkgs; [
       ethtool
       tcpdump
@@ -361,6 +714,13 @@ in {
         renew-timer = 1000;
         valid-lifetime = 4000;
 
+        # Global static reservations
+        reservations = map (res: {
+          hostname = res.hostname;
+          hw-address = res.mac;
+          ip-address = res.ip;
+        }) cfg.globalStaticReservations;
+
         interfaces-config = {
           interfaces =
             map (vlan: "vlan${toString vlan.id}/${vlan.router}") (filter (v: v.enabled) cfg.vlans)
@@ -395,6 +755,11 @@ in {
                   in "${network}.20 - ${network}.240";
                 }
               ];
+              reservations = map (res: {
+                hostname = res.hostname;
+                hw-address = res.mac;
+                ip-address = res.ip;
+              }) cfg.oobStaticReservations;
               option-data = [
                 {
                   name = "routers";
@@ -415,6 +780,11 @@ in {
                   in "${network}.20 - ${network}.240";
                 }
               ];
+              reservations = map (res: {
+                hostname = res.hostname;
+                hw-address = res.mac;
+                ip-address = res.ip;
+              }) cfg.lanStaticReservations;
               option-data = [
                 {
                   name = "routers";
@@ -558,10 +928,6 @@ in {
             forwarders { 100.100.100.100; };
         };
         # Legacy zones
-        # zone "scr1.rabbito.tech" {
-        #     type forward;
-        #     forwarders { 10.5.0.7; 10.5.0.8; };
-        # };
         # zone "kutara.io" {
         #     type forward;
         #     forwarders { 10.5.0.7; 10.5.0.8; };
@@ -599,11 +965,14 @@ in {
               )
                               IN    NS      ${config.networking.hostName}.${cfg.domain}.
               ${config.networking.hostName}             IN    A       ${(findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router}
-              unifi           IN    CNAME   unifi.scr1.rabbito.tech.
+              ${optionalString (dnsRecordsText != "") "\n; Custom DNS records"}
+              ${dnsRecordsText}
             '';
           };
         }
-        // reverseDnsZones;
+        // reverseDnsZones
+        // customDnsZones
+        // (optionalAttrs cfg.rfc2136.enable _rfc2136Config.externalDnsZones);
     };
 
     # Configure DDNS
