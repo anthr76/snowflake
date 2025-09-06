@@ -66,9 +66,4 @@
     options cfg80211 crda_support=y
     options cfg80211 ieee80211_regdom="US"
   '';
-  networking.wireless.iwd.settings = {
-    General = {
-      ControlPortOverNL80211 = false;
-    };
-  };
 }
