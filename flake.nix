@@ -44,6 +44,7 @@
     apple-color-emoji.inputs.nixpkgs.follows = "nixpkgs";
     nix-ai-tools.url = "github:numtide/nix-ai-tools";
     nix-ai-tools.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";
   };
 
   outputs = {
@@ -115,11 +116,19 @@
     nixosConfigurations = {
       "bkp1" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
-        modules = [./nixos/hosts/bkp1 chaotic.nixosModules.default];
+        modules = [
+          ./nixos/hosts/bkp1
+          inputs.nixos-facter-modules.nixosModules.facter
+          chaotic.nixosModules.default
+        ];
       };
       "octo" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
-        modules = [chaotic.nixosModules.default ./nixos/hosts/octo];
+        modules = [
+          chaotic.nixosModules.default
+          ./nixos/hosts/octo
+          inputs.nixos-facter-modules.nixosModules.facter
+        ];
       };
       "cdgc" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
@@ -135,6 +144,7 @@
           chaotic.nixosModules.default
           nix-flatpak.nixosModules.nix-flatpak
           nixified-ai.nixosModules.comfyui
+          inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
       "lattice" = lib.nixosSystem {
@@ -142,20 +152,33 @@
         modules = [
           chaotic.nixosModules.default
           hardware.nixosModules.framework-16-7040-amd
+          inputs.nixos-facter-modules.nixosModules.facter
           ./nixos/hosts/lattice
         ];
       };
       "fw1-nwk3" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
-        modules = [./nixos/hosts/fw1-nwk3 chaotic.nixosModules.default];
+        modules = [
+          ./nixos/hosts/fw1-nwk3
+          chaotic.nixosModules.default
+          inputs.nixos-facter-modules.nixosModules.facter
+        ];
       };
       "fw1-nwk2" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
-        modules = [./nixos/hosts/fw1-nwk2 chaotic.nixosModules.default];
+        modules = [
+          ./nixos/hosts/fw1-nwk2
+          chaotic.nixosModules.default
+          inputs.nixos-facter-modules.nixosModules.facter
+        ];
       };
       "fw1-scr1" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
-        modules = [./nixos/hosts/fw1-scr1 chaotic.nixosModules.default];
+        modules = [
+          ./nixos/hosts/fw1-scr1
+          chaotic.nixosModules.default
+          inputs.nixos-facter-modules.nixosModules.facter
+        ];
       };
     };
 

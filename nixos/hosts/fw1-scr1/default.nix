@@ -16,6 +16,7 @@
   system.stateVersion = "23.11";
   nixpkgs.hostPlatform = "x86_64-linux";
   boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod"];
+  facter.reportPath = ./facter.json;
   boot.initrd.kernelModules = [];
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];

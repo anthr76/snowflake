@@ -1,8 +1,4 @@
-{
-  inputs,
-  ...
-}:
-{
+{inputs, ...}: {
   imports = [
     ./disks.nix
     ../../personalities/server/default.nix
@@ -13,7 +9,7 @@
 
   networking.hostName = "fw1";
   networking.domain = "nwk2.rabbito.tech";
-
+  facter.reportPath = ./facter.json;
   boot.initrd.availableKernelModules = [
     "xhci_pci"
     "ahci"
@@ -23,9 +19,9 @@
     "sd_mod"
     "rtsx_pci_sdmmc"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.kernelModules = [];
+  boot.kernelModules = ["kvm-intel"];
+  boot.extraModulePackages = [];
   system.stateVersion = "23.11";
   nixpkgs.hostPlatform = "x86_64-linux";
   services.router = {
@@ -59,13 +55,13 @@
 
     forwardZones = {
       "nwk3.rabbito.tech" = {
-        forwarders = [ "10.40.99.1" ];
+        forwarders = ["10.40.99.1"];
       };
       "scr1.rabbito.tech" = {
-        forwarders = [ "10.20.99.1" ];
+        forwarders = ["10.20.99.1"];
       };
       "kutara.io" = {
-        forwarders = [ "10.20.99.1" ];
+        forwarders = ["10.20.99.1"];
       };
     };
 

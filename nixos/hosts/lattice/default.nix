@@ -1,4 +1,11 @@
-{ config, inputs, lib, modulesPath, pkgs, ... }: {
+{
+  config,
+  inputs,
+  lib,
+  modulesPath,
+  pkgs,
+  ...
+}: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
@@ -13,6 +20,7 @@
   # TODO: This was causing a eval failure
   # Ensure it's upstreammed
   hardware.framework.enableKmod = false;
+  facter.reportPath = ./facter.json;
 
   boot.initrd.availableKernelModules = [
     "nvme"
@@ -24,15 +32,15 @@
     "sd_mod"
     "amdgpu"
   ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = ["kvm-amd"];
   hardware.enableAllFirmware = true;
   hardware.enableRedistributableFirmware = true;
   disko.devices = import ./disks.nix {
-    disks = [ "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_24035A801792" ];
+    disks = ["/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_24035A801792"];
     luksCreds = config.sops.secrets.e39-luks-password.path;
   };
 
-  swapDevices = [ ];
+  swapDevices = [];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "lattice";
