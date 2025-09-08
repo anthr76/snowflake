@@ -1,4 +1,4 @@
-{ inputs, outputs, lib, config, pkgs, ... }: {
+{ inputs, ... }: {
 
   imports = [
     inputs.disko.nixosModules.disko
@@ -6,6 +6,11 @@
     ../../personalities/server
     ./disks.nix
   ];
+
+  services.observability.vector.extraLabels = {
+    site = "nwk2";
+  };
+
   networking.hostName = "bkp1";
   networking.domain = "nwk2.rabbito.tech";
   system.stateVersion = "23.05";

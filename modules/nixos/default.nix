@@ -9,4 +9,5 @@
   router = import ./router.nix;
   haproxy-k8s = import ./haproxy-k8s.nix;
   bgp = import ./bgp.nix;
+  observability = import ./observability.nix;
 }

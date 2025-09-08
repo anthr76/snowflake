@@ -34,7 +34,8 @@
     };
   };
   imports = [
-    ./serial.nix
+    # ./serial.nix
+    ./observability.nix
   ];
   networking.firewall = {
     enable = true;

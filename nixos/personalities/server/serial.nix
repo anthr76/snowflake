@@ -34,7 +34,4 @@ in
     # allows user to change terminal size when it changed locally
     environment.systemPackages = [ resize ];
 
-    # default is something like vt220... however we want to get alt least some colors...
-    systemd.services."serial-getty@".environment.TERM = "xterm-256color";
-
 }

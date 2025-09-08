@@ -7,6 +7,18 @@
     inputs.disko.nixosModules.disko
   ];
 
+  # Customize observability for this router
+  services.observability = {
+    exporters = {
+      bind = true;
+      frr = false;
+    };
+
+    vector.extraLabels = {
+      site = "nwk3";
+    };
+  };
+
   networking.hostName = "fw1";
   networking.domain = "nwk3.rabbito.tech";
   facter.reportPath = ./facter.json;

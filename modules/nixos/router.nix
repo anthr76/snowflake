@@ -922,6 +922,14 @@ in {
 
       extraConfig = ''
         include "${config.sops.secrets."bind-ddns-tsig-file".path}";
+
+        ${optionalString (config.services.observability.exporters.bind or false) ''
+        # Statistics endpoint for prometheus bind-exporter
+        statistics-channels {
+          inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+        };
+        ''}
+
         # Tailscale
         zone "mole-bowfin.ts.net" {
             type forward;
@@ -1120,6 +1128,27 @@ in {
         map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface
         ++ optional cfg.enableLan cfg.lanInterface;
+    };
+
+    # Router-specific observability configuration
+    # Enable exporters and advanced log parsing when observability is enabled
+    services.observability = mkIf (config.services.observability.enable or false) {
+      exporters = {
+        # Always enable node exporter for routers
+        node = mkForce true;
+
+        # Enable BIND exporter if DNS is configured
+        bind = mkForce (cfg.vlans != []);
+
+        # Enable FRR exporter if BGP is configured
+        frr = mkForce (config.services.bgp.enable or false);
+      };
+
+      # Add router-specific Vector configuration for log parsing
+      vector.extraLabels = mkDefault {
+        role = "router";
+        domain = cfg.domain;
+      };
     };
   };
 }
