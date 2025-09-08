@@ -146,6 +146,14 @@ in {
             source = ''
               .tags.hostname = "${config.networking.hostName}"
               .tags.fqdn = "${config.networking.hostName}.${config.networking.domain}"
+
+              .tags.instance = "${config.networking.hostName}.${config.networking.domain}"
+
+              # Override nodename label with FQDN for node-exporter metrics that have it
+              if exists(.tags.nodename) {
+                .tags.nodename = "${config.networking.hostName}.${config.networking.domain}"
+              }
+
               ${concatStringsSep "\n" (mapAttrsToList (k: v: ".tags.${k} = \"${v}\"") cfg.vector.extraLabels)}
             '';
           };
@@ -226,7 +234,6 @@ in {
         listenAddress = "127.0.0.1";
         port = 9119;
         bindURI = "http://127.0.0.1:8053/";
-        bindGroups = ["server" "view" "tasks"];
       };
 
       # FRR routing metrics
