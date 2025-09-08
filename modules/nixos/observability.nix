@@ -69,7 +69,6 @@ in {
     };
     systemd.services.vector.serviceConfig.LoadCredential = "grafana:${config.sops.secrets."vector".path}";
 
-
     # Vector configuration for shipping logs and metrics
     services.vector = mkIf cfg.vector.enable {
       enable = true;
@@ -109,13 +108,16 @@ in {
           # Prometheus metrics from local exporters
           prometheus_scrape = {
             type = "prometheus_scrape";
-            endpoints = [
-              "http://127.0.0.1:9100/metrics"  # node-exporter
-            ] ++ optionals cfg.exporters.bind [
-              "http://127.0.0.1:9119/metrics"  # bind-exporter
-            ] ++ optionals cfg.exporters.frr [
-              "http://127.0.0.1:9342/metrics"  # frr-exporter
-            ];
+            endpoints =
+              [
+                "http://127.0.0.1:9100/metrics" # node-exporter
+              ]
+              ++ optionals cfg.exporters.bind [
+                "http://127.0.0.1:9119/metrics" # bind-exporter
+              ]
+              ++ optionals cfg.exporters.frr [
+                "http://127.0.0.1:9342/metrics" # frr-exporter
+              ];
             scrape_interval_secs = 30;
           };
         };
@@ -241,21 +243,29 @@ in {
         enable = true;
         listenAddress = "127.0.0.1";
         port = 9342;
+        user = "frr";
+        group = "frr";
+        enabledCollectors = [
+          "bgp"
+        ];
       };
     };
 
     # Firewall configuration - only allow local access to exporters
     networking.firewall = {
       interfaces.lo = {
-        allowedTCPPorts = [
-          9100  # node-exporter
-          8686  # vector-api
-        ] ++ optionals cfg.exporters.bind [
-          9119  # bind-exporter
-          8053  # bind statistics
-        ] ++ optionals cfg.exporters.frr [
-          9342  # frr-exporter
-        ];
+        allowedTCPPorts =
+          [
+            9100 # node-exporter
+            8686 # vector-api
+          ]
+          ++ optionals cfg.exporters.bind [
+            9119 # bind-exporter
+            8053 # bind statistics
+          ]
+          ++ optionals cfg.exporters.frr [
+            9342 # frr-exporter
+          ];
       };
     };
   };

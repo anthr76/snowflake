@@ -186,12 +186,18 @@
       "anthony@bkp1" = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {inherit inputs outputs;};
-        modules = [./home-manager/hosts/bkp1.nix];
+        modules = [
+          ./home-manager/hosts/bkp1.nix
+          catppuccin.homeModules.catppuccin
+        ];
       };
       "steam@octo" = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {inherit inputs outputs;};
-        modules = [./home-manager/hosts/octo.nix];
+        modules = [
+          ./home-manager/hosts/octo.nix
+          catppuccin.homeModules.catppuccin
+        ];
       };
       "anthony@f80" = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
