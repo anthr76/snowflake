@@ -41,7 +41,7 @@
     # RFC 2136 / external-dns support
     rfc2136 = {
       enable = true;
-      externalDnsZones = ["scr1.rabbito.tech" "kutara.io"];
+      externalDnsZones = ["scr1.rabbito.tech"];
       defaultTtl = 1;
     };
 
@@ -91,6 +91,31 @@
             hostname = "master-03";
             mac = "80:61:5f:0d:e2:e2";
             ip = "192.168.8.60";
+          }
+          {
+            hostname = "worker-01";
+            mac = "A0:36:9F:FF:FF:FF";
+            ip = "192.168.8.20";
+          }
+          {
+            hostname = "worker-02";
+            mac = "90:E2:BA:8C:70:3A";
+            ip = "192.168.8.62";
+          }
+          {
+            hostname = "worker-03";
+            mac = "90:E2:BA:8C:74:98";
+            ip = "192.168.8.61";
+          }
+          {
+            hostname = "worker-13";
+            mac = "90:E2:BA:44:05:B0";
+            ip = "192.168.8.41";
+          }
+          {
+            hostname = "worker-14";
+            mac = "80:61:5F:03:99:23";
+            ip = "192.168.8.144";
           }
         ];
       }

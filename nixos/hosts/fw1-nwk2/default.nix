@@ -60,9 +60,6 @@
       "scr1.rabbito.tech" = {
         forwarders = ["10.20.99.1"];
       };
-      "kutara.io" = {
-        forwarders = ["10.20.99.1"];
-      };
     };
 
     vlans = [
