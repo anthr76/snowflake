@@ -205,6 +205,7 @@
         github = {
           copilot = {
             chat = {
+              virtualTools.threshold = 500;
               agent = {
                 thinkingTool = true;
               };
