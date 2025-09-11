@@ -40,6 +40,12 @@
     enable = true;
     domain = "nwk3.rabbito.tech";
 
+    ipv6 = {
+      enable = true;
+      enableRadvd = true;
+      radvdVlans = [99 100];
+    };
+
     udevRules = ''
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:e0:67:26:40:d9", NAME="lan"
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:e0:67:26:40:d8", NAME="wan"

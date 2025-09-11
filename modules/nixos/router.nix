@@ -595,6 +595,43 @@ in {
         description = "Default TTL for external-dns managed records";
       };
     };
+
+    # IPv6 configuration
+    ipv6 = {
+      enable = mkEnableOption "IPv6 support";
+
+      enableRadvd = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Enable Router Advertisement Daemon (radvd)";
+      };
+
+      radvdVlans = mkOption {
+        type = types.listOf types.int;
+        default = [100];
+        description = "VLAN IDs on which to advertise IPv6 router advertisements";
+        example = [100 200];
+      };
+
+      upstreamPrefix = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "IPv6 prefix from upstream (auto-detected if null)";
+        example = "2001:db8::/64";
+      };
+
+      enableDhcpv6Pd = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Enable DHCPv6 Prefix Delegation on WAN interface";
+      };
+
+      delegatedPrefixLength = mkOption {
+        type = types.int;
+        default = 56;
+        description = "Length of delegated prefix to request (typically 56 or 60)";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -622,11 +659,22 @@ in {
     ];
 
     # Configure kernel parameters for routing
-    boot.kernel.sysctl = {
-      "net.ipv4.conf.all.forwarding" = true;
-      "net.ipv6.conf.all.forwarding" = true;
-      "net.ipv6.conf.wan.disable_ipv6" = true;
-    };
+    boot.kernel.sysctl =
+      {
+        "net.ipv4.conf.all.forwarding" = true;
+        "net.ipv6.conf.all.forwarding" = true;
+      }
+      // (optionalAttrs cfg.ipv6.enable {
+        # IPv6 configuration - disable RA and autoconf by default
+        "net.ipv6.conf.all.accept_ra" = 0;
+        "net.ipv6.conf.default.accept_ra" = 0;
+        "net.ipv6.conf.all.autoconf" = 0;
+        "net.ipv6.conf.default.autoconf" = 0;
+
+        # WAN interface IPv6 settings - enable for upstream connectivity
+        "net.ipv6.conf.${cfg.wanInterface}.accept_ra" = 2;  # Accept RA even when forwarding
+        "net.ipv6.conf.${cfg.wanInterface}.autoconf" = 1;
+      });
 
     # Ensure network-online.target is enabled for proper dependency ordering
     systemd.targets.network-online.wantedBy = ["multi-user.target"];
@@ -648,6 +696,7 @@ in {
       {
         ${cfg.wanInterface} = {
           useDHCP = true;
+          # IPv6 will be handled via sysctl settings, not interface options
         };
       }
       // (optionalAttrs cfg.enableLan {
@@ -679,7 +728,20 @@ in {
               prefixLength = toInt (last (splitString "/" vlan.subnet));
             }
           ];
-        };
+          # Add IPv6 addresses for management VLAN or radvd VLANs
+        } // (optionalAttrs cfg.ipv6.enable {
+          ipv6.addresses = if vlan.id == 99 then [
+            {
+              address = "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:99::1";
+              prefixLength = 64;
+            }
+          ] else if elem vlan.id cfg.ipv6.radvdVlans then [
+            {
+              address = "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlan.id}::1";
+              prefixLength = 64;
+            }
+          ] else [];
+        });
       }) (filter (v: v.enabled) cfg.vlans)));
 
     # Configure NAT
@@ -690,6 +752,65 @@ in {
         map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface
         ++ optional cfg.enableLan cfg.lanInterface;
+
+      # Enable IPv6 forwarding if IPv6 is enabled
+      enableIPv6 = cfg.ipv6.enable;
+    };
+
+    # Configure Router Advertisement Daemon (radvd) for IPv6
+    services.radvd = mkIf (cfg.ipv6.enable && cfg.ipv6.enableRadvd) {
+      enable = true;
+      config = concatStringsSep "\n" (map (vlanId: let
+        vlan = findFirst (v: v.id == vlanId) null (filter (v: v.enabled) cfg.vlans);
+      in optionalString (vlan != null) ''
+        interface vlan${toString vlanId} {
+          AdvSendAdvert on;
+          AdvManagedFlag off;
+          AdvOtherConfigFlag on;
+          AdvLinkMTU 1500;
+          AdvCurHopLimit 64;
+          AdvDefaultLifetime 9000;
+          AdvReachableTime 0;
+          AdvRetransTimer 0;
+
+          # Use ULA prefix for internal networks
+          prefix fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::/64 {
+            AdvOnLink on;
+            AdvAutonomous on;
+            AdvRouterAddr off;
+            AdvPreferredLifetime 14400;
+            AdvValidLifetime 86400;
+          };
+
+          # Auto-advertise any /64 prefixes assigned to this interface
+          # This should pick up the delegated prefix from dhcpcd
+          prefix ::/64 {
+            AdvOnLink on;
+            AdvAutonomous on;
+            AdvRouterAddr off;
+          };
+
+          # RDNSS for DNS
+          RDNSS fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::1 {
+            AdvRDNSSLifetime 3600;
+          };
+
+          # DNS search domain
+          DNSSL ${cfg.domain} {
+            AdvDNSSLLifetime 3600;
+          };
+        };
+      '') cfg.ipv6.radvdVlans);
+    };
+
+    # Configure DHCPv6 Prefix Delegation on WAN interface
+    networking.dhcpcd = mkIf (cfg.ipv6.enable && cfg.ipv6.enableDhcpv6Pd) {
+      enable = true;
+      extraConfig = ''
+        # Enable IPv6 Router Solicitation on WAN
+        interface ${cfg.wanInterface}
+          ${concatStringsSep "\n          " (map (vlanId: "ia_pd ${toString vlanId}/::/64 vlan${toString vlanId}/0/64") cfg.ipv6.radvdVlans)}
+        '';
     }; # Configure Tailscale
     services.tailscale.extraUpFlags = mkIf (cfg.tailscaleRoutes != []) [
       "--advertise-routes=${concatStringsSep "," cfg.tailscaleRoutes}"
@@ -894,6 +1015,10 @@ in {
       listenOn = [
         (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router
       ];
+      # Listen on IPv6 address on management VLAN when IPv6 is enabled
+      listenOnIpv6 = mkIf cfg.ipv6.enable [
+        "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:99::1"
+      ];
       cacheNetworks =
         map (vlan: vlan.subnet) cfg.vlans
         ++ [
@@ -903,7 +1028,11 @@ in {
           "192.168.4.0/24"
           "10.20.99.0/24"
           "10.5.0.0/24"
-        ];
+        ]
+        # Add IPv6 ULA networks when IPv6 is enabled
+        ++ (optionals cfg.ipv6.enable (
+          map (vlanId: "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::/64") cfg.ipv6.radvdVlans
+        ));
       extraOptions = ''
         dnssec-validation no;
         notify no;
@@ -935,11 +1064,6 @@ in {
             type forward;
             forwarders { 100.100.100.100; };
         };
-        # Legacy zones
-        # zone "kutara.io" {
-        #     type forward;
-        #     forwarders { 10.5.0.7; 10.5.0.8; };
-        # };
         ${concatStringsSep "\n" (mapAttrsToList (zone: config: ''
             zone "${zone}" {
                 type forward;
@@ -988,6 +1112,7 @@ in {
       enable = true;
       apiTokenFile = config.sops.secrets.cfApiToken.path;
       domains = cfg.cloudflaredomains;
+      ipv6 = true;
     };
 
     # Ensure cloudflare-dyndns waits for network and DNS to be ready
@@ -1128,6 +1253,22 @@ in {
         map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface
         ++ optional cfg.enableLan cfg.lanInterface;
+    };
+
+    # Ensure miniupnpd waits for network interfaces and NAT to be ready
+    systemd.services.miniupnpd = {
+      after = [
+        "network-online.target"
+        "firewall.service"
+        "systemd-networkd.service"
+      ];
+      wants = [
+        "network-online.target"
+      ];
+      # Add a delay to ensure all interfaces and NAT rules are ready
+      serviceConfig = {
+        ExecStartPre = "${pkgs.coreutils}/bin/sleep 15";
+      };
     };
 
     # Router-specific observability configuration
