@@ -1,4 +1,9 @@
-{ pkgs, ... }: {
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: {
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
@@ -13,13 +18,16 @@
       gamemode
     ];
     package = pkgs.steam.override {
-      extraEnv = { STEAM_FORCE_DESKTOPUI_SCALING = "1.5"; };
-      extraLibraries = pkgs: [ pkgs.xorg.libxcb ];
+      extraEnv = {STEAM_FORCE_DESKTOPUI_SCALING = "1.5";};
+      extraLibraries = pkgs: [pkgs.xorg.libxcb];
     };
-    extraCompatPackages = with pkgs; [ proton-ge-bin ];
+    extraCompatPackages = with pkgs; [proton-ge-bin];
   };
-  services.scx.enable = true;
-  services.scx.scheduler = "scx_lavd";
+  services.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+    package = inputs.nixpkgs-pr-442124.legacyPackages.${pkgs.system}.scx.full;
+  };
   programs.gamescope = {
     enable = true;
     capSysNice = false;
@@ -27,11 +35,11 @@
   };
   hardware.graphics = {
     enable32Bit = true;
-    extraPackages = [ pkgs.gamescope-wsi ];
-    extraPackages32 = [ pkgs.pkgsi686Linux.gamescope-wsi ];
+    extraPackages = [pkgs.gamescope-wsi];
+    extraPackages32 = [pkgs.pkgsi686Linux.gamescope-wsi];
   };
   services.pulseaudio.support32Bit = true;
-  environment.systemPackages = [ pkgs.vulkan-tools pkgs.amdgpu_top pkgs.lsfg-vk-ui pkgs.lsfg-vk ];
+  environment.systemPackages = [pkgs.vulkan-tools pkgs.amdgpu_top pkgs.lsfg-vk-ui pkgs.lsfg-vk];
   programs.gamemode = {
     enable = true;
     settings = {
@@ -52,5 +60,5 @@
   };
   gaming-kernel.enable = true;
   chaotic.hdr.enable = true;
-  chaotic.hdr.specialisation.enable	= false;
+  chaotic.hdr.specialisation.enable = false;
 }

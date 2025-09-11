@@ -3,8 +3,6 @@
 {
   inputs,
   outputs,
-  lib,
-  config,
   pkgs,
   ...
 }: {
@@ -13,7 +11,7 @@
   nixpkgs = {
     # You can add overlays here
     overlays = [
-      # Add overlays your own flake exports (from overlays and pkgs dir):
+
       outputs.overlays.additions
       outputs.overlays.modifications
 
@@ -47,8 +45,11 @@
     may be monitored if unauthorized usage is suspected.
   '';
   boot.kernelPackages = pkgs.linuxPackages_cachyos-server;
-  services.scx.enable = true;
-  services.scx.scheduler = "scx_bpfland";
+  services.scx = {
+      enable = true;
+      scheduler = "scx_bpfland";
+      package = inputs.nixpkgs-pr-442124.legacyPackages.${pkgs.system}.scx.full;
+    };
   systemd = {
     enableEmergencyMode = false;
     settings = {

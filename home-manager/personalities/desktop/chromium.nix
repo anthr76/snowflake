@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   home.sessionVariables = {
     GOOGLE_DEFAULT_CLIENT_ID = "77185425430.apps.googleusercontent.com";
@@ -6,9 +6,16 @@
   };
   programs.chromium = {
     enable = true;
-    package = pkgs.chromium.override {
-      enableWideVine = true;
-    };
+    package =
+      let
+        stablePkgs = import inputs.nixpkgs-stable {
+          system = pkgs.system;
+          config.allowUnfree = true;
+        };
+      in
+      stablePkgs.chromium.override {
+        enableWideVine = true;
+      };
     extensions = [
       { id = "nngceckbapebfimnlniiiahkandclblb"; } # Bitwarden
       { id = "ckhlfagjncfmdieecfekjbpnnaekhlhd"; } # No Mouse Wheel Zoom

@@ -44,6 +44,7 @@
       enable = true;
       enableRadvd = true;
       radvdVlans = [99 100];
+      publicPrefixVlan = 100;
     };
 
     udevRules = ''

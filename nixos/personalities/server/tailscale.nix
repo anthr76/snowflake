@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 {
   sops.secrets = {
     tailscale-auth-key = { sopsFile = ../../../secrets/users.yaml; };
@@ -10,5 +10,6 @@
     enable = true;
     port = 41641;
     authKeyFile = config.sops.secrets.tailscale-auth-key.path;
+    package = pkgs.tailscale;
   };
 }

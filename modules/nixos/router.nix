@@ -609,8 +609,15 @@ in {
       radvdVlans = mkOption {
         type = types.listOf types.int;
         default = [100];
-        description = "VLAN IDs on which to advertise IPv6 router advertisements";
-        example = [100 200];
+        description = "VLAN IDs on which to advertise IPv6 router advertisements with ULA prefixes";
+        example = [99 100 200];
+      };
+
+      publicPrefixVlan = mkOption {
+        type = types.nullOr types.int;
+        default = 100;
+        description = "VLAN ID that should receive the public/delegated IPv6 prefix from ISP. Only one VLAN can receive the delegated prefix.";
+        example = 100;
       };
 
       upstreamPrefix = mkOption {
@@ -762,6 +769,7 @@ in {
       enable = true;
       config = concatStringsSep "\n" (map (vlanId: let
         vlan = findFirst (v: v.id == vlanId) null (filter (v: v.enabled) cfg.vlans);
+        isPublicVlan = cfg.ipv6.publicPrefixVlan == vlanId;
       in optionalString (vlan != null) ''
         interface vlan${toString vlanId} {
           AdvSendAdvert on;
@@ -773,7 +781,7 @@ in {
           AdvReachableTime 0;
           AdvRetransTimer 0;
 
-          # Use ULA prefix for internal networks
+          # Use ULA prefix for internal networks (always advertised)
           prefix fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::/64 {
             AdvOnLink on;
             AdvAutonomous on;
@@ -782,16 +790,17 @@ in {
             AdvValidLifetime 86400;
           };
 
-          # Auto-advertise any /64 prefixes assigned to this interface
-          # This should pick up the delegated prefix from dhcpcd
+          ${optionalString isPublicVlan ''
+          # Auto-advertise delegated prefix only on the designated public VLAN
           prefix ::/64 {
             AdvOnLink on;
             AdvAutonomous on;
             AdvRouterAddr off;
           };
+          ''}
 
-          # RDNSS for DNS
-          RDNSS fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::1 {
+          # RDNSS for DNS - use management VLAN DNS server
+          RDNSS fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:99::1 {
             AdvRDNSSLifetime 3600;
           };
 
@@ -809,7 +818,7 @@ in {
       extraConfig = ''
         # Enable IPv6 Router Solicitation on WAN
         interface ${cfg.wanInterface}
-          ${concatStringsSep "\n          " (map (vlanId: "ia_pd ${toString vlanId}/::/64 vlan${toString vlanId}/0/64") cfg.ipv6.radvdVlans)}
+          ${optionalString (cfg.ipv6.publicPrefixVlan != null) "ia_pd ${toString cfg.ipv6.publicPrefixVlan}/::/64 vlan${toString cfg.ipv6.publicPrefixVlan}/0/64"}
         '';
     }; # Configure Tailscale
     services.tailscale.extraUpFlags = mkIf (cfg.tailscaleRoutes != []) [

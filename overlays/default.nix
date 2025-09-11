@@ -65,6 +65,11 @@
         '';
     });
 
+    # Hehe I'm in danger
+    tailscale = prev.tailscale.overrideAttrs (oldAttrs: {
+      doCheck = false;
+    });
+
     kdePackages =
       prev.kdePackages
       // {
