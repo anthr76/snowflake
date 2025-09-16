@@ -4,7 +4,7 @@
     fractal-next
     slack
     element-desktop
-    discord
+    discord-krisp
     # For Discord
     wayland-push-to-talk-fix
     discover-overlay

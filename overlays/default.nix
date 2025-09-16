@@ -49,7 +49,7 @@
           ./gamescope-native-res.patch
         ];
     });
-    discord = prev.discord.overrideAttrs (oldAttrs: {
+    discord-krisp = prev.discord-krisp.overrideAttrs (oldAttrs: {
       withOpenASAR = true;
       withVencord = true;
       postFixup =
