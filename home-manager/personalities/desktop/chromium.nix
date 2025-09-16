@@ -31,16 +31,10 @@
       }
     ];
     commandLineArgs = [
-      "--enable-features=AcceleratedVideoEncoder,VaapiOnNvidiaGPUs,VaapiIgnoreDriverChecks,Vulkan,DefaultANGLEVulkan,VulkanFromANGLE"
-      "--ignore-gpu-blocklist"
-      "--enable-logging=stderr"
-      "--disable-features=WaylandFractionalScaleV1"
-      "--enable-zero-copy"
-      "--ignore-gpu-blocklist"
-      # TODO: Work around Mesa issue @ d7ba0b445a025e6d105515527a78f1738e7e91be
-      # https://github.com/NixOS/nixpkgs/issues/244742
-      "--disable-gpu-shader-disk-cache"
-      # fd -0 cache | xargs --null rm -rf $0
+      "--enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,AcceleratedVideoDecodeLinuxZeroCopyGL,AcceleratedVideoEncoder,VaapiIgnoreDriverChecks,UseMultiPlaneFormatForHardwareVideo"
+      "--use-gl=angle"
+      "--use-angle=vulkan"
+      "--ozone-platform-hint=x11"
     ];
   };
   catppuccin.chromium.enable = true;

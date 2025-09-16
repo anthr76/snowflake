@@ -26,6 +26,7 @@
   services.scx = {
     enable = true;
     scheduler = "scx_lavd";
+    extraArgs = ["---autopower"];
   };
   programs.gamescope = {
     enable = true;

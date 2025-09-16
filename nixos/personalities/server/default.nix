@@ -11,7 +11,6 @@
   nixpkgs = {
     # You can add overlays here
     overlays = [
-
       outputs.overlays.additions
       outputs.overlays.modifications
 
@@ -46,9 +45,10 @@
   '';
   boot.kernelPackages = pkgs.linuxPackages_cachyos-server;
   services.scx = {
-      enable = true;
-      scheduler = "scx_bpfland";
-    };
+    enable = true;
+    scheduler = "scx_bpfland";
+    extraArgs = ["-p"];
+  };
   systemd = {
     enableEmergencyMode = false;
     settings = {
