@@ -21,10 +21,7 @@
       extraEnv = {STEAM_FORCE_DESKTOPUI_SCALING = "1.5";};
       extraLibraries = pkgs: [pkgs.xorg.libxcb];
     };
-    extraCompatPackages = [
-      pkgs.proton-ge-bin
-      pkgs.proton-cachyos
-    ];
+    extraCompatPackages = with pkgs; [proton-ge-bin];
   };
   services.scx = {
     enable = true;
