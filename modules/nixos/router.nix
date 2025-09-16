@@ -639,6 +639,111 @@ in {
         description = "Length of delegated prefix to request (typically 56 or 60)";
       };
     };
+
+    # Fail2ban configuration
+    fail2ban = {
+      enable = mkEnableOption "Fail2ban intrusion prevention";
+
+      ignoreIP = mkOption {
+        type = types.listOf types.str;
+        default = [
+          "127.0.0.0/8"     # Localhost
+          "10.0.0.0/8"      # RFC 1918 - Private networks
+          "172.16.0.0/12"   # RFC 1918 - Private networks
+          "192.168.0.0/16"  # RFC 1918 - Private networks
+          "169.254.0.0/16"  # RFC 3927 - Link-local
+          "::1/128"         # IPv6 localhost
+          "fc00::/7"        # IPv6 unique local addresses
+          "fe80::/10"       # IPv6 link-local
+        ];
+        description = "List of IP addresses/networks to ignore (never ban)";
+        example = [
+          "127.0.0.0/8"
+          "192.168.1.0/24"
+          "10.0.0.0/8"
+        ];
+      };
+
+      banTime = mkOption {
+        type = types.str;
+        default = "1h";
+        description = "Default ban time for offending IPs";
+        example = "24h";
+      };
+
+      findTime = mkOption {
+        type = types.str;
+        default = "10m";
+        description = "Time window to count failures";
+        example = "30m";
+      };
+
+      maxRetry = mkOption {
+        type = types.int;
+        default = 3;
+        description = "Number of failures before banning";
+        example = 5;
+      };
+
+      enabledJails = mkOption {
+        type = types.listOf types.str;
+        default = [
+          "sshd"
+          "router-scan"
+          "router-dns-abuse"
+        ];
+        description = "List of jails to enable";
+        example = [
+          "sshd"
+          "nginx-http-auth"
+          "nginx-limit-req"
+          "nginx-botsearch"
+          "router-scan"
+          "router-dhcp-abuse"
+          "router-port-scan"
+          "router-dns-abuse"
+          "postfix"
+          "dovecot"
+        ];
+      };
+
+      customJails = mkOption {
+        type = types.attrsOf types.str;
+        default = {};
+        description = "Custom jail configurations";
+        example = {
+          "custom-app" = ''
+            enabled = true
+            port = 8080
+            logpath = /var/log/custom-app.log
+            maxretry = 5
+          '';
+        };
+      };
+
+      whitelist = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = "Additional IP addresses/networks to whitelist beyond ignoreIP";
+        example = [
+          "203.0.113.0/24"  # Trusted external network
+          "198.51.100.5"    # Specific trusted IP
+        ];
+      };
+
+      banAction = mkOption {
+        type = types.str;
+        default = "iptables-multiport";
+        description = "Default ban action to use";
+        example = "iptables-allports";
+      };
+
+      logLevel = mkOption {
+        type = types.enum ["CRITICAL" "ERROR" "WARNING" "NOTICE" "INFO" "DEBUG"];
+        default = "INFO";
+        description = "Fail2ban log level";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -1037,6 +1142,7 @@ in {
           "192.168.4.0/24"
           "10.20.99.0/24"
           "10.5.0.0/24"
+          "100.64.0.0/10"
         ]
         # Add IPv6 ULA networks when IPv6 is enabled
         ++ (optionals cfg.ipv6.enable (
@@ -1277,6 +1383,312 @@ in {
       # Add a delay to ensure all interfaces and NAT rules are ready
       serviceConfig = {
         ExecStartPre = "${pkgs.coreutils}/bin/sleep 15";
+      };
+    };
+
+    # Fail2ban configuration
+    services.fail2ban = mkIf cfg.fail2ban.enable {
+      enable = true;
+
+      # Combine default ignoreIP with user-specified whitelist and dynamic VLAN subnets
+      ignoreIP = cfg.fail2ban.ignoreIP
+        ++ cfg.fail2ban.whitelist
+        ++ (map (vlan: vlan.subnet) cfg.vlans)
+        ++ (optional cfg.enableLan cfg.lanSubnet)
+        ++ (optional cfg.enableOob cfg.oobSubnet);
+
+      bantime = cfg.fail2ban.banTime;
+      maxretry = cfg.fail2ban.maxRetry;
+      banaction = cfg.fail2ban.banAction;
+      banaction-allports = "${cfg.fail2ban.banAction}-allports";
+
+      bantime-increment = {
+        enable = true;
+        formula = "ban.Time * (1<<(ban.Count if ban.Count<20 else 20)) * banFactor";
+        factor = "2";
+        maxtime = "72h";
+      };
+
+      # Configure jails using proper NixOS structure
+      jails = {
+        # SSH protection - always enabled if SSH is running
+        sshd = mkIf (elem "sshd" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "ssh";
+            filter = "sshd";
+            logpath = "/var/log/auth.log";
+            maxretry = cfg.fail2ban.maxRetry;
+            findtime = cfg.fail2ban.findTime;
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        # Nginx HTTP auth protection
+        nginx-http-auth = mkIf (elem "nginx-http-auth" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "http,https";
+            filter = "nginx-http-auth";
+            logpath = "/var/log/nginx/error.log";
+            maxretry = cfg.fail2ban.maxRetry;
+            findtime = cfg.fail2ban.findTime;
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        # Nginx rate limiting protection
+        nginx-limit-req = mkIf (elem "nginx-limit-req" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "http,https";
+            filter = "nginx-limit-req";
+            logpath = "/var/log/nginx/error.log";
+            maxretry = cfg.fail2ban.maxRetry;
+            findtime = cfg.fail2ban.findTime;
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        # Nginx bot search protection
+        nginx-botsearch = mkIf (elem "nginx-botsearch" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "http,https";
+            filter = "nginx-botsearch";
+            logpath = "/var/log/nginx/access.log";
+            maxretry = cfg.fail2ban.maxRetry;
+            findtime = cfg.fail2ban.findTime;
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        # BIND DNS protection for DNS amplification and abuse
+        named-refused = mkIf (elem "named-refused" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "domain,953";
+            filter = "named-refused";
+            logpath = "/var/log/named/security.log";
+            maxretry = 10;  # Higher threshold for DNS
+            findtime = "10m";
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        # Postfix protection (if mail server is running)
+        postfix = mkIf (elem "postfix" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "smtp,465,submission";
+            filter = "postfix";
+            logpath = "/var/log/mail.log";
+            maxretry = cfg.fail2ban.maxRetry;
+            findtime = cfg.fail2ban.findTime;
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        # Dovecot protection (if IMAP/POP3 server is running)
+        dovecot = mkIf (elem "dovecot" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "pop3,pop3s,imap,imaps,submission,465,sieve";
+            filter = "dovecot[mode=aggressive]";
+            logpath = "/var/log/mail.log";
+            maxretry = cfg.fail2ban.maxRetry;
+            findtime = cfg.fail2ban.findTime;
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        # Router-specific protections using custom filters
+        router-scan = mkIf (elem "router-scan" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "ssh,http,https,telnet,23,80,443,8080,8443";
+            filter = "router-scan";
+            backend = "systemd";
+            maxretry = 5;
+            findtime = "5m";
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        router-dhcp-abuse = mkIf (elem "router-dhcp-abuse" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "67,68";
+            filter = "router-dhcp-abuse";
+            backend = "systemd";
+            maxretry = 20;  # Higher threshold for DHCP
+            findtime = "2m";
+            bantime = "6h"; # Shorter ban for potential legitimate devices
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        router-port-scan = mkIf (elem "router-port-scan" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "all";
+            filter = "router-port-scan";
+            backend = "systemd";
+            maxretry = 10;
+            findtime = "1m";
+            bantime = cfg.fail2ban.banTime;
+            action = "iptables-allports[name=%(__name__)s, protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        router-dns-abuse = mkIf (elem "router-dns-abuse" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "53";
+            filter = "router-dns-abuse";
+            backend = "systemd";
+            maxretry = 15;  # Higher threshold for DNS
+            findtime = "5m";
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+
+        router-web-scan = mkIf (elem "router-web-scan" cfg.fail2ban.enabledJails) {
+          settings = {
+            enabled = true;
+            port = "http,https";
+            filter = "router-web-scan";
+            backend = "systemd";
+            maxretry = 5;
+            findtime = "10m";
+            bantime = cfg.fail2ban.banTime;
+            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
+          };
+        };
+      } // (mapAttrs (name: config: {
+        settings = lib.fromTOML config;
+      }) cfg.fail2ban.customJails);
+
+      extraPackages = with pkgs; [
+        iptables
+        ipset
+      ];
+
+      daemonSettings = {
+        DEFAULT = {
+          # Log settings
+          loglevel = cfg.fail2ban.logLevel;
+          logtarget = "SYSLOG";
+
+          # Socket and file settings
+          socket = "/run/fail2ban/fail2ban.sock";
+          pidfile = "/run/fail2ban/fail2ban.pid";
+
+          # Database settings
+          dbfile = "/var/lib/fail2ban/fail2ban.sqlite3";
+          dbpurgeage = "7d";
+
+          # Additional settings
+          allowipv6 = "auto";
+        };
+      };
+    };
+
+    # Create custom fail2ban filters for router-specific threats
+    environment.etc = mkIf cfg.fail2ban.enable {
+      "fail2ban/filter.d/router-scan.conf" = {
+        text = ''
+          # Fail2Ban filter for router scanning attempts
+          [Definition]
+          failregex = ^.*authentication failure.*rhost=<HOST>.*$
+                      ^.*Failed login attempt.*from <HOST>.*$
+                      ^.*Invalid user.*from <HOST>.*$
+                      ^.*Connection from <HOST> closed by.*$
+                      ^.*Did not receive identification string from <HOST>.*$
+                      ^.*Unable to negotiate with <HOST>.*$
+                      ^.*Bad protocol version identification.*from <HOST>.*$
+                      ^.*Connection reset by <HOST>.*$
+
+          ignoreregex =
+
+          [Init]
+          journalmatch = _SYSTEMD_UNIT=sshd.service + _SYSTEMD_UNIT=openssh.service
+        '';
+      };
+
+      "fail2ban/filter.d/router-dhcp-abuse.conf" = {
+        text = ''
+          # Fail2Ban filter for DHCP abuse/exhaustion attempts
+          [Definition]
+          failregex = ^.*DHCPDISCOVER from [a-f0-9:]+ \(<HOST>\) via.*$
+                      ^.*DHCPREQUEST.*from <HOST>.*lease.*not available.*$
+                      ^.*DHCPNAK.*to <HOST>.*$
+                      ^.*Excessive DHCP requests from <HOST>.*$
+
+          ignoreregex =
+
+          [Init]
+          journalmatch = _SYSTEMD_UNIT=kea-dhcp4-server.service + _SYSTEMD_UNIT=dhcpd.service + _SYSTEMD_UNIT=kea-dhcp4.service
+        '';
+      };
+
+      "fail2ban/filter.d/router-port-scan.conf" = {
+        text = ''
+          # Fail2Ban filter for port scanning attempts (kernel firewall drops)
+          [Definition]
+          failregex = ^.*kernel:.*\[UFW BLOCK\].*SRC=<HOST>.*$
+                      ^.*kernel:.*\[REJECT\].*SRC=<HOST>.*$
+                      ^.*kernel:.*DROP.*SRC=<HOST>.*$
+                      ^.*kernel:.*DENY.*SRC=<HOST>.*DPT=.*$
+
+          ignoreregex = ^.*kernel:.*SRC=<HOST>.*DPT=(67|68|53).*$
+
+          [Init]
+          journalmatch = _TRANSPORT=kernel
+        '';
+      };
+
+      "fail2ban/filter.d/router-dns-abuse.conf" = {
+        text = ''
+          # Fail2Ban filter for DNS abuse and amplification attempts
+          [Definition]
+          failregex = ^.*client <HOST>#.*query.*refused.*$
+                      ^.*client <HOST>#.*query.*denied.*$
+                      ^.*client <HOST>#.*too many queries.*$
+                      ^.*client <HOST>#.*query.*rate limit.*$
+                      ^.*client <HOST>#.*query.*denied \(security policy\).*$
+                      ^.*client <HOST>#.*DNS format error.*$
+
+          ignoreregex =
+
+          [Init]
+          journalmatch = _SYSTEMD_UNIT=named.service + _SYSTEMD_UNIT=bind.service + _SYSTEMD_UNIT=bind9.service
+        '';
+      };
+
+      "fail2ban/filter.d/router-web-scan.conf" = {
+        text = ''
+          # Fail2Ban filter for web scanning attempts on router interfaces
+          [Definition]
+          failregex = ^<HOST>.*"(GET|POST|HEAD).*(/admin|/login|/cgi-bin|/setup|/config|\.php|\.asp|\.jsp).*" (401|403|404|500).*$
+                      ^<HOST>.*".*\.\./.*".*$
+                      ^<HOST>.*"(GET|POST|HEAD).*(union|select|script|alert|drop|delete|insert).*".*$
+
+          ignoreregex =
+
+          [Init]
+          # For nginx/apache logs
+          journalmatch = _SYSTEMD_UNIT=nginx.service + _SYSTEMD_UNIT=apache2.service + _SYSTEMD_UNIT=httpd.service
+        '';
       };
     };
 

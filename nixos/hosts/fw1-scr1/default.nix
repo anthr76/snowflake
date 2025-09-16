@@ -45,10 +45,28 @@
       defaultTtl = 1;
     };
 
+    fail2ban = {
+      enable = true;
+      banTime = "12h";
+      findTime = "10m";
+      maxRetry = 3;
+      logLevel = "INFO";
+
+      enabledJails = [
+        "sshd"
+        "router-scan"
+        "router-dns-abuse"
+        "router-port-scan"
+      ];
+
+      banAction = "iptables-multiport";
+    };
+
     cloudflaredomains = [
       "fw1.scr1.rabbito.tech"
       "scr1.rabbito.tech"
       "cluster-0.scr1.rabbito.tech"
+      "cluster-0-ie.scr1.rabbito.tech"
     ];
     # TODO: Fixup
     tailscaleRoutes = [

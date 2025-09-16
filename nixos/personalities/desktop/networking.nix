@@ -6,9 +6,11 @@
   networking.firewall = {
     enable = true;
   };
-  networking.wireless.iwd.enable = true;
+  networking.wireless = {
+    fallbackToWPA2 = false;
+  };
   networking.networkmanager = {
     enable = true;
-    wifi.backend = "iwd";
+    wifi.backend = "wpa_supplicant";
   };
 }

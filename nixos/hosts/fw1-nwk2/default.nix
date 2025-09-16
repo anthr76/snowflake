@@ -62,6 +62,23 @@
       };
     };
 
+    fail2ban = {
+      enable = true;
+      banTime = "12h";
+      findTime = "10m";
+      maxRetry = 3;
+      logLevel = "INFO";
+
+      enabledJails = [
+        "sshd"
+        "router-scan"
+        "router-dns-abuse"
+        "router-port-scan"
+      ];
+
+      banAction = "iptables-multiport";
+    };
+
     vlans = [
       {
         id = 8;
