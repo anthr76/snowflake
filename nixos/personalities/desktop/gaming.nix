@@ -26,7 +26,6 @@
   services.scx = {
     enable = true;
     scheduler = "scx_lavd";
-    package = inputs.nixpkgs-pr-442124.legacyPackages.${pkgs.system}.scx.full;
   };
   programs.gamescope = {
     enable = true;

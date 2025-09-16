@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs-master.url = "github:nixos/nixpkgs?ref=master";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-darwin.url = "github:LnL7/nix-darwin";
@@ -17,7 +18,6 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
-    nixpkgs-pr-442124.url = "github:nixos/nixpkgs?ref=master";  # SCX bash path fix
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     nix-github-actions.url = "github:nix-community/nix-github-actions";

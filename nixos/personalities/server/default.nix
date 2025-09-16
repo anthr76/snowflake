@@ -48,7 +48,6 @@
   services.scx = {
       enable = true;
       scheduler = "scx_bpfland";
-      package = inputs.nixpkgs-pr-442124.legacyPackages.${pkgs.system}.scx.full;
     };
   systemd = {
     enableEmergencyMode = false;
