@@ -42,6 +42,13 @@
     lanSubnet = "192.168.1.0/24";
     lanAddress = "192.168.1.1";
 
+    ipv6 = {
+      enable = true;
+      enableRadvd = true;
+      radvdVlans = [99 100];
+      publicPrefixVlan = 100;
+    };
+
     cloudflaredomains = [
       "fw1.nwk2.rabbito.tech"
       "nwk2.rabbito.tech"

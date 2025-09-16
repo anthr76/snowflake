@@ -1227,7 +1227,7 @@ in {
       enable = true;
       apiTokenFile = config.sops.secrets.cfApiToken.path;
       domains = cfg.cloudflaredomains;
-      ipv6 = true;
+      ipv6 = cfg.ipv6.enable;
     };
 
     # Ensure cloudflare-dyndns waits for network and DNS to be ready
