@@ -6,8 +6,6 @@
   # TODO: See if we can just include in a overlay for vscode.
   home.packages = [
     pkgs.helm-ls
-    # We may want to put this elsewhere.
-    inputs.nix-ai-tools.packages.${pkgs.system}.claude-code
   ];
   catppuccin.vscode.profiles.default = {
     enable = true;
