@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, config, ... }:
 {
   imports = [ ../users/anthony ../users/anthony/linux.nix ];
 
@@ -8,7 +8,8 @@
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${pkgs.nh}/bin/nh home switch --no-nom -c anthony@generic github:anthr76/snowflake/stable";
+      path = [ config.nix.package ];
+      ExecStart = "${lib.getExe pkgs.nh} home switch --no-nom -c anthony@generic github:anthr76/snowflake/stable";
     };
   };
 
