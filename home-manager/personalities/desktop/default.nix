@@ -14,6 +14,7 @@
     ./wayland-wm/common
     ./wayland-wm/kde
     ./obs.nix
+    ./agentic-coding.nix
     # ./syncthing.nix
   ];
   home.packages = with pkgs; [
