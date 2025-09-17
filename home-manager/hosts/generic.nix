@@ -8,7 +8,7 @@
     };
     Service = {
       Type = "oneshot";
-      Path = [ config.nix.package ];
+      path = [ config.nix.package ];
       ExecStart = "${lib.getExe pkgs.nh} home switch --no-nom -c anthony@generic github:anthr76/snowflake/stable";
     };
   };
