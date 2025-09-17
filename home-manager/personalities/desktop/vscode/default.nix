@@ -1,11 +1,13 @@
 {
   pkgs,
-  config,
+  config, inputs,
   ...
 }: {
   # TODO: See if we can just include in a overlay for vscode.
   home.packages = [
     pkgs.helm-ls
+    # We may want to put this elsewhere.
+    inputs.nix-ai-tools.package.${pkgs.system}.claude-code
   ];
   catppuccin.vscode.profiles.default = {
     enable = true;
@@ -59,6 +61,8 @@
         "fwcd.kotlin"
         "github.copilot-chat"
         "github.copilot"
+        "openai.chatgpt"
+        "anthropic.claude-code"
         "eamodio.gitlens"
         "hashicorp.terraform"
         "ms-vscode-remote.remote-ssh"
