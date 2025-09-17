@@ -7,7 +7,7 @@
   home.packages = [
     pkgs.helm-ls
     # We may want to put this elsewhere.
-    inputs.nix-ai-tools.package.${pkgs.system}.claude-code
+    inputs.nix-ai-tools.packages.${pkgs.system}.claude-code
   ];
   catppuccin.vscode.profiles.default = {
     enable = true;
