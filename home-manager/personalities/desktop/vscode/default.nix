@@ -1,6 +1,7 @@
 {
   pkgs,
-  config, inputs,
+  config,
+  inputs,
   ...
 }: {
   # TODO: See if we can just include in a overlay for vscode.
@@ -85,6 +86,7 @@
             type = "stdio";
             command = "${pkgs.mcp-k8s-go}/bin/mcp-k8s-go";
             args = ["--readonly"];
+          };
         };
       };
       userSettings = {
