@@ -1131,6 +1131,7 @@ in {
             ${optionalString (dnsRecordsText != "") "\n; Custom DNS records\n${dnsRecordsText}"}
           '';
           mode = "0644";
+          user = "named";
         };
       }
 
@@ -1519,7 +1520,7 @@ in {
             master = true;
             extraConfig = ''
               allow-update { key "dhcp-update-key"; };
-              journal "db.${cfg.domain}.jnl";
+              journal "/var/lib/bind/db.${cfg.domain}.jnl";
               notify no;
               ixfr-from-differences yes;
               max-journal-size 1m;
