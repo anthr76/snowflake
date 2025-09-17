@@ -30,11 +30,13 @@ with lib; let
           else defaultPool;
       }
     ];
-    reservations = map (res: {
-      hostname = res.hostname;
-      hw-address = res.mac;
-      ip-address = res.ip;
-    }) staticReservations;
+    reservations =
+      map (res: {
+        hostname = res.hostname;
+        hw-address = res.mac;
+        ip-address = res.ip;
+      })
+      staticReservations;
     option-data = [
       {
         name = "routers";
@@ -94,10 +96,17 @@ with lib; let
 
   # Helper function to format DNS records for BIND zone file
   formatDnsRecord = record: let
-    ttlPart = if record.ttl != null then "${toString record.ttl}" else "";
-    priorityPart = if record.priority != null then "${toString record.priority} " else "";
+    ttlPart =
+      if record.ttl != null
+      then "${toString record.ttl}"
+      else "";
+    priorityPart =
+      if record.priority != null
+      then "${toString record.priority} "
+      else "";
     recordLine = "${record.name} ${ttlPart} IN ${record.type} ${priorityPart}${record.value}";
-  in recordLine;
+  in
+    recordLine;
 
   # Generate DNS records text for zone file
   dnsRecordsText = concatStringsSep "\n" (map formatDnsRecord cfg.dnsRecords);
@@ -140,7 +149,8 @@ with lib; let
     tsigSecretPath = config.sops.secrets."ddns-tsig-key".path;
 
     # Determine bind address - default to management VLAN router IP
-    bindAddress = if cfg.rfc2136.bindAddress != ""
+    bindAddress =
+      if cfg.rfc2136.bindAddress != ""
       then cfg.rfc2136.bindAddress
       else (findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router;
 
@@ -152,34 +162,34 @@ with lib; let
 
     # Generate external-dns zone configurations only for additional zones (not main domain)
     externalDnsZones = listToAttrs (map (zoneName: {
-      name = "${zoneName}.";
-      value = {
-        master = true;
-        slaves = ["key ${tsigKeyName}"];
-        extraConfig = ''
-          allow-update { key "${tsigKeyName}"; };
-          journal "db.${zoneName}.jnl";
-          notify no;
-          ixfr-from-differences yes;
-          max-journal-size 1m;
-        '';
-        file = pkgs.writeText "${zoneName}.zone" ''
-          $ORIGIN ${zoneName}.
-          $TTL    ${toString cfg.rfc2136.defaultTtl}
-          @ IN SOA ${zoneName}. admin.rabbito.tech (
-          ${toString inputs.self.lastModified}           ; serial number
-          3600                    ; refresh
-          900                     ; retry
-          1209600                 ; expire
-          ${toString cfg.rfc2136.defaultTtl}             ; minimum ttl
-          )
-                          IN    NS      ${config.networking.hostName}.${cfg.domain}.
-          ; External-DNS managed records will be dynamically added here
-        '';
-      };
-    }) additionalExternalDnsZones);
+        name = "${zoneName}.";
+        value = {
+          master = true;
+          slaves = ["key ${tsigKeyName}"];
+          extraConfig = ''
+            allow-update { key "${tsigKeyName}"; };
+            journal "db.${zoneName}.jnl";
+            notify no;
+            ixfr-from-differences yes;
+            max-journal-size 1m;
+          '';
+          file = pkgs.writeText "${zoneName}.zone" ''
+            $ORIGIN ${zoneName}.
+            $TTL    ${toString cfg.rfc2136.defaultTtl}
+            @ IN SOA ${zoneName}. admin.rabbito.tech (
+            ${toString inputs.self.lastModified}           ; serial number
+            3600                    ; refresh
+            900                     ; retry
+            1209600                 ; expire
+            ${toString cfg.rfc2136.defaultTtl}             ; minimum ttl
+            )
+                            IN    NS      ${config.networking.hostName}.${cfg.domain}.
+            ; External-DNS managed records will be dynamically added here
+          '';
+        };
+      })
+      additionalExternalDnsZones);
   };
-
 in {
   options.services.router = {
     enable = mkEnableOption "Router Configuration";
@@ -553,8 +563,16 @@ in {
       example = {
         "internal.local" = {
           records = [
-            { name = "server1"; type = "A"; value = "10.0.0.10"; }
-            { name = "www"; type = "CNAME"; value = "server1"; }
+            {
+              name = "server1";
+              type = "A";
+              value = "10.0.0.10";
+            }
+            {
+              name = "www";
+              type = "CNAME";
+              value = "server1";
+            }
           ];
         };
       };
@@ -647,14 +665,14 @@ in {
       ignoreIP = mkOption {
         type = types.listOf types.str;
         default = [
-          "127.0.0.0/8"     # Localhost
-          "10.0.0.0/8"      # RFC 1918 - Private networks
-          "172.16.0.0/12"   # RFC 1918 - Private networks
-          "192.168.0.0/16"  # RFC 1918 - Private networks
-          "169.254.0.0/16"  # RFC 3927 - Link-local
-          "::1/128"         # IPv6 localhost
-          "fc00::/7"        # IPv6 unique local addresses
-          "fe80::/10"       # IPv6 link-local
+          "127.0.0.0/8" # Localhost
+          "10.0.0.0/8" # RFC 1918 - Private networks
+          "172.16.0.0/12" # RFC 1918 - Private networks
+          "192.168.0.0/16" # RFC 1918 - Private networks
+          "169.254.0.0/16" # RFC 3927 - Link-local
+          "::1/128" # IPv6 localhost
+          "fc00::/7" # IPv6 unique local addresses
+          "fe80::/10" # IPv6 link-local
         ];
         description = "List of IP addresses/networks to ignore (never ban)";
         example = [
@@ -726,8 +744,8 @@ in {
         default = [];
         description = "Additional IP addresses/networks to whitelist beyond ignoreIP";
         example = [
-          "203.0.113.0/24"  # Trusted external network
-          "198.51.100.5"    # Specific trusted IP
+          "203.0.113.0/24" # Trusted external network
+          "198.51.100.5" # Specific trusted IP
         ];
       };
 
@@ -761,7 +779,7 @@ in {
     };
 
     # Override the default router configuration
-    networking.networkmanager.enable = lib.mkForce false;    # Add router-specific packages
+    networking.networkmanager.enable = lib.mkForce false; # Add router-specific packages
     environment.systemPackages = with pkgs; [
       ethtool
       tcpdump
@@ -784,7 +802,7 @@ in {
         "net.ipv6.conf.default.autoconf" = 0;
 
         # WAN interface IPv6 settings - enable for upstream connectivity
-        "net.ipv6.conf.${cfg.wanInterface}.accept_ra" = 2;  # Accept RA even when forwarding
+        "net.ipv6.conf.${cfg.wanInterface}.accept_ra" = 2; # Accept RA even when forwarding
         "net.ipv6.conf.${cfg.wanInterface}.autoconf" = 1;
       });
 
@@ -833,27 +851,34 @@ in {
       })
       // (listToAttrs (map (vlan: {
         name = "vlan${toString vlan.id}";
-        value = {
-          ipv4.addresses = [
-            {
-              address = vlan.router;
-              prefixLength = toInt (last (splitString "/" vlan.subnet));
-            }
-          ];
-          # Add IPv6 addresses for management VLAN or radvd VLANs
-        } // (optionalAttrs cfg.ipv6.enable {
-          ipv6.addresses = if vlan.id == 99 then [
-            {
-              address = "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:99::1";
-              prefixLength = 64;
-            }
-          ] else if elem vlan.id cfg.ipv6.radvdVlans then [
-            {
-              address = "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlan.id}::1";
-              prefixLength = 64;
-            }
-          ] else [];
-        });
+        value =
+          {
+            ipv4.addresses = [
+              {
+                address = vlan.router;
+                prefixLength = toInt (last (splitString "/" vlan.subnet));
+              }
+            ];
+            # Add IPv6 addresses for management VLAN or radvd VLANs
+          }
+          // (optionalAttrs cfg.ipv6.enable {
+            ipv6.addresses =
+              if vlan.id == 99
+              then [
+                {
+                  address = "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:99::1";
+                  prefixLength = 64;
+                }
+              ]
+              else if elem vlan.id cfg.ipv6.radvdVlans
+              then [
+                {
+                  address = "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlan.id}::1";
+                  prefixLength = 64;
+                }
+              ]
+              else [];
+          });
       }) (filter (v: v.enabled) cfg.vlans)));
 
     # Configure NAT
@@ -875,56 +900,85 @@ in {
       config = concatStringsSep "\n" (map (vlanId: let
         vlan = findFirst (v: v.id == vlanId) null (filter (v: v.enabled) cfg.vlans);
         isPublicVlan = cfg.ipv6.publicPrefixVlan == vlanId;
-      in optionalString (vlan != null) ''
-        interface vlan${toString vlanId} {
-          AdvSendAdvert on;
-          AdvManagedFlag off;
-          AdvOtherConfigFlag on;
-          AdvLinkMTU 1500;
-          AdvCurHopLimit 64;
-          AdvDefaultLifetime 9000;
-          AdvReachableTime 0;
-          AdvRetransTimer 0;
+      in
+        optionalString (vlan != null) ''
+          interface vlan${toString vlanId} {
+            AdvSendAdvert on;
+            AdvManagedFlag off;
+            AdvOtherConfigFlag on;
+            AdvLinkMTU 1500;
+            AdvCurHopLimit 64;
+            AdvDefaultLifetime 9000;
+            AdvReachableTime 0;
+            AdvRetransTimer 0;
 
-          # Use ULA prefix for internal networks (always advertised)
-          prefix fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::/64 {
-            AdvOnLink on;
-            AdvAutonomous on;
-            AdvRouterAddr off;
-            AdvPreferredLifetime 14400;
-            AdvValidLifetime 86400;
-          };
+            # Use ULA prefix for internal networks (always advertised)
+            prefix fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::/64 {
+              AdvOnLink on;
+              AdvAutonomous on;
+              AdvRouterAddr off;
+              AdvPreferredLifetime 14400;
+              AdvValidLifetime 86400;
+            };
 
-          ${optionalString isPublicVlan ''
-          # Auto-advertise delegated prefix only on the designated public VLAN
-          prefix ::/64 {
-            AdvOnLink on;
-            AdvAutonomous on;
-            AdvRouterAddr off;
-          };
+            ${optionalString isPublicVlan ''
+            # Auto-advertise delegated prefix only on the designated public VLAN
+            prefix ::/64 {
+              AdvOnLink on;
+              AdvAutonomous on;
+              AdvRouterAddr off;
+            };
           ''}
 
-          # RDNSS for DNS - use management VLAN DNS server
-          RDNSS fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:99::1 {
-            AdvRDNSSLifetime 3600;
-          };
+            # RDNSS for DNS - use management VLAN DNS server
+            RDNSS fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:99::1 {
+              AdvRDNSSLifetime 3600;
+            };
 
-          # DNS search domain
-          DNSSL ${cfg.domain} {
-            AdvDNSSLLifetime 3600;
+            # DNS search domain
+            DNSSL ${cfg.domain} {
+              AdvDNSSLLifetime 3600;
+            };
           };
-        };
-      '') cfg.ipv6.radvdVlans);
+        '')
+      cfg.ipv6.radvdVlans);
     };
 
     # Configure DHCPv6 Prefix Delegation on WAN interface
-    networking.dhcpcd = mkIf (cfg.ipv6.enable && cfg.ipv6.enableDhcpv6Pd) {
-      enable = true;
-      extraConfig = ''
-        # Enable IPv6 Router Solicitation on WAN
+    # Also ensure dhcpcd doesn't interfere with our static VLAN configuration
+    networking.dhcpcd = {
+      enable = cfg.ipv6.enable && cfg.ipv6.enableDhcpv6Pd;
+      # Only run on WAN interface - explicitly deny all other interfaces
+      denyInterfaces =
+        map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
+        ++ optional cfg.enableOob cfg.oobInterface
+        ++ optional cfg.enableLan cfg.lanInterface;
+      # Only allow WAN interface
+      allowInterfaces = mkIf (cfg.ipv6.enable && cfg.ipv6.enableDhcpv6Pd) [ cfg.wanInterface ];
+      extraConfig = mkIf (cfg.ipv6.enable && cfg.ipv6.enableDhcpv6Pd) ''
+        # Enable IPv6 Router Solicitation on WAN only
         interface ${cfg.wanInterface}
           ${optionalString (cfg.ipv6.publicPrefixVlan != null) "ia_pd ${toString cfg.ipv6.publicPrefixVlan}/::/64 vlan${toString cfg.ipv6.publicPrefixVlan}/0/64"}
-        '';
+
+        # Explicitly configure all other interfaces as static
+        ${concatStringsSep "\n" (map (vlan: ''
+        interface vlan${toString vlan.id}
+          static ip_address=${vlan.router}/${toString (toInt (last (splitString "/" vlan.subnet)))}
+          nohook resolv.conf
+        '') (filter (v: v.enabled) cfg.vlans))}
+
+        ${optionalString cfg.enableOob ''
+        interface ${cfg.oobInterface}
+          static ip_address=${cfg.oobAddress}/${toString (toInt (last (splitString "/" cfg.oobSubnet)))}
+          nohook resolv.conf
+        ''}
+
+        ${optionalString cfg.enableLan ''
+        interface ${cfg.lanInterface}
+          static ip_address=${cfg.lanAddress}/${toString (toInt (last (splitString "/" cfg.lanSubnet)))}
+          nohook resolv.conf
+        ''}
+      '';
     }; # Configure Tailscale
     services.tailscale.extraUpFlags = mkIf (cfg.tailscaleRoutes != []) [
       "--advertise-routes=${concatStringsSep "," cfg.tailscaleRoutes}"
@@ -950,11 +1004,13 @@ in {
         valid-lifetime = 4000;
 
         # Global static reservations
-        reservations = map (res: {
-          hostname = res.hostname;
-          hw-address = res.mac;
-          ip-address = res.ip;
-        }) cfg.globalStaticReservations;
+        reservations =
+          map (res: {
+            hostname = res.hostname;
+            hw-address = res.mac;
+            ip-address = res.ip;
+          })
+          cfg.globalStaticReservations;
 
         interfaces-config = {
           interfaces =
@@ -990,11 +1046,13 @@ in {
                   in "${network}.20 - ${network}.240";
                 }
               ];
-              reservations = map (res: {
-                hostname = res.hostname;
-                hw-address = res.mac;
-                ip-address = res.ip;
-              }) cfg.oobStaticReservations;
+              reservations =
+                map (res: {
+                  hostname = res.hostname;
+                  hw-address = res.mac;
+                  ip-address = res.ip;
+                })
+                cfg.oobStaticReservations;
               option-data = [
                 {
                   name = "routers";
@@ -1015,11 +1073,13 @@ in {
                   in "${network}.20 - ${network}.240";
                 }
               ];
-              reservations = map (res: {
-                hostname = res.hostname;
-                hw-address = res.mac;
-                ip-address = res.ip;
-              }) cfg.lanStaticReservations;
+              reservations =
+                map (res: {
+                  hostname = res.hostname;
+                  hw-address = res.mac;
+                  ip-address = res.ip;
+                })
+                cfg.lanStaticReservations;
               option-data = [
                 {
                   name = "routers";
@@ -1050,6 +1110,275 @@ in {
       "Z /var/lib/bind 0775 named named -"
       "f /var/log/bind-maintenance.log 0644 named named -"
     ];
+
+    # Create zone files
+    environment.etc = mkMerge [
+      # Main domain zone file
+      {
+        "bind/db.${cfg.domain}" = {
+          text = ''
+            $ORIGIN ${cfg.domain}.
+            $TTL    86400
+            @ IN SOA ${cfg.domain}. admin.rabbito.tech (
+            ${toString inputs.self.lastModified}           ; serial number
+            3600                    ; refresh
+            900                     ; retry
+            1209600                 ; expire
+            1800                    ; ttl
+            )
+                            IN    NS      ${config.networking.hostName}.${cfg.domain}.
+            ${config.networking.hostName}             IN    A       ${(findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router}
+            ${optionalString (dnsRecordsText != "") "\n; Custom DNS records\n${dnsRecordsText}"}
+          '';
+          mode = "0644";
+        };
+      }
+
+      # Reverse zone files for each VLAN - dynamically generated
+      (listToAttrs (map (vlan: {
+          name = "bind/db.${mkReverseDnsZone vlan.subnet}";
+          value = {
+            text = ''
+              $ORIGIN ${mkReverseDnsZone vlan.subnet}
+              $TTL    86400
+              @ IN SOA ${cfg.domain}. admin.rabbito.tech (
+              ${toString inputs.self.lastModified}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      ${config.networking.hostName}.${cfg.domain}.
+              ${optionalString (vlan.id == 99) "1               IN    PTR     ${config.networking.hostName}.${cfg.domain}."}
+            '';
+            mode = "0644";
+          };
+        })
+        cfg.vlans))
+
+      # Custom DNS zone files - dynamically generated
+      (listToAttrs (mapAttrsToList (zoneName: zoneConfig: {
+          name = "bind/db.${zoneName}";
+          value = {
+            text = ''
+              $ORIGIN ${zoneName}.
+              $TTL    ${toString zoneConfig.ttl}
+              @ IN SOA ${zoneName}. ${zoneConfig.soaEmail} (
+              ${toString inputs.self.lastModified}           ; serial number
+              3600                    ; refresh
+              900                     ; retry
+              1209600                 ; expire
+              1800                    ; ttl
+              )
+                              IN    NS      ${config.networking.hostName}.${cfg.domain}.
+              ${concatStringsSep "\n" (map formatDnsRecord zoneConfig.records)}
+            '';
+            mode = "0644";
+          };
+        })
+        cfg.customDnsZones))
+
+      # Fail2ban filter definitions for router-specific attacks
+      {
+        "fail2ban/filter.d/router-scan.conf" = mkIf cfg.fail2ban.enable {
+          text = ''
+            # Fail2Ban filter for router SSH scanning attempts
+            [INCLUDES]
+            before = common.conf
+
+            [Definition]
+            _daemon = sshd
+            failregex = ^%(__prefix_line)s(?:error: PAM: )?[aA]uthentication (?:failure|error|failed) for .* from <HOST>( via \S+)?\s*$
+                        ^%(__prefix_line)s(?:error: )?Received disconnect from <HOST>: 3: .*: Auth fail$
+                        ^%(__prefix_line)sFailed \S+ for .*? from <HOST>(?: port \d*)?(?: ssh\d*)?$
+                        ^%(__prefix_line)sROOT LOGIN REFUSED.* FROM <HOST>$
+                        ^%(__prefix_line)s[iI](?:llegal|nvalid) user .* from <HOST>$
+                        ^%(__prefix_line)sUser .+ from <HOST> not allowed because not listed in AllowUsers$
+                        ^%(__prefix_line)sConnection closed by <HOST> port \d+ \[preauth\]$
+
+            ignoreregex =
+
+            # DEV Notes:
+            # Enhanced SSH filter for router-specific scanning patterns
+            # Uses standard fail2ban common.conf for prefix handling
+          '';
+          mode = "0644";
+        };
+
+        "fail2ban/filter.d/router-dhcp-abuse.conf" = mkIf cfg.fail2ban.enable {
+          text = ''
+            # Fail2Ban filter for DHCP abuse attempts
+            [INCLUDES]
+            before = common.conf
+
+            [Definition]
+            _daemon = dhcp
+            failregex = ^%(__prefix_line)sDHCPDISCOVER from [0-9a-f:]+ \(<HOST>\) via.*$
+                        ^%(__prefix_line)sDHCPREQUEST for .* from [0-9a-f:]+ \(<HOST>\) via.*$
+                        ^%(__prefix_line)sDHCP packet from <HOST> discarded.*$
+                        ^%(__prefix_line)sExcessive DHCP requests from <HOST>.*$
+                        ^%(__prefix_line)sclient <HOST> sends too many requests.*$
+
+            ignoreregex =
+
+            # DEV Notes:
+            # Detects DHCP flooding and abuse patterns
+            # Note: May need adjustment based on actual Kea DHCP log format
+          '';
+          mode = "0644";
+        };
+
+        "fail2ban/filter.d/router-port-scan.conf" = mkIf cfg.fail2ban.enable {
+          text = ''
+            # Fail2Ban filter for port scanning attempts
+            [INCLUDES]
+            before = common.conf
+
+            [Definition]
+            _daemon = kernel
+            failregex = ^%(__prefix_line)s.*IN=.* SRC=<HOST>.*DPT=\d+.*$
+                        ^%(__prefix_line)s.*\[UFW BLOCK\] IN=.* SRC=<HOST>.*$
+                        ^%(__prefix_line)s.*DROP.*SRC=<HOST>.*DPT=\d+.*$
+                        ^%(__prefix_line)s.*nf_conntrack:.*SRC=<HOST>.*$
+
+            ignoreregex =
+
+            # DEV Notes:
+            # Detects port scanning via kernel/firewall logs
+            # Adjust patterns based on actual firewall logging
+          '';
+          mode = "0644";
+        };
+
+        "fail2ban/filter.d/router-dns-abuse.conf" = mkIf cfg.fail2ban.enable {
+          text = ''
+            # Fail2Ban filter for DNS abuse attempts
+            [INCLUDES]
+            before = common.conf
+
+            [Definition]
+            _daemon = named
+            failregex = ^%(__prefix_line)sclient <HOST>#\d+.*query \(cache\) .*/IN denied$
+                        ^%(__prefix_line)sclient <HOST>#\d+.*too many queries$
+                        ^%(__prefix_line)sclient <HOST>#\d+.*query denied$
+                        ^%(__prefix_line)sclient <HOST>#\d+.*rate limit exceeded$
+                        ^%(__prefix_line)sclient <HOST>#\d+.*FORMERR.*$
+
+            ignoreregex =
+
+            # DEV Notes:
+            # Detects DNS abuse patterns and query flooding
+            # Based on BIND9 named log format
+          '';
+          mode = "0644";
+        };
+
+        "fail2ban/filter.d/router-web-scan.conf" = mkIf cfg.fail2ban.enable {
+          text = ''
+            # Fail2Ban filter for web scanning attempts on router interfaces
+            [INCLUDES]
+            before = common.conf
+
+            [Definition]
+            _daemon = nginx
+            failregex = ^<HOST> -.*"(GET|POST|HEAD) .*(\.php|\.asp|\.cgi|admin|login|wp-admin|phpmyadmin).*" (404|403|401).*$
+                        ^<HOST> -.*"(GET|POST) .*/\.\./.*" .*$
+                        ^<HOST> -.*"(GET|POST) .*/(etc/passwd|proc/|dev/).*" .*$
+                        ^<HOST> -.*"(GET|POST) .*(cmd=|exec=|union.*select).*" .*$
+                        ^<HOST> -.*".*(/\?|\.\.\\).*" (400|404|403).*$
+
+            ignoreregex =
+
+            # DEV Notes:
+            # Detects web application scanning and exploit attempts
+            # Common patterns for admin panel discovery and path traversal
+          '';
+          mode = "0644";
+        };
+      }
+    ];
+
+    # Configure router-specific fail2ban jails using services.fail2ban.jails
+    services.fail2ban = mkIf cfg.fail2ban.enable {
+      enable = true;
+
+      # Combine default ignoreIP with user-specified whitelist and dynamic VLAN subnets
+      ignoreIP =
+        cfg.fail2ban.ignoreIP
+        ++ cfg.fail2ban.whitelist
+        ++ (map (vlan: vlan.subnet) cfg.vlans)
+        ++ (optional cfg.enableLan cfg.lanSubnet)
+        ++ (optional cfg.enableOob cfg.oobSubnet);
+
+      bantime = cfg.fail2ban.banTime;
+      maxretry = cfg.fail2ban.maxRetry;
+      banaction = cfg.fail2ban.banAction;
+      banaction-allports = "${cfg.fail2ban.banAction}-allports";
+
+      bantime-increment = {
+        enable = true;
+        formula = "ban.Time * (1<<(ban.Count if ban.Count<20 else 20)) * banFactor";
+        factor = "2";
+        maxtime = "72h";
+      };
+
+      jails = {
+        # Router SSH scanning attempts
+        router-scan = {
+          settings = {
+            enabled = true;
+            filter = "router-scan";
+            logpath = "/var/log/auth.log";
+            maxretry = 3;
+            bantime = cfg.fail2ban.banTime;
+          };
+        };
+
+        # DHCP abuse attempts
+        router-dhcp-abuse = {
+          settings = {
+            enabled = true;
+            filter = "router-dhcp-abuse";
+            logpath = "/var/log/kea-dhcp4.log";
+            maxretry = 5;
+            bantime = cfg.fail2ban.banTime;
+          };
+        };
+
+        # Port scanning attempts
+        router-port-scan = {
+          settings = {
+            enabled = true;
+            filter = "router-port-scan";
+            logpath = "/var/log/kern.log";
+            maxretry = 10;
+            bantime = cfg.fail2ban.banTime;
+          };
+        };
+
+        # DNS abuse attempts
+        router-dns-abuse = {
+          settings = {
+            enabled = true;
+            filter = "router-dns-abuse";
+            logpath = "/var/log/named/security.log";
+            maxretry = 5;
+            bantime = cfg.fail2ban.banTime;
+          };
+        };
+
+        # Web scanning attempts on router interfaces
+        router-web-scan = {
+          settings = {
+            enabled = true;
+            filter = "router-web-scan";
+            logpath = "/var/log/nginx/access.log";
+            maxretry = 3;
+            bantime = cfg.fail2ban.banTime;
+          };
+        };
+      };
+    };
 
     # Service to clean BIND journal files on startup to prevent DDNS corruption
     systemd.services.bind-journal-cleanup = {
@@ -1136,12 +1465,7 @@ in {
       cacheNetworks =
         map (vlan: vlan.subnet) cfg.vlans
         ++ [
-          # Additional networks that may need caching
-          "192.168.12.0/24"
-          "192.168.6.0/24"
-          "192.168.4.0/24"
-          "10.20.99.0/24"
-          "10.5.0.0/24"
+          # Tailscale
           "100.64.0.0/10"
         ]
         # Add IPv6 ULA networks when IPv6 is enabled
@@ -1168,10 +1492,10 @@ in {
         include "${config.sops.secrets."bind-ddns-tsig-file".path}";
 
         ${optionalString (config.services.observability.exporters.bind or false) ''
-        # Statistics endpoint for prometheus bind-exporter
-        statistics-channels {
-          inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
-        };
+          # Statistics endpoint for prometheus bind-exporter
+          statistics-channels {
+            inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+          };
         ''}
 
         # Tailscale
@@ -1383,312 +1707,6 @@ in {
       # Add a delay to ensure all interfaces and NAT rules are ready
       serviceConfig = {
         ExecStartPre = "${pkgs.coreutils}/bin/sleep 15";
-      };
-    };
-
-    # Fail2ban configuration
-    services.fail2ban = mkIf cfg.fail2ban.enable {
-      enable = true;
-
-      # Combine default ignoreIP with user-specified whitelist and dynamic VLAN subnets
-      ignoreIP = cfg.fail2ban.ignoreIP
-        ++ cfg.fail2ban.whitelist
-        ++ (map (vlan: vlan.subnet) cfg.vlans)
-        ++ (optional cfg.enableLan cfg.lanSubnet)
-        ++ (optional cfg.enableOob cfg.oobSubnet);
-
-      bantime = cfg.fail2ban.banTime;
-      maxretry = cfg.fail2ban.maxRetry;
-      banaction = cfg.fail2ban.banAction;
-      banaction-allports = "${cfg.fail2ban.banAction}-allports";
-
-      bantime-increment = {
-        enable = true;
-        formula = "ban.Time * (1<<(ban.Count if ban.Count<20 else 20)) * banFactor";
-        factor = "2";
-        maxtime = "72h";
-      };
-
-      # Configure jails using proper NixOS structure
-      jails = {
-        # SSH protection - always enabled if SSH is running
-        sshd = mkIf (elem "sshd" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "ssh";
-            filter = "sshd";
-            logpath = "/var/log/auth.log";
-            maxretry = cfg.fail2ban.maxRetry;
-            findtime = cfg.fail2ban.findTime;
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        # Nginx HTTP auth protection
-        nginx-http-auth = mkIf (elem "nginx-http-auth" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "http,https";
-            filter = "nginx-http-auth";
-            logpath = "/var/log/nginx/error.log";
-            maxretry = cfg.fail2ban.maxRetry;
-            findtime = cfg.fail2ban.findTime;
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        # Nginx rate limiting protection
-        nginx-limit-req = mkIf (elem "nginx-limit-req" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "http,https";
-            filter = "nginx-limit-req";
-            logpath = "/var/log/nginx/error.log";
-            maxretry = cfg.fail2ban.maxRetry;
-            findtime = cfg.fail2ban.findTime;
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        # Nginx bot search protection
-        nginx-botsearch = mkIf (elem "nginx-botsearch" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "http,https";
-            filter = "nginx-botsearch";
-            logpath = "/var/log/nginx/access.log";
-            maxretry = cfg.fail2ban.maxRetry;
-            findtime = cfg.fail2ban.findTime;
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        # BIND DNS protection for DNS amplification and abuse
-        named-refused = mkIf (elem "named-refused" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "domain,953";
-            filter = "named-refused";
-            logpath = "/var/log/named/security.log";
-            maxretry = 10;  # Higher threshold for DNS
-            findtime = "10m";
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        # Postfix protection (if mail server is running)
-        postfix = mkIf (elem "postfix" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "smtp,465,submission";
-            filter = "postfix";
-            logpath = "/var/log/mail.log";
-            maxretry = cfg.fail2ban.maxRetry;
-            findtime = cfg.fail2ban.findTime;
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        # Dovecot protection (if IMAP/POP3 server is running)
-        dovecot = mkIf (elem "dovecot" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "pop3,pop3s,imap,imaps,submission,465,sieve";
-            filter = "dovecot[mode=aggressive]";
-            logpath = "/var/log/mail.log";
-            maxretry = cfg.fail2ban.maxRetry;
-            findtime = cfg.fail2ban.findTime;
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        # Router-specific protections using custom filters
-        router-scan = mkIf (elem "router-scan" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "ssh,http,https,telnet,23,80,443,8080,8443";
-            filter = "router-scan";
-            backend = "systemd";
-            maxretry = 5;
-            findtime = "5m";
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        router-dhcp-abuse = mkIf (elem "router-dhcp-abuse" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "67,68";
-            filter = "router-dhcp-abuse";
-            backend = "systemd";
-            maxretry = 20;  # Higher threshold for DHCP
-            findtime = "2m";
-            bantime = "6h"; # Shorter ban for potential legitimate devices
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        router-port-scan = mkIf (elem "router-port-scan" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "all";
-            filter = "router-port-scan";
-            backend = "systemd";
-            maxretry = 10;
-            findtime = "1m";
-            bantime = cfg.fail2ban.banTime;
-            action = "iptables-allports[name=%(__name__)s, protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        router-dns-abuse = mkIf (elem "router-dns-abuse" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "53";
-            filter = "router-dns-abuse";
-            backend = "systemd";
-            maxretry = 15;  # Higher threshold for DNS
-            findtime = "5m";
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-
-        router-web-scan = mkIf (elem "router-web-scan" cfg.fail2ban.enabledJails) {
-          settings = {
-            enabled = true;
-            port = "http,https";
-            filter = "router-web-scan";
-            backend = "systemd";
-            maxretry = 5;
-            findtime = "10m";
-            bantime = cfg.fail2ban.banTime;
-            action = "%(banaction)s[name=%(__name__)s, port=\"%(port)s\", protocol=\"%(protocol)s\", chain=\"%(chain)s\"]";
-          };
-        };
-      } // (mapAttrs (name: config: {
-        settings = lib.fromTOML config;
-      }) cfg.fail2ban.customJails);
-
-      extraPackages = with pkgs; [
-        iptables
-        ipset
-      ];
-
-      daemonSettings = {
-        DEFAULT = {
-          # Log settings
-          loglevel = cfg.fail2ban.logLevel;
-          logtarget = "SYSLOG";
-
-          # Socket and file settings
-          socket = "/run/fail2ban/fail2ban.sock";
-          pidfile = "/run/fail2ban/fail2ban.pid";
-
-          # Database settings
-          dbfile = "/var/lib/fail2ban/fail2ban.sqlite3";
-          dbpurgeage = "7d";
-
-          # Additional settings
-          allowipv6 = "auto";
-        };
-      };
-    };
-
-    # Create custom fail2ban filters for router-specific threats
-    environment.etc = mkIf cfg.fail2ban.enable {
-      "fail2ban/filter.d/router-scan.conf" = {
-        text = ''
-          # Fail2Ban filter for router scanning attempts
-          [Definition]
-          failregex = ^.*authentication failure.*rhost=<HOST>.*$
-                      ^.*Failed login attempt.*from <HOST>.*$
-                      ^.*Invalid user.*from <HOST>.*$
-                      ^.*Connection from <HOST> closed by.*$
-                      ^.*Did not receive identification string from <HOST>.*$
-                      ^.*Unable to negotiate with <HOST>.*$
-                      ^.*Bad protocol version identification.*from <HOST>.*$
-                      ^.*Connection reset by <HOST>.*$
-
-          ignoreregex =
-
-          [Init]
-          journalmatch = _SYSTEMD_UNIT=sshd.service + _SYSTEMD_UNIT=openssh.service
-        '';
-      };
-
-      "fail2ban/filter.d/router-dhcp-abuse.conf" = {
-        text = ''
-          # Fail2Ban filter for DHCP abuse/exhaustion attempts
-          [Definition]
-          failregex = ^.*DHCPDISCOVER from [a-f0-9:]+ \(<HOST>\) via.*$
-                      ^.*DHCPREQUEST.*from <HOST>.*lease.*not available.*$
-                      ^.*DHCPNAK.*to <HOST>.*$
-                      ^.*Excessive DHCP requests from <HOST>.*$
-
-          ignoreregex =
-
-          [Init]
-          journalmatch = _SYSTEMD_UNIT=kea-dhcp4-server.service + _SYSTEMD_UNIT=dhcpd.service + _SYSTEMD_UNIT=kea-dhcp4.service
-        '';
-      };
-
-      "fail2ban/filter.d/router-port-scan.conf" = {
-        text = ''
-          # Fail2Ban filter for port scanning attempts (kernel firewall drops)
-          [Definition]
-          failregex = ^.*kernel:.*\[UFW BLOCK\].*SRC=<HOST>.*$
-                      ^.*kernel:.*\[REJECT\].*SRC=<HOST>.*$
-                      ^.*kernel:.*DROP.*SRC=<HOST>.*$
-                      ^.*kernel:.*DENY.*SRC=<HOST>.*DPT=.*$
-
-          ignoreregex = ^.*kernel:.*SRC=<HOST>.*DPT=(67|68|53).*$
-
-          [Init]
-          journalmatch = _TRANSPORT=kernel
-        '';
-      };
-
-      "fail2ban/filter.d/router-dns-abuse.conf" = {
-        text = ''
-          # Fail2Ban filter for DNS abuse and amplification attempts
-          [Definition]
-          failregex = ^.*client <HOST>#.*query.*refused.*$
-                      ^.*client <HOST>#.*query.*denied.*$
-                      ^.*client <HOST>#.*too many queries.*$
-                      ^.*client <HOST>#.*query.*rate limit.*$
-                      ^.*client <HOST>#.*query.*denied \(security policy\).*$
-                      ^.*client <HOST>#.*DNS format error.*$
-
-          ignoreregex =
-
-          [Init]
-          journalmatch = _SYSTEMD_UNIT=named.service + _SYSTEMD_UNIT=bind.service + _SYSTEMD_UNIT=bind9.service
-        '';
-      };
-
-      "fail2ban/filter.d/router-web-scan.conf" = {
-        text = ''
-          # Fail2Ban filter for web scanning attempts on router interfaces
-          [Definition]
-          failregex = ^<HOST>.*"(GET|POST|HEAD).*(/admin|/login|/cgi-bin|/setup|/config|\.php|\.asp|\.jsp).*" (401|403|404|500).*$
-                      ^<HOST>.*".*\.\./.*".*$
-                      ^<HOST>.*"(GET|POST|HEAD).*(union|select|script|alert|drop|delete|insert).*".*$
-
-          ignoreregex =
-
-          [Init]
-          # For nginx/apache logs
-          journalmatch = _SYSTEMD_UNIT=nginx.service + _SYSTEMD_UNIT=apache2.service + _SYSTEMD_UNIT=httpd.service
-        '';
       };
     };
 
