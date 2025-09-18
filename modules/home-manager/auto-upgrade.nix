@@ -179,12 +179,18 @@ in {
 
       extraArgs = escapeArgs cfg.extraSwitchArgs;
 
+      preSwitchSnippet =
+        optionalString (cfg.preSwitch != "") "${cfg.preSwitch}\n";
+
+      postSwitchSnippet =
+        optionalString (cfg.postSwitch != "") "${cfg.postSwitch}\n";
+
       upgradeScript = pkgs.writeShellScript "${cfg.scriptName}" ''
         set -euo pipefail
         export PATH=${pathValue}
-        ${optionalString cfg.preSwitch != "" cfg.preSwitch}
+        ${preSwitchSnippet}
         ${hmBin} switch --flake ${escapeShellArg flakeRef}${optionalString (extraArgs != "") " ${extraArgs}"}
-        ${optionalString cfg.postSwitch != "" cfg.postSwitch}
+        ${postSwitchSnippet}
       '';
 
       serviceEnv =
