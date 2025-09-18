@@ -1,30 +1,17 @@
-{ pkgs, ... }:
+{ ... }:
 {
   imports = [ ../users/anthony ../users/anthony/linux.nix ];
 
-  systemd.user.services.auto-home-update = {
-    Unit = {
-      Description = "Automatic Home Manager update via nh";
-    };
-    Service = {
-      Type = "oneshot";
-      Path = with pkgs; [ nh nix git home-manager ];
-      ExecStart = "${pkgs.nh}/bin/nh home switch --no-nom -c anthony@generic github:anthr76/snowflake/stable";
-    };
-  };
-
-  systemd.user.timers.auto-home-update = {
-    Unit = {
-      Description = "Weekly Home Manager auto-update timer";
-      Requires = [ "auto-home-update.service" ];
-    };
-    Timer = {
-      OnCalendar = "Sun *-*-* 03:00:00";
-      Persistent = true;
-      RandomizedDelaySec = "1800";
-    };
-    Install = {
-      WantedBy = [ "timers.target" ];
+  services.home.autoUpgrade = {
+    enable = true;
+    serviceName = "auto-home-update";
+    description = "Automatic Home Manager upgrade";
+    flake = "github:anthr76/snowflake/stable";
+    configuration = "anthony@generic";
+    timer = {
+      onCalendar = "Sun *-*-* 03:00:00";
+      randomizedDelaySec = "1800";
+      persistent = true;
     };
   };
 }
