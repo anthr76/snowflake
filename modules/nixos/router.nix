@@ -60,8 +60,8 @@ with lib; let
 
   # Helper helpers for working with zone file paths
   stripTrailingDot = zoneName:
-    if hasSuffix "." zoneName then
-      substring 0 (stringLength zoneName - 1) zoneName
+    if hasSuffix "." zoneName
+    then substring 0 (stringLength zoneName - 1) zoneName
     else zoneName;
 
   zoneFileName = zoneName: "db.${stripTrailingDot zoneName}";
@@ -213,14 +213,16 @@ with lib; let
     customDnsZoneDefinitions);
 
   zoneTemplateDefinitions =
-    [ mainZoneDefinition ]
+    [mainZoneDefinition]
     ++ reverseDnsZoneDefinitions
     ++ customDnsZoneDefinitions
     ++ optionals (cfg.rfc2136.enable) _rfc2136Config.externalDnsZoneDefinitions;
 
-  zoneTmpfilesRules = map (zone:
-    "C ${zone.filePath} 0644 named named - ${zone.templatePath}"
-  ) zoneTemplateDefinitions;
+  zoneTmpfilesRules =
+    map (
+      zone: "C ${zone.filePath} 0644 named named - ${zone.templatePath}"
+    )
+    zoneTemplateDefinitions;
 
   # Helper variables for RFC 2136 / external-dns configuration
   _rfc2136Config = rec {
@@ -241,7 +243,8 @@ with lib; let
     mainDomainInExternalDns = elem cfg.domain cfg.rfc2136.externalDnsZones;
 
     # Generate external-dns zone configurations only for additional zones (not main domain)
-    externalDnsZoneDefinitions = map (zoneName: let
+    externalDnsZoneDefinitions =
+      map (zoneName: let
         fqdn = "${zoneName}.";
         zoneTemplate = pkgs.writeText (zoneFileName fqdn) ''
           $ORIGIN ${zoneName}.
@@ -1037,40 +1040,45 @@ in {
 
     # Configure DHCPv6 Prefix Delegation on WAN interface
     # Also ensure dhcpcd doesn't interfere with our static VLAN configuration
-    networking.dhcpcd = {
-      enable = cfg.ipv6.enable && cfg.ipv6.enableDhcpv6Pd;
-      # Only run on WAN interface - explicitly deny all other interfaces
-      denyInterfaces =
-        map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
-        ++ optional cfg.enableOob cfg.oobInterface
-        ++ optional cfg.enableLan cfg.lanInterface;
-      # Only allow WAN interface
-      allowInterfaces = mkIf (cfg.ipv6.enable && cfg.ipv6.enableDhcpv6Pd) [ cfg.wanInterface ];
-      extraConfig = mkIf (cfg.ipv6.enable && cfg.ipv6.enableDhcpv6Pd) ''
-        # Enable IPv6 Router Solicitation on WAN only
-        interface ${cfg.wanInterface}
-          ${optionalString (cfg.ipv6.publicPrefixVlan != null) "ia_pd ${toString cfg.ipv6.publicPrefixVlan}/::/64 vlan${toString cfg.ipv6.publicPrefixVlan}/0/64"}
+    networking.dhcpcd = mkMerge [
+      {
+        enable = true;
+        # Only run on WAN interface - explicitly deny all other interfaces
+        denyInterfaces =
+          map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
+          ++ optional cfg.enableOob cfg.oobInterface
+          ++ optional cfg.enableLan cfg.lanInterface;
+      }
+      (mkIf (cfg.ipv6.enable && cfg.ipv6.enableDhcpv6Pd) {
+        # When IPv6 PD is in use, restrict dhcpcd to WAN and provide IPv6-specific tuning
+        allowInterfaces = [cfg.wanInterface];
+        extraConfig = ''
+          # Enable IPv6 Router Solicitation on WAN only
+          interface ${cfg.wanInterface}
+            ${optionalString (cfg.ipv6.publicPrefixVlan != null) "ia_pd ${toString cfg.ipv6.publicPrefixVlan}/::/64 vlan${toString cfg.ipv6.publicPrefixVlan}/0/64"}
 
-        # Explicitly configure all other interfaces as static
-        ${concatStringsSep "\n" (map (vlan: ''
-        interface vlan${toString vlan.id}
-          static ip_address=${vlan.router}/${toString (toInt (last (splitString "/" vlan.subnet)))}
-          nohook resolv.conf
-        '') (filter (v: v.enabled) cfg.vlans))}
+          # Explicitly configure all other interfaces as static
+          ${concatStringsSep "\n" (map (vlan: ''
+            interface vlan${toString vlan.id}
+              static ip_address=${vlan.router}/${toString (toInt (last (splitString "/" vlan.subnet)))}
+              nohook resolv.conf
+          '') (filter (v: v.enabled) cfg.vlans))}
 
-        ${optionalString cfg.enableOob ''
-        interface ${cfg.oobInterface}
-          static ip_address=${cfg.oobAddress}/${toString (toInt (last (splitString "/" cfg.oobSubnet)))}
-          nohook resolv.conf
-        ''}
+          ${optionalString cfg.enableOob ''
+            interface ${cfg.oobInterface}
+              static ip_address=${cfg.oobAddress}/${toString (toInt (last (splitString "/" cfg.oobSubnet)))}
+              nohook resolv.conf
+          ''}
 
-        ${optionalString cfg.enableLan ''
-        interface ${cfg.lanInterface}
-          static ip_address=${cfg.lanAddress}/${toString (toInt (last (splitString "/" cfg.lanSubnet)))}
-          nohook resolv.conf
-        ''}
-      '';
-    }; # Configure Tailscale
+          ${optionalString cfg.enableLan ''
+            interface ${cfg.lanInterface}
+              static ip_address=${cfg.lanAddress}/${toString (toInt (last (splitString "/" cfg.lanSubnet)))}
+              nohook resolv.conf
+          ''}
+        '';
+      })
+    ];
+    # Configure Tailscale
     services.tailscale.extraUpFlags = mkIf (cfg.tailscaleRoutes != []) [
       "--advertise-routes=${concatStringsSep "," cfg.tailscaleRoutes}"
     ];
@@ -1196,12 +1204,13 @@ in {
       };
     };
 
-    systemd.tmpfiles.rules = [
-      "d /var/lib/bind 0775 named named -"
-      "Z /var/lib/bind 0775 named named -"
-      "f /var/log/bind-maintenance.log 0644 named named -"
-    ]
-    ++ zoneTmpfilesRules;
+    systemd.tmpfiles.rules =
+      [
+        "d /var/lib/bind 0775 named named -"
+        "Z /var/lib/bind 0775 named named -"
+        "f /var/log/bind-maintenance.log 0644 named named -"
+      ]
+      ++ zoneTmpfilesRules;
 
     # Create configuration files for auxiliary services
     environment.etc = {
