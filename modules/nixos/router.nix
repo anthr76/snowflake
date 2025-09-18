@@ -43,7 +43,9 @@ with lib; let
         data = router;
       }
     ];
-  }; # Helper function to generate reverse DNS zone name
+  };
+
+  # Helper function to generate reverse DNS zone name
   mkReverseDnsZone = subnet: let
     parts = splitString "." (head (splitString "/" subnet));
     reverseParts =
@@ -56,6 +58,18 @@ with lib; let
         [(elemAt parts 2) (elemAt parts 1) (head parts)];
   in "${concatStringsSep "." reverseParts}.in-addr.arpa.";
 
+  # Helper helpers for working with zone file paths
+  stripTrailingDot = zoneName:
+    if hasSuffix "." zoneName then
+      substring 0 (stringLength zoneName - 1) zoneName
+    else zoneName;
+
+  zoneFileName = zoneName: "db.${stripTrailingDot zoneName}";
+
+  zoneFilePath = zoneName: "${config.services.bind.directory}/${zoneFileName zoneName}";
+
+  zoneJournalPath = zoneName: "${zoneFilePath zoneName}.jnl";
+
   # Generate DHCP subnets
   dhcpSubnets =
     map (
@@ -65,34 +79,7 @@ with lib; let
           pool = vlan.dhcpPool or null;
         }
     )
-    cfg.vlans; # Generate reverse DNS zones
-  reverseDnsZones = listToAttrs (map (vlan: {
-      name = mkReverseDnsZone vlan.subnet;
-      value = {
-        master = true;
-        extraConfig = ''
-          allow-update { key "dhcp-update-key"; };
-          journal "db.${mkReverseDnsZone vlan.subnet}jnl";
-          notify no;
-          ixfr-from-differences yes;
-          max-journal-size 1m;
-        '';
-        file = pkgs.writeText (mkReverseDnsZone vlan.subnet) ''
-          $ORIGIN ${mkReverseDnsZone vlan.subnet}
-          $TTL    86400
-          @ IN SOA ${cfg.domain}. admin.rabbito.tech (
-          ${toString inputs.self.lastModified}           ; serial number
-          3600                    ; refresh
-          900                     ; retry
-          1209600                 ; expire
-          1800                    ; ttl
-          )
-                          IN    NS      ${config.networking.hostName}.${cfg.domain}.
-          ${optionalString (vlan.id == 99) "1               IN    PTR     ${config.networking.hostName}.${cfg.domain}."}
-        '';
-      };
-    })
-    cfg.vlans);
+    cfg.vlans;
 
   # Helper function to format DNS records for BIND zone file
   formatDnsRecord = record: let
@@ -111,36 +98,129 @@ with lib; let
   # Generate DNS records text for zone file
   dnsRecordsText = concatStringsSep "\n" (map formatDnsRecord cfg.dnsRecords);
 
-  # Helper function to generate custom DNS zones
-  mkCustomZone = zoneName: zoneConfig: {
-    name = "${zoneName}.";
-    value = {
+  mainZoneName = "${cfg.domain}.";
+  mainZoneTemplateText = ''
+    $ORIGIN ${cfg.domain}.
+    $TTL    86400
+    @ IN SOA ${cfg.domain}. admin.rabbito.tech (
+    ${toString inputs.self.lastModified}           ; serial number
+    3600                    ; refresh
+    900                     ; retry
+    1209600                 ; expire
+    1800                    ; ttl
+    )
+                        IN    NS      ${config.networking.hostName}.${cfg.domain}.
+    ${config.networking.hostName}             IN    A       ${(findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router}
+    ${optionalString (dnsRecordsText != "") "\n; Custom DNS records"}
+    ${dnsRecordsText}
+  '';
+
+  mainZoneDefinition = {
+    zoneName = mainZoneName;
+    templatePath = pkgs.writeText (zoneFileName mainZoneName) mainZoneTemplateText;
+    filePath = zoneFilePath mainZoneName;
+    zoneAttr = {
       master = true;
       extraConfig = ''
         allow-update { key "dhcp-update-key"; };
-        journal "db.${zoneName}.jnl";
+        journal "${zoneJournalPath mainZoneName}";
         notify no;
         ixfr-from-differences yes;
         max-journal-size 1m;
       '';
-      file = pkgs.writeText zoneName ''
-        $ORIGIN ${zoneName}.
-        $TTL    ${toString zoneConfig.ttl}
-        @ IN SOA ${zoneName}. ${zoneConfig.soaEmail} (
-        ${toString inputs.self.lastModified}           ; serial number
-        3600                    ; refresh
-        900                     ; retry
-        1209600                 ; expire
-        1800                    ; ttl
-        )
-                        IN    NS      ${config.networking.hostName}.${cfg.domain}.
-        ${concatStringsSep "\n" (map formatDnsRecord zoneConfig.records)}
-      '';
+      file = zoneFilePath mainZoneName;
     };
   };
 
-  # Generate custom DNS zones
-  customDnsZones = listToAttrs (mapAttrsToList mkCustomZone cfg.customDnsZones);
+  mkReverseDnsZoneDefinition = vlan: let
+    zoneName = mkReverseDnsZone vlan.subnet;
+    reverseZoneTemplate = pkgs.writeText (zoneFileName zoneName) ''
+      $ORIGIN ${zoneName}
+      $TTL    86400
+      @ IN SOA ${cfg.domain}. admin.rabbito.tech (
+      ${toString inputs.self.lastModified}           ; serial number
+      3600                    ; refresh
+      900                     ; retry
+      1209600                 ; expire
+      1800                    ; ttl
+      )
+                      IN    NS      ${config.networking.hostName}.${cfg.domain}.
+      ${optionalString (vlan.id == 99) "1               IN    PTR     ${config.networking.hostName}.${cfg.domain}."}
+    '';
+  in {
+    zoneName = zoneName;
+    templatePath = reverseZoneTemplate;
+    filePath = zoneFilePath zoneName;
+    zoneAttr = {
+      master = true;
+      extraConfig = ''
+        allow-update { key "dhcp-update-key"; };
+        journal "${zoneJournalPath zoneName}";
+        notify no;
+        ixfr-from-differences yes;
+        max-journal-size 1m;
+      '';
+      file = zoneFilePath zoneName;
+    };
+  };
+
+  reverseDnsZoneDefinitions = map mkReverseDnsZoneDefinition cfg.vlans;
+
+  reverseDnsZones = listToAttrs (map (zone: {
+      name = zone.zoneName;
+      value = zone.zoneAttr;
+    })
+    reverseDnsZoneDefinitions);
+
+  mkCustomZoneDefinition = zoneName: zoneConfig: let
+    fqdn = "${zoneName}.";
+    customZoneTemplate = pkgs.writeText (zoneFileName fqdn) ''
+      $ORIGIN ${zoneName}.
+      $TTL    ${toString zoneConfig.ttl}
+      @ IN SOA ${zoneName}. ${zoneConfig.soaEmail} (
+      ${toString inputs.self.lastModified}           ; serial number
+      3600                    ; refresh
+      900                     ; retry
+      1209600                 ; expire
+      1800                    ; ttl
+      )
+                      IN    NS      ${config.networking.hostName}.${cfg.domain}.
+      ${concatStringsSep "\n" (map formatDnsRecord zoneConfig.records)}
+    '';
+  in {
+    zoneName = fqdn;
+    templatePath = customZoneTemplate;
+    filePath = zoneFilePath fqdn;
+    zoneAttr = {
+      master = true;
+      extraConfig = ''
+        allow-update { key "dhcp-update-key"; };
+        journal "${zoneJournalPath fqdn}";
+        notify no;
+        ixfr-from-differences yes;
+        max-journal-size 1m;
+      '';
+      file = zoneFilePath fqdn;
+    };
+  };
+
+  customDnsZoneDefinitions = mapAttrsToList mkCustomZoneDefinition cfg.customDnsZones;
+
+  customDnsZones = listToAttrs (map (zone: {
+      name = zone.zoneName;
+      value = zone.zoneAttr;
+    })
+    customDnsZoneDefinitions);
+
+  zoneTemplateDefinitions =
+    [ mainZoneDefinition ]
+    ++ reverseDnsZoneDefinitions
+    ++ customDnsZoneDefinitions
+    ++ optionals (cfg.rfc2136.enable) _rfc2136Config.externalDnsZoneDefinitions;
+
+  zoneTmpfilesRules = map (zone:
+    "C ${zone.filePath} 0644 named named - ${zone.templatePath}"
+  ) zoneTemplateDefinitions;
 
   # Helper variables for RFC 2136 / external-dns configuration
   _rfc2136Config = rec {
@@ -161,34 +241,45 @@ with lib; let
     mainDomainInExternalDns = elem cfg.domain cfg.rfc2136.externalDnsZones;
 
     # Generate external-dns zone configurations only for additional zones (not main domain)
-    externalDnsZones = listToAttrs (map (zoneName: {
-        name = "${zoneName}.";
-        value = {
+    externalDnsZoneDefinitions = map (zoneName: let
+        fqdn = "${zoneName}.";
+        zoneTemplate = pkgs.writeText (zoneFileName fqdn) ''
+          $ORIGIN ${zoneName}.
+          $TTL    ${toString cfg.rfc2136.defaultTtl}
+          @ IN SOA ${zoneName}. admin.rabbito.tech (
+          ${toString inputs.self.lastModified}           ; serial number
+          3600                    ; refresh
+          900                     ; retry
+          1209600                 ; expire
+          ${toString cfg.rfc2136.defaultTtl}             ; minimum ttl
+          )
+                          IN    NS      ${config.networking.hostName}.${cfg.domain}.
+          ; External-DNS managed records will be dynamically added here
+        '';
+      in {
+        zoneName = fqdn;
+        templatePath = zoneTemplate;
+        filePath = zoneFilePath fqdn;
+        zoneAttr = {
           master = true;
           slaves = ["key ${tsigKeyName}"];
           extraConfig = ''
             allow-update { key "${tsigKeyName}"; };
-            journal "db.${zoneName}.jnl";
+            journal "${zoneJournalPath fqdn}";
             notify no;
             ixfr-from-differences yes;
             max-journal-size 1m;
           '';
-          file = pkgs.writeText "${zoneName}.zone" ''
-            $ORIGIN ${zoneName}.
-            $TTL    ${toString cfg.rfc2136.defaultTtl}
-            @ IN SOA ${zoneName}. admin.rabbito.tech (
-            ${toString inputs.self.lastModified}           ; serial number
-            3600                    ; refresh
-            900                     ; retry
-            1209600                 ; expire
-            ${toString cfg.rfc2136.defaultTtl}             ; minimum ttl
-            )
-                            IN    NS      ${config.networking.hostName}.${cfg.domain}.
-            ; External-DNS managed records will be dynamically added here
-          '';
+          file = zoneFilePath fqdn;
         };
       })
-      additionalExternalDnsZones);
+      additionalExternalDnsZones;
+
+    externalDnsZones = listToAttrs (map (zone: {
+        name = zone.zoneName;
+        value = zone.zoneAttr;
+      })
+      externalDnsZoneDefinitions);
   };
 in {
   options.services.router = {
@@ -1109,195 +1200,127 @@ in {
       "d /var/lib/bind 0775 named named -"
       "Z /var/lib/bind 0775 named named -"
       "f /var/log/bind-maintenance.log 0644 named named -"
-    ];
+    ]
+    ++ zoneTmpfilesRules;
 
-    # Create zone files
-    environment.etc = mkMerge [
-      # Main domain zone file
-      {
-        "bind/db.${cfg.domain}" = {
-          text = ''
-            $ORIGIN ${cfg.domain}.
-            $TTL    86400
-            @ IN SOA ${cfg.domain}. admin.rabbito.tech (
-            ${toString inputs.self.lastModified}           ; serial number
-            3600                    ; refresh
-            900                     ; retry
-            1209600                 ; expire
-            1800                    ; ttl
-            )
-                            IN    NS      ${config.networking.hostName}.${cfg.domain}.
-            ${config.networking.hostName}             IN    A       ${(findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router}
-            ${optionalString (dnsRecordsText != "") "\n; Custom DNS records\n${dnsRecordsText}"}
-          '';
-          mode = "0644";
-          user = "named";
-        };
-      }
+    # Create configuration files for auxiliary services
+    environment.etc = {
+      "fail2ban/filter.d/router-scan.conf" = mkIf cfg.fail2ban.enable {
+        text = ''
+          # Fail2Ban filter for router SSH scanning attempts
+          [INCLUDES]
+          before = common.conf
 
-      # Reverse zone files for each VLAN - dynamically generated
-      (listToAttrs (map (vlan: {
-          name = "bind/db.${mkReverseDnsZone vlan.subnet}";
-          value = {
-            text = ''
-              $ORIGIN ${mkReverseDnsZone vlan.subnet}
-              $TTL    86400
-              @ IN SOA ${cfg.domain}. admin.rabbito.tech (
-              ${toString inputs.self.lastModified}           ; serial number
-              3600                    ; refresh
-              900                     ; retry
-              1209600                 ; expire
-              1800                    ; ttl
-              )
-                              IN    NS      ${config.networking.hostName}.${cfg.domain}.
-              ${optionalString (vlan.id == 99) "1               IN    PTR     ${config.networking.hostName}.${cfg.domain}."}
-            '';
-            mode = "0644";
-          };
-        })
-        cfg.vlans))
+          [Definition]
+          _daemon = sshd
+          failregex = ^%(__prefix_line)s(?:error: PAM: )?[aA]uthentication (?:failure|error|failed) for .* from <HOST>( via \S+)?\s*$
+                      ^%(__prefix_line)s(?:error: )?Received disconnect from <HOST>: 3: .*: Auth fail$
+                      ^%(__prefix_line)sFailed \S+ for .*? from <HOST>(?: port \d*)?(?: ssh\d*)?$
+                      ^%(__prefix_line)sROOT LOGIN REFUSED.* FROM <HOST>$
+                      ^%(__prefix_line)s[iI](?:llegal|nvalid) user .* from <HOST>$
+                      ^%(__prefix_line)sUser .+ from <HOST> not allowed because not listed in AllowUsers$
+                      ^%(__prefix_line)sConnection closed by <HOST> port \d+ \[preauth\]$
 
-      # Custom DNS zone files - dynamically generated
-      (listToAttrs (mapAttrsToList (zoneName: zoneConfig: {
-          name = "bind/db.${zoneName}";
-          value = {
-            text = ''
-              $ORIGIN ${zoneName}.
-              $TTL    ${toString zoneConfig.ttl}
-              @ IN SOA ${zoneName}. ${zoneConfig.soaEmail} (
-              ${toString inputs.self.lastModified}           ; serial number
-              3600                    ; refresh
-              900                     ; retry
-              1209600                 ; expire
-              1800                    ; ttl
-              )
-                              IN    NS      ${config.networking.hostName}.${cfg.domain}.
-              ${concatStringsSep "\n" (map formatDnsRecord zoneConfig.records)}
-            '';
-            mode = "0644";
-          };
-        })
-        cfg.customDnsZones))
+          ignoreregex =
 
-      # Fail2ban filter definitions for router-specific attacks
-      {
-        "fail2ban/filter.d/router-scan.conf" = mkIf cfg.fail2ban.enable {
-          text = ''
-            # Fail2Ban filter for router SSH scanning attempts
-            [INCLUDES]
-            before = common.conf
+          # DEV Notes:
+          # Enhanced SSH filter for router-specific scanning patterns
+          # Uses standard fail2ban common.conf for prefix handling
+        '';
+        mode = "0644";
+      };
 
-            [Definition]
-            _daemon = sshd
-            failregex = ^%(__prefix_line)s(?:error: PAM: )?[aA]uthentication (?:failure|error|failed) for .* from <HOST>( via \S+)?\s*$
-                        ^%(__prefix_line)s(?:error: )?Received disconnect from <HOST>: 3: .*: Auth fail$
-                        ^%(__prefix_line)sFailed \S+ for .*? from <HOST>(?: port \d*)?(?: ssh\d*)?$
-                        ^%(__prefix_line)sROOT LOGIN REFUSED.* FROM <HOST>$
-                        ^%(__prefix_line)s[iI](?:llegal|nvalid) user .* from <HOST>$
-                        ^%(__prefix_line)sUser .+ from <HOST> not allowed because not listed in AllowUsers$
-                        ^%(__prefix_line)sConnection closed by <HOST> port \d+ \[preauth\]$
+      "fail2ban/filter.d/router-dhcp-abuse.conf" = mkIf cfg.fail2ban.enable {
+        text = ''
+          # Fail2Ban filter for DHCP abuse attempts
+          [INCLUDES]
+          before = common.conf
 
-            ignoreregex =
+          [Definition]
+          _daemon = dhcp
+          failregex = ^%(__prefix_line)sDHCPDISCOVER from [0-9a-f:]+ \(<HOST>\) via.*$
+                      ^%(__prefix_line)sDHCPREQUEST for .* from [0-9a-f:]+ \(<HOST>\) via.*$
+                      ^%(__prefix_line)sDHCP packet from <HOST> discarded.*$
+                      ^%(__prefix_line)sExcessive DHCP requests from <HOST>.*$
+                      ^%(__prefix_line)sclient <HOST> sends too many requests.*$
 
-            # DEV Notes:
-            # Enhanced SSH filter for router-specific scanning patterns
-            # Uses standard fail2ban common.conf for prefix handling
-          '';
-          mode = "0644";
-        };
+          ignoreregex =
 
-        "fail2ban/filter.d/router-dhcp-abuse.conf" = mkIf cfg.fail2ban.enable {
-          text = ''
-            # Fail2Ban filter for DHCP abuse attempts
-            [INCLUDES]
-            before = common.conf
+          # DEV Notes:
+          # Detects DHCP flooding and abuse patterns
+          # Note: May need adjustment based on actual Kea DHCP log format
+        '';
+        mode = "0644";
+      };
 
-            [Definition]
-            _daemon = dhcp
-            failregex = ^%(__prefix_line)sDHCPDISCOVER from [0-9a-f:]+ \(<HOST>\) via.*$
-                        ^%(__prefix_line)sDHCPREQUEST for .* from [0-9a-f:]+ \(<HOST>\) via.*$
-                        ^%(__prefix_line)sDHCP packet from <HOST> discarded.*$
-                        ^%(__prefix_line)sExcessive DHCP requests from <HOST>.*$
-                        ^%(__prefix_line)sclient <HOST> sends too many requests.*$
+      "fail2ban/filter.d/router-port-scan.conf" = mkIf cfg.fail2ban.enable {
+        text = ''
+          # Fail2Ban filter for port scanning attempts
+          [INCLUDES]
+          before = common.conf
 
-            ignoreregex =
+          [Definition]
+          _daemon = kernel
+          failregex = ^%(__prefix_line)s.*IN=.* SRC=<HOST>.*DPT=\d+.*$
+                      ^%(__prefix_line)s.*\[UFW BLOCK\] IN=.* SRC=<HOST>.*$
+                      ^%(__prefix_line)s.*DROP.*SRC=<HOST>.*DPT=\d+.*$
+                      ^%(__prefix_line)s.*nf_conntrack:.*SRC=<HOST>.*$
 
-            # DEV Notes:
-            # Detects DHCP flooding and abuse patterns
-            # Note: May need adjustment based on actual Kea DHCP log format
-          '';
-          mode = "0644";
-        };
+          ignoreregex =
 
-        "fail2ban/filter.d/router-port-scan.conf" = mkIf cfg.fail2ban.enable {
-          text = ''
-            # Fail2Ban filter for port scanning attempts
-            [INCLUDES]
-            before = common.conf
+          # DEV Notes:
+          # Detects port scanning via kernel/firewall logs
+          # Adjust patterns based on actual firewall logging
+        '';
+        mode = "0644";
+      };
 
-            [Definition]
-            _daemon = kernel
-            failregex = ^%(__prefix_line)s.*IN=.* SRC=<HOST>.*DPT=\d+.*$
-                        ^%(__prefix_line)s.*\[UFW BLOCK\] IN=.* SRC=<HOST>.*$
-                        ^%(__prefix_line)s.*DROP.*SRC=<HOST>.*DPT=\d+.*$
-                        ^%(__prefix_line)s.*nf_conntrack:.*SRC=<HOST>.*$
+      "fail2ban/filter.d/router-dns-abuse.conf" = mkIf cfg.fail2ban.enable {
+        text = ''
+          # Fail2Ban filter for DNS abuse attempts
+          [INCLUDES]
+          before = common.conf
 
-            ignoreregex =
+          [Definition]
+          _daemon = named
+          failregex = ^%(__prefix_line)sclient <HOST>#\d+.*query \(cache\) .*/IN denied$
+                      ^%(__prefix_line)sclient <HOST>#\d+.*too many queries$
+                      ^%(__prefix_line)sclient <HOST>#\d+.*query denied$
+                      ^%(__prefix_line)sclient <HOST>#\d+.*rate limit exceeded$
+                      ^%(__prefix_line)sclient <HOST>#\d+.*FORMERR.*$
 
-            # DEV Notes:
-            # Detects port scanning via kernel/firewall logs
-            # Adjust patterns based on actual firewall logging
-          '';
-          mode = "0644";
-        };
+          ignoreregex =
 
-        "fail2ban/filter.d/router-dns-abuse.conf" = mkIf cfg.fail2ban.enable {
-          text = ''
-            # Fail2Ban filter for DNS abuse attempts
-            [INCLUDES]
-            before = common.conf
+          # DEV Notes:
+          # Detects DNS abuse patterns and query flooding
+          # Based on BIND9 named log format
+        '';
+        mode = "0644";
+      };
 
-            [Definition]
-            _daemon = named
-            failregex = ^%(__prefix_line)sclient <HOST>#\d+.*query \(cache\) .*/IN denied$
-                        ^%(__prefix_line)sclient <HOST>#\d+.*too many queries$
-                        ^%(__prefix_line)sclient <HOST>#\d+.*query denied$
-                        ^%(__prefix_line)sclient <HOST>#\d+.*rate limit exceeded$
-                        ^%(__prefix_line)sclient <HOST>#\d+.*FORMERR.*$
+      "fail2ban/filter.d/router-web-scan.conf" = mkIf cfg.fail2ban.enable {
+        text = ''
+          # Fail2Ban filter for web scanning attempts on router interfaces
+          [INCLUDES]
+          before = common.conf
 
-            ignoreregex =
+          [Definition]
+          _daemon = nginx
+          failregex = ^<HOST> -.*"(GET|POST|HEAD) .*(\.php|\.asp|\.cgi|admin|login|wp-admin|phpmyadmin).*" (404|403|401).*$
+                      ^<HOST> -.*"(GET|POST) .*/\.\./.*" .*$
+                      ^<HOST> -.*"(GET|POST) .*/(etc/passwd|proc/|dev/).*" .*$
+                      ^<HOST> -.*"(GET|POST) .*(cmd=|exec=|union.*select).*" .*$
+                      ^<HOST> -.*".*(/\?|\.\.\\).*" (400|404|403).*$
 
-            # DEV Notes:
-            # Detects DNS abuse patterns and query flooding
-            # Based on BIND9 named log format
-          '';
-          mode = "0644";
-        };
+          ignoreregex =
 
-        "fail2ban/filter.d/router-web-scan.conf" = mkIf cfg.fail2ban.enable {
-          text = ''
-            # Fail2Ban filter for web scanning attempts on router interfaces
-            [INCLUDES]
-            before = common.conf
-
-            [Definition]
-            _daemon = nginx
-            failregex = ^<HOST> -.*"(GET|POST|HEAD) .*(\.php|\.asp|\.cgi|admin|login|wp-admin|phpmyadmin).*" (404|403|401).*$
-                        ^<HOST> -.*"(GET|POST) .*/\.\./.*" .*$
-                        ^<HOST> -.*"(GET|POST) .*/(etc/passwd|proc/|dev/).*" .*$
-                        ^<HOST> -.*"(GET|POST) .*(cmd=|exec=|union.*select).*" .*$
-                        ^<HOST> -.*".*(/\?|\.\.\\).*" (400|404|403).*$
-
-            ignoreregex =
-
-            # DEV Notes:
-            # Detects web application scanning and exploit attempts
-            # Common patterns for admin panel discovery and path traversal
-          '';
-          mode = "0644";
-        };
-      }
-    ];
+          # DEV Notes:
+          # Detects web application scanning and exploit attempts
+          # Common patterns for admin panel discovery and path traversal
+        '';
+        mode = "0644";
+      };
+    };
 
     # Configure router-specific fail2ban jails using services.fail2ban.jails
     services.fail2ban = mkIf cfg.fail2ban.enable {
@@ -1516,31 +1539,7 @@ in {
 
       zones =
         {
-          "${cfg.domain}." = {
-            master = true;
-            extraConfig = ''
-              allow-update { key "dhcp-update-key"; };
-              journal "/var/lib/bind/db.${cfg.domain}.jnl";
-              notify no;
-              ixfr-from-differences yes;
-              max-journal-size 1m;
-            '';
-            file = pkgs.writeText cfg.domain ''
-              $ORIGIN ${cfg.domain}.
-              $TTL    86400
-              @ IN SOA ${cfg.domain}. admin.rabbito.tech (
-              ${toString inputs.self.lastModified}           ; serial number
-              3600                    ; refresh
-              900                     ; retry
-              1209600                 ; expire
-              1800                    ; ttl
-              )
-                              IN    NS      ${config.networking.hostName}.${cfg.domain}.
-              ${config.networking.hostName}             IN    A       ${(findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router}
-              ${optionalString (dnsRecordsText != "") "\n; Custom DNS records"}
-              ${dnsRecordsText}
-            '';
-          };
+          "${cfg.domain}." = mainZoneDefinition.zoneAttr;
         }
         // reverseDnsZones
         // customDnsZones

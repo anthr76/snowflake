@@ -74,8 +74,8 @@
           };
           nixos = {
             type = "stdio";
-            command = "nix";
-            args = ["run" "github:utensils/mcp-nixos" "--"];
+            command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
+            args = ["--"];
           };
           gk = {
             type = "stdio";

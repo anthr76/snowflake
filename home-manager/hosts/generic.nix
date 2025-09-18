@@ -8,7 +8,7 @@
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${pkgs.nh}/bin/nh home switch --no-nom -c anthony@generic github:anthr76/snowflake/stable";
+      ExecStart = "${pkgs.nh}/bin/nh home switch --no-nom -c anthony@generic -- --flake github:anthr76/snowflake/stable";
     };
   };
 
