@@ -1183,7 +1183,7 @@ in {
     };
 
     # Configure DNS
-    services.dnscrypt-proxy2 = {
+    services.dnscrypt-proxy = {
       enable = true;
       settings = {
         listen_addresses = ["127.0.0.1:53"];
@@ -1558,7 +1558,7 @@ in {
     systemd.services.cloudflare-dyndns = {
       after = [
         "network-online.target"
-        "dnscrypt-proxy2.service"
+        "dnscrypt-proxy.service"
         "bind.service"
         "systemd-resolved.service"
       ];
