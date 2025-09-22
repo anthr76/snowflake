@@ -68,14 +68,14 @@
       ];
       userMcp = {
         servers = {
-          github = {
-            type = "http";
-            url = "https://api.githubcopilot.com/mcp/";
-          };
           nixos = {
             type = "stdio";
             command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
             args = ["--"];
+          };
+          playwright = {
+            type = "stdio";
+            command = "${pkgs.playwright-mcp}/bin/mcp-server-playwright";
           };
           gk = {
             type = "stdio";

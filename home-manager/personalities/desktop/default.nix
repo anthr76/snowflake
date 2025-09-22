@@ -8,6 +8,7 @@
     ./fonts.nix
     ./wezterm.nix
     ./chromium.nix
+    ./zen.nix
     ./firefox.nix
     ./email.nix
     ./chat
