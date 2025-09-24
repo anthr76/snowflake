@@ -70,15 +70,6 @@
       doCheck = false;
     });
 
-    linux-firmware = prev.linux-firmware.overrideAttrs (oldAttrs: {
-      # TODO: Working around regressions in linux-firmware
-      version = "20250808";
-      src = final.fetchzip {
-        url = "https://cdn.kernel.org/pub/linux/kernel/firmware/linux-firmware-20250808.tar.xz ";
-        hash = "sha256-bmvhAKAY43WaPr3VLUUYoX6BU2Ret47vDnyCVP7157s=";
-      };
-    });
-
     kdePackages =
       prev.kdePackages
       // {
