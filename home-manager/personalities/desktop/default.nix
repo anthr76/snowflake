@@ -25,8 +25,6 @@
     # zoom-us
     system76-keyboard-configurator
     uhk-agent
-    podman-desktop
-    mumble
     murmur
     bottles
     lightworks
