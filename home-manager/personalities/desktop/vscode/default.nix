@@ -93,7 +93,13 @@
                   if pkgs.stdenv.isDarwin
                   then "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
                   else "${pkgs.chromium}/bin/chromium";
+              }
+              // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
                 CHROMIUM_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
+                FIREFOX_EXECUTABLE_PATH = "${pkgs.firefox}/bin/firefox";
+              }
+              // pkgs.lib.optionalAttrs pkgs.stdenv.isDarwin {
+                FIREFOX_EXECUTABLE_PATH = "/Applications/Firefox.app/Contents/MacOS/firefox";
               };
           };
           gk = {
