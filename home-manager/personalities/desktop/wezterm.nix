@@ -49,6 +49,10 @@
       -- Thin I-Beam cursor, power-aware (blink on AC, steady on battery)
       config.cursor_thickness = 0.15
 
+      config.keys = {
+        {key="Enter", mods="SHIFT", action=wezterm.action{SendString="\x1b\r"}},
+      }
+
       local function on_ac_power()
         for _, b in ipairs(wezterm.battery_info()) do
           if b.state == 'Charging' or b.state == 'Full' then
