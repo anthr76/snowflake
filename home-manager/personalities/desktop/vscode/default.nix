@@ -5,9 +5,17 @@
   ...
 }: {
   # TODO: See if we can just include in a overlay for vscode.
-  home.packages = [
-    pkgs.helm-ls
-  ];
+  home.packages =
+    [
+      pkgs.helm-ls
+      # Playwright MCP dependencies
+      pkgs.playwright-driver
+    ]
+    ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+      # Linux-specific browsers for Playwright
+      pkgs.chromium
+      pkgs.firefox
+    ];
   catppuccin.vscode.profiles.default = {
     enable = true;
     icons.enable = true;
@@ -76,6 +84,23 @@
           playwright = {
             type = "stdio";
             command = "${pkgs.playwright-mcp}/bin/mcp-server-playwright";
+            env =
+              {
+                PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+                PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+                PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+                CHROME_EXECUTABLE_PATH =
+                  if pkgs.stdenv.isDarwin
+                  then "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+                  else "${pkgs.chromium}/bin/chromium";
+              }
+              // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+                CHROMIUM_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
+                FIREFOX_EXECUTABLE_PATH = "${pkgs.firefox}/bin/firefox";
+              }
+              // pkgs.lib.optionalAttrs pkgs.stdenv.isDarwin {
+                FIREFOX_EXECUTABLE_PATH = "/Applications/Firefox.app/Contents/MacOS/firefox";
+              };
           };
           gk = {
             type = "stdio";
