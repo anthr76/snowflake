@@ -223,6 +223,9 @@
           mode = "manual";
           showReleaseNotes = false;
         };
+        claude-code = {
+          useTerminal = true;
+        };
         github = {
           copilot = {
             chat = {
