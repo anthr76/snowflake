@@ -10,11 +10,6 @@
       pkgs.helm-ls
       # Playwright MCP dependencies
       pkgs.playwright-driver
-    ]
-    ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
-      # Linux-specific browsers for Playwright
-      pkgs.chromium
-      pkgs.firefox
     ];
   catppuccin.vscode.profiles.default = {
     enable = true;
