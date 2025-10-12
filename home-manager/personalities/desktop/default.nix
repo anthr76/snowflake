@@ -29,7 +29,8 @@
     bottles
     lightworks
     darktable
-    shadps4
+    # TODO: Currently broken
+    # shadps4
     yuki-iptv
     vorta
     prismlauncher
