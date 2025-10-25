@@ -31,7 +31,6 @@
     darktable
     # TODO: Currently broken
     # shadps4
-    yuki-iptv
     vorta
     prismlauncher
     minicom
