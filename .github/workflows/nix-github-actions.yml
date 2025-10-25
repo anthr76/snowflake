@@ -13,7 +13,8 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: DeterminateSystems/nix-installer-action@45a18a69953f27af3c2bfad0a5e01c38ef2da462
+      - uses: DeterminateSystems/nix-installer-action@2fd3724578c33f9f62507d651600d52b8de3c0b9
+      - uses: DeterminateSystems/magic-nix-cache-action@9934a5f127967bcd92e99961e365730ba57253de
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - id: set-matrix
         name: Generate Nix Matrix
@@ -31,7 +32,7 @@ jobs:
       matrix: ${{fromJSON(needs.nix-matrix.outputs.matrix)}}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - uses: DeterminateSystems/nix-installer-action@45a18a69953f27af3c2bfad0a5e01c38ef2da462
+      - uses: DeterminateSystems/nix-installer-action@2fd3724578c33f9f62507d651600d52b8de3c0b9
       - uses: DeterminateSystems/magic-nix-cache-action@9934a5f127967bcd92e99961e365730ba57253de
       - uses: cachix/cachix-action@0fc020193b5a1fa3ac4575aa3a7d3aa6a35435ad # v16
         with:
