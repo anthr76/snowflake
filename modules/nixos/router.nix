@@ -984,6 +984,10 @@ in {
         ++ optional cfg.enableOob cfg.oobInterface
         ++ optional cfg.enableLan cfg.lanInterface;
 
+      # Exclude Tailscale CGNAT range from NAT - traffic to 100.64.0.0/10 should route via Tailscale
+      # internalIPs = ["100.64.0.0/10"];
+      # externalIP = "!100.64.0.0/10";
+
       # Enable IPv6 forwarding if IPv6 is enabled
       enableIPv6 = cfg.ipv6.enable;
     };
@@ -1079,9 +1083,18 @@ in {
       })
     ];
     # Configure Tailscale
-    services.tailscale.extraUpFlags = mkIf (cfg.tailscaleRoutes != []) [
-      "--advertise-routes=${concatStringsSep "," cfg.tailscaleRoutes}"
-    ];
+    services.tailscale = {
+      extraSetFlags =
+        (optionals (cfg.tailscaleRoutes != []) [
+          "--advertise-routes=${concatStringsSep "," cfg.tailscaleRoutes}"
+        ])
+        ++ [
+          "--accept-routes"
+          "--snat-subnet-routes"
+        ];
+      openFirewall = true;
+      useRoutingFeatures = "both";
+    };
 
     # Configure DHCP
     services.kea.dhcp4 = {
