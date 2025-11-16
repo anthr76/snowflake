@@ -1090,7 +1090,7 @@ in {
         ])
         ++ [
           "--accept-routes"
-          "--snat-subnet-routes"
+          "--snat-subnet-routes=false"
         ];
       openFirewall = true;
       useRoutingFeatures = "both";
