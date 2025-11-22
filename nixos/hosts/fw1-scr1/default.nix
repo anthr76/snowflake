@@ -74,7 +74,7 @@
       "192.168.4.0/24" # Servers
       "10.20.99.0/24" # Management
       "192.168.6.0/24" # End users
-      "10.45.0.0/16" # MetalLB LoadBalancer IP range
+      "10.45.0.0/16" # K8s BGP LoadBalancer IP range
     ];
 
     forwardZones = {
@@ -194,7 +194,7 @@
 
   # HAProxy for Kubernetes control-plane load balancing
   services.haproxy-k8s = {
-    enable = true;
+    enable = false;
     frontendPort = 6443;
     bindAddress = "192.168.8.1"; # Router IP on kubernetes VLAN
     controlPlaneNodes = [
@@ -216,83 +216,39 @@
     ];
   };
 
-  # BGP daemon for MetalLB support
+  # BGP daemon for K8s BGP support
   services.bgp = {
     enable = true;
     routerId = "192.168.8.1";
-    localASN = 64512;
+    localASN = 64513;
+    peerGroupName = "k8s";
+    peerASN = 64512;
+    nextHopSelf = true;
 
-    # Advertise the MetalLB IP pool
-    networks = [
-      {
-        network = "10.45.0.0/16";
-        description = "MetalLB LoadBalancer IP range";
-      }
-    ];
-
-    # BGP peers - MetalLB speakers on all Kubernetes nodes
+    # BGP peers - K8s BGP speakers on worker nodes
     peers = [
-      # Control plane nodes (masters)
-      {
-        address = "192.168.8.40";
-        asn = 64512;
-        description = "MetalLB speaker on master-1";
-      }
-      {
-        address = "192.168.8.47";
-        asn = 64512;
-        description = "MetalLB speaker on master-2";
-      }
-      {
-        address = "192.168.8.60";
-        asn = 64512;
-        description = "MetalLB speaker on master-3";
-      }
-      # Worker nodes
       {
         address = "192.168.8.20";
-        asn = 64512;
-        description = "MetalLB speaker on worker-1";
+        description = "K8s BGP speaker on worker-1";
       }
       {
         address = "192.168.8.62";
-        asn = 64512;
-        description = "MetalLB speaker on worker-2";
+        description = "K8s BGP speaker on worker-2";
       }
       {
         address = "192.168.8.61";
-        asn = 64512;
-        description = "MetalLB speaker on worker-3";
+        description = "K8s BGP speaker on worker-3";
       }
       {
         address = "192.168.8.41";
-        asn = 64512;
-        description = "MetalLB speaker on worker-13";
+        description = "K8s BGP speaker on worker-4";
       }
       {
         address = "192.168.8.144";
-        asn = 64512;
-        description = "MetalLB speaker on worker-14";
+        description = "K8s BGP speaker on worker-5";
       }
     ];
 
-    interface = "lan";
     logLevel = "informational";
-
-    # Additional BGP configuration if needed
-    extraConfig = ''
-      ! Additional MetalLB specific configuration
-      ! Ensure faster convergence for load balancer IPs
-      ! Control plane nodes
-      neighbor 192.168.8.40 timers 30 90
-      neighbor 192.168.8.47 timers 30 90
-      neighbor 192.168.8.60 timers 30 90
-      ! Worker nodes
-      neighbor 192.168.8.20 timers 30 90
-      neighbor 192.168.8.62 timers 30 90
-      neighbor 192.168.8.61 timers 30 90
-      neighbor 192.168.8.41 timers 30 90
-      neighbor 192.168.8.144 timers 30 90
-    '';
   };
 }

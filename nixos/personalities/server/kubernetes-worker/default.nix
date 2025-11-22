@@ -144,15 +144,8 @@
     "net.ipv6.conf.all.forwarding" = lib.mkDefault 1;
   };
 
-  networking.firewall = {
-    allowedTCPPorts = [10250];
-    allowedTCPPortRanges = [
-      {
-        from = 30000;
-        to = 32767;
-      }
-    ];
-  };
+  # TODO: Should we care about this?
+  networking.firewall.enable = lib.mkForce false;
 
   environment.systemPackages = with pkgs; [
     cri-tools
