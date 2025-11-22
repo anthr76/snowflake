@@ -69,46 +69,20 @@
         "hashicorp.terraform"
         "ms-vscode-remote.remote-ssh"
       ];
-      userMcp = {
-        servers = {
-          nixos = {
-            type = "stdio";
-            command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
-            args = ["--"];
-          };
-          playwright = {
-            type = "stdio";
-            command = "${pkgs.playwright-mcp}/bin/mcp-server-playwright";
-            env =
-              {
-                PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
-                PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
-                PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
-                CHROME_EXECUTABLE_PATH =
-                  if pkgs.stdenv.isDarwin
-                  then "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-                  else "${pkgs.chromium}/bin/chromium";
-              }
-              // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
-                CHROMIUM_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
-                FIREFOX_EXECUTABLE_PATH = "${pkgs.firefox}/bin/firefox";
-              }
-              // pkgs.lib.optionalAttrs pkgs.stdenv.isDarwin {
-                FIREFOX_EXECUTABLE_PATH = "/Applications/Firefox.app/Contents/MacOS/firefox";
-              };
-          };
-          gk = {
-            type = "stdio";
-            command = "${pkgs.gk-cli}/bin/gk";
-            args = ["mcp"];
-          };
-          mcp-k8s-go = {
-            type = "stdio";
-            command = "${pkgs.mcp-k8s-go}/bin/mcp-k8s-go";
-            args = ["--readonly"];
-          };
-        };
-      };
+      # userMcp = {
+      #   servers = {
+      #     nixos = {
+      #       type = "stdio";
+      #       command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
+      #       args = ["--"];
+      #     };
+      #     gk = {
+      #       type = "stdio";
+      #       command = "${pkgs.gk-cli}/bin/gk";
+      #       args = ["mcp"];
+      #     };
+      #   };
+      # };
       userSettings = {
         "[go]".editor.defaultFormatter = "golang.go";
         "[go]".toolsManagement.autoUpdate = true;
