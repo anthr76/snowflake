@@ -10,4 +10,5 @@
   # TODO: Currently broken and unused.
   # led_matrix_monitoring = pkgs.callPackage ./led_matrix_monitoring { };
   kotlin-debug-adapter = pkgs.callPackage ./kotlin-debug-adapter { };
+  scuttle = pkgs.callPackage ./scuttle { };
 }

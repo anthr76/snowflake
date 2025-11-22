@@ -16,6 +16,7 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+    impermanence.url = "github:nix-community/impermanence";
     nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
@@ -69,6 +70,7 @@
     nixified-ai,
     nixos-generators,
     zen-browser,
+    impermanence,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -182,6 +184,46 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/fw1-scr1
+          chaotic.nixosModules.default
+          inputs.nixos-facter-modules.nixosModules.facter
+        ];
+      };
+      "worker-1" = lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nixos/hosts/worker-1
+          chaotic.nixosModules.default
+          inputs.nixos-facter-modules.nixosModules.facter
+        ];
+      };
+      "worker-2" = lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nixos/hosts/worker-2
+          chaotic.nixosModules.default
+          inputs.nixos-facter-modules.nixosModules.facter
+        ];
+      };
+      "worker-3" = lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nixos/hosts/worker-3
+          chaotic.nixosModules.default
+          inputs.nixos-facter-modules.nixosModules.facter
+        ];
+      };
+      "worker-4" = lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nixos/hosts/worker-4
+          chaotic.nixosModules.default
+          inputs.nixos-facter-modules.nixosModules.facter
+        ];
+      };
+      "worker-5" = lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nixos/hosts/worker-5
           chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];

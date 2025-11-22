@@ -96,42 +96,42 @@
         enabled = true;
         staticReservations = [
           {
-            hostname = "master-01";
+            hostname = "master-1";
             mac = "00:1B:21:C1:FD:C6";
             ip = "192.168.8.40";
           }
           {
-            hostname = "master-02";
+            hostname = "master-2";
             mac = "80:61:5f:0d:e0:78";
             ip = "192.168.8.47";
           }
           {
-            hostname = "master-03";
+            hostname = "master-3";
             mac = "80:61:5f:0d:e2:e2";
             ip = "192.168.8.60";
           }
           {
-            hostname = "worker-01";
+            hostname = "worker-1";
             mac = "A0:36:9F:FF:FF:FF";
             ip = "192.168.8.20";
           }
           {
-            hostname = "worker-02";
+            hostname = "worker-2";
             mac = "90:E2:BA:8C:70:3A";
             ip = "192.168.8.62";
           }
           {
-            hostname = "worker-03";
+            hostname = "worker-3";
             mac = "90:E2:BA:8C:74:98";
             ip = "192.168.8.61";
           }
           {
-            hostname = "worker-13";
+            hostname = "worker-4";
             mac = "90:E2:BA:44:05:B0";
             ip = "192.168.8.41";
           }
           {
-            hostname = "worker-14";
+            hostname = "worker-5";
             mac = "80:61:5F:03:99:23";
             ip = "192.168.8.144";
           }
@@ -236,33 +236,33 @@
       {
         address = "192.168.8.40";
         asn = 64512;
-        description = "MetalLB speaker on master-01";
+        description = "MetalLB speaker on master-1";
       }
       {
         address = "192.168.8.47";
         asn = 64512;
-        description = "MetalLB speaker on master-02";
+        description = "MetalLB speaker on master-2";
       }
       {
         address = "192.168.8.60";
         asn = 64512;
-        description = "MetalLB speaker on master-03";
+        description = "MetalLB speaker on master-3";
       }
       # Worker nodes
       {
         address = "192.168.8.20";
         asn = 64512;
-        description = "MetalLB speaker on worker-01";
+        description = "MetalLB speaker on worker-1";
       }
       {
         address = "192.168.8.62";
         asn = 64512;
-        description = "MetalLB speaker on worker-02";
+        description = "MetalLB speaker on worker-2";
       }
       {
         address = "192.168.8.61";
         asn = 64512;
-        description = "MetalLB speaker on worker-03";
+        description = "MetalLB speaker on worker-3";
       }
       {
         address = "192.168.8.41";
