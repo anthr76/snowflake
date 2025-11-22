@@ -10,7 +10,7 @@
   ];
 
   networking.hostName = "worker-3";
-  networking.domain = "scr1.rabbito.tech";
+  networking.domain = "qgr1.rabbito.tech";
   system.stateVersion = "24.11";
   facter.reportPath = ./facter.json;
 

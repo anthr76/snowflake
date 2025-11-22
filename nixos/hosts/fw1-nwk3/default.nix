@@ -77,7 +77,7 @@
       "nwk2.rabbito.tech" = {
         forwarders = ["10.30.99.1"];
       };
-      "scr1.rabbito.tech" = {
+      "qgr1.rabbito.tech" = {
         forwarders = ["10.20.99.1"];
       };
     };

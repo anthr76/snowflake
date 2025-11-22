@@ -12,7 +12,7 @@
     inputs.disko.nixosModules.disko
   ];
   networking.hostName = "fw1";
-  networking.domain = "scr1.rabbito.tech";
+  networking.domain = "qgr1.rabbito.tech";
   system.stateVersion = "23.11";
   nixpkgs.hostPlatform = "x86_64-linux";
   boot.initrd.availableKernelModules = ["xhci_pci" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod"];
@@ -23,7 +23,7 @@
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   services.router = {
     enable = true;
-    domain = "scr1.rabbito.tech";
+    domain = "qgr1.rabbito.tech";
     udevRules = ''
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:7c:14:f8:4a:d5", NAME="lan"
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:7c:14:f8:4a:d0", NAME="wan"
@@ -41,7 +41,7 @@
     # RFC 2136 / external-dns support
     rfc2136 = {
       enable = true;
-      externalDnsZones = ["scr1.rabbito.tech"];
+      externalDnsZones = ["qgr1.rabbito.tech"];
       defaultTtl = 1;
     };
 
@@ -63,10 +63,8 @@
     };
 
     cloudflaredomains = [
-      "fw1.scr1.rabbito.tech"
-      "scr1.rabbito.tech"
-      "cluster-0.scr1.rabbito.tech"
-      "cluster-0-ie.scr1.rabbito.tech"
+      "fw1.qgr1.rabbito.tech"
+      "qgr1.rabbito.tech"
     ];
     # TODO: Fixup
     tailscaleRoutes = [
@@ -180,38 +178,9 @@
         value = "192.168.8.60";
       }
       {
-        name = "cluster-0";
+        name = "cluster-0-ge";
         type = "A";
-        value = "192.168.8.1";
-      }
-      {
-        name = "cluster-0-ie";
-        type = "A";
-        value = "10.45.0.80";
-      }
-    ];
-  };
-
-  # HAProxy for Kubernetes control-plane load balancing
-  services.haproxy-k8s = {
-    enable = false;
-    frontendPort = 6443;
-    bindAddress = "192.168.8.1"; # Router IP on kubernetes VLAN
-    controlPlaneNodes = [
-      {
-        name = "master-01";
-        address = "192.168.8.40";
-        port = 6443;
-      }
-      {
-        name = "master-02";
-        address = "192.168.8.47";
-        port = 6443;
-      }
-      {
-        name = "master-03";
-        address = "192.168.8.60";
-        port = 6443;
+        value = "10.45.0.43";
       }
     ];
   };

@@ -686,7 +686,7 @@ in {
         type = types.listOf types.str;
         default = [];
         description = "DNS zones that external-dns should manage";
-        example = ["scr1.rabbito.tech" "kutara.io"];
+        example = ["qgr1.rabbito.tech" "kutara.io"];
       };
 
       bindAddress = mkOption {

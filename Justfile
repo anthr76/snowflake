@@ -80,7 +80,7 @@ deploy-workers ACTION="switch":
             --option builders '' \
             --sudo \
             --use-remote-sudo \
-            --target-host "anthony@${worker}.scr1.rabbito.tech" || {
+            --target-host "anthony@${worker}.qgr1.rabbito.tech" || {
             echo "ERROR: Failed to deploy $worker"
             read -p "Continue with remaining workers? (y/N) " -n 1 -r
             echo
@@ -111,4 +111,4 @@ deploy-worker WORKER ACTION="switch":
         --option builders '' \
         --sudo \
         --use-remote-sudo \
-        --target-host "anthony@{{WORKER}}.scr1.rabbito.tech"
+        --target-host "anthony@{{WORKER}}.qgr1.rabbito.tech"

@@ -180,10 +180,10 @@
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
-      "fw1-scr1" = lib.nixosSystem {
+      "fw1-qgr1" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
-          ./nixos/hosts/fw1-scr1
+          ./nixos/hosts/fw1-qgr1
           chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];

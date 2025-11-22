@@ -15,7 +15,7 @@ in {
       };
       trusted = lib.hm.dag.entryBefore [ "net" ] {
         host =
-          "rabbito.tech *.nwk3.rabbito.tech *.nwk2.rabbito.tech *.scr1.rabbito.tech";
+          "rabbito.tech *.nwk3.rabbito.tech *.nwk2.rabbito.tech *.qgr1.rabbito.tech";
         forwardAgent = true;
       };
     };
