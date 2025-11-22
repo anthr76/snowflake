@@ -7,7 +7,7 @@ with lib; let
   cfg = config.services.bgp;
 in {
   options.services.bgp = {
-    enable = mkEnableOption "BGP daemon for MetalLB support";
+    enable = mkEnableOption "BGP daemon for K8s BGP support";
 
     routerId = mkOption {
       type = types.str;
@@ -21,6 +21,18 @@ in {
       default = 64512;
     };
 
+    peerGroupName = mkOption {
+      type = types.str;
+      description = "Name of the BGP peer group";
+      default = "k8s";
+    };
+
+    peerASN = mkOption {
+      type = types.int;
+      description = "Remote AS number for peers";
+      default = 64512;
+    };
+
     peers = mkOption {
       type = types.listOf (types.submodule {
         options = {
@@ -30,43 +42,22 @@ in {
             example = "192.168.8.40";
           };
 
-          asn = mkOption {
-            type = types.int;
-            description = "Peer AS number";
-            example = 64512;
-          };
-
           description = mkOption {
             type = types.str;
             description = "Description of the peer";
             default = "";
-            example = "MetalLB speaker on master-01";
+            example = "K8s BGP speaker on master-01";
           };
         };
       });
       default = [];
-      description = "List of BGP peers (MetalLB speakers)";
+      description = "List of BGP peers (K8s BGP speakers)";
     };
 
-    networks = mkOption {
-      type = types.listOf (types.submodule {
-        options = {
-          network = mkOption {
-            type = types.str;
-            description = "Network to advertise via BGP";
-            example = "10.45.0.0/16";
-          };
-
-          description = mkOption {
-            type = types.str;
-            description = "Description of the network";
-            default = "";
-            example = "MetalLB LoadBalancer IP range";
-          };
-        };
-      });
-      default = [];
-      description = "Networks to advertise via BGP";
+    nextHopSelf = mkOption {
+      type = types.bool;
+      description = "Advertise this router as next hop for all peers in the peer group";
+      default = true;
     };
 
     extraConfig = mkOption {
@@ -75,55 +66,58 @@ in {
       description = "Additional FRR BGP configuration";
     };
 
-    interface = mkOption {
-      type = types.str;
-      description = "Interface to bind BGP to";
-      default = "lan";
-      example = "lan";
-    };
-
     logLevel = mkOption {
       type = types.enum ["emergencies" "alerts" "critical" "errors" "warnings" "notifications" "informational" "debugging"];
       default = "informational";
       description = "BGP logging level";
     };
+
+    openFirewall = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Open firewall for BGP traffic and allow forwarding";
+    };
   };
 
   config = mkIf cfg.enable {
-    # Enable FRR BGP daemon
+    # Enable FRR BGP daemon and Zebra for route installation
     services.frr = {
       bgpd = {
         enable = true;
-        options = [
-          "--log-level=${cfg.logLevel}"
-        ];
       };
 
       config = ''
         !
-        ! BGP Configuration for MetalLB
+        ! BGP Configuration for K8s BGP
         !
         log syslog ${cfg.logLevel}
         !
+        ! Route-map definitions (must come before router bgp)
+        route-map ALLOW-ALL permit 10
+        !
         router bgp ${toString cfg.localASN}
          bgp router-id ${cfg.routerId}
-         bgp bestpath as-path multipath-relax
-         bgp bestpath compare-routerid
+         maximum-paths 4
+         bgp ebgp-requires-policy
          !
-         ! Advertise networks
-        ${concatMapStringsSep "\n" (net: " network ${net.network}${optionalString (net.description != "") " ! ${net.description}"}") cfg.networks}
+         ! Peer group configuration
+         neighbor ${cfg.peerGroupName} peer-group
+         neighbor ${cfg.peerGroupName} remote-as ${toString cfg.peerASN}
+         neighbor ${cfg.peerGroupName} activate
+         neighbor ${cfg.peerGroupName} soft-reconfiguration inbound
          !
-         ! BGP peers (MetalLB speakers)
-        ${concatMapStringsSep "\n" (peer: ''
-         neighbor ${peer.address} remote-as ${toString peer.asn}
-         neighbor ${peer.address} description ${if peer.description != "" then peer.description else "BGP peer ${peer.address}"}
-         neighbor ${peer.address} activate
-         neighbor ${peer.address} soft-reconfiguration inbound'') cfg.peers}
+         ! BGP peers
+        ${concatMapStringsSep "\n" (peer: " neighbor ${peer.address} peer-group ${cfg.peerGroupName}") cfg.peers}
          !
+         address-family ipv4 unicast
+          redistribute connected
+          neighbor ${cfg.peerGroupName} activate
+          neighbor ${cfg.peerGroupName} route-map ALLOW-ALL in
+          neighbor ${cfg.peerGroupName} route-map ALLOW-ALL out
+          neighbor ${cfg.peerGroupName} next-hop-self
+        exit-address-family
+        !
         ${cfg.extraConfig}
-        !
-        exit
-        !
       '';
     };
 
@@ -133,5 +127,9 @@ in {
       "net.ipv6.conf.all.forwarding" = lib.mkDefault 1;
     };
 
+    # Firewall configuration
+    networking.firewall = mkIf cfg.openFirewall {
+      allowedTCPPorts = [ 179 ];
+    };
   };
 }

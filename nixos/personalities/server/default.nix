@@ -32,7 +32,7 @@
   };
   imports = [
     # ./serial.nix
-    ./observability.nix
+    #./observability.nix
   ];
   networking.firewall = {
     enable = true;

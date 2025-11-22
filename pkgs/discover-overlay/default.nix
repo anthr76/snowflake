@@ -5,7 +5,7 @@
   gtk-layer-shell,
   gtk3,
   lib,
-  wrapGAppsHook,
+  wrapGAppsHook3,
   pillow,
   pygobject3,
   pyxdg,
@@ -25,7 +25,7 @@ buildPythonPackage rec {
     rev = "v0.7.8";
     sha256 = "sha256-0b0uZDa9Q3pQ6X65C+E31dMpdTPt4vvHDEqFEtRoedg=";
   };
-  nativeBuildInputs = [wrapGAppsHook gobject-introspection];
+  nativeBuildInputs = [wrapGAppsHook3 gobject-introspection];
   propagatedBuildInputs = [
     gobject-introspection
     gtk-layer-shell
