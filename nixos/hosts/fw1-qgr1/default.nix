@@ -179,7 +179,7 @@
         value = "192.168.8.60";
       }
       {
-        name = "cluster-0-external-gateway.qgr1.rabbito.tech";
+        name = "cluster-0-external-gateway";
         type = "A";
         value = "10.45.0.43";
       }
