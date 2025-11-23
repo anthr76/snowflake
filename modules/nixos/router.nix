@@ -107,7 +107,7 @@ with lib; let
     3600                    ; refresh
     900                     ; retry
     1209600                 ; expire
-    1800                    ; ttl
+    60                      ; ttl
     )
                         IN    NS      ${config.networking.hostName}.${cfg.domain}.
     ${config.networking.hostName}             IN    A       ${(findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router}
@@ -142,7 +142,7 @@ with lib; let
       3600                    ; refresh
       900                     ; retry
       1209600                 ; expire
-      1800                    ; ttl
+      60                      ; ttl
       )
                       IN    NS      ${config.networking.hostName}.${cfg.domain}.
       ${optionalString (vlan.id == 99) "1               IN    PTR     ${config.networking.hostName}.${cfg.domain}."}
@@ -182,7 +182,7 @@ with lib; let
       3600                    ; refresh
       900                     ; retry
       1209600                 ; expire
-      1800                    ; ttl
+      60                      ; ttl
       )
                       IN    NS      ${config.networking.hostName}.${cfg.domain}.
       ${concatStringsSep "\n" (map formatDnsRecord zoneConfig.records)}
@@ -254,7 +254,7 @@ with lib; let
           3600                    ; refresh
           900                     ; retry
           1209600                 ; expire
-          ${toString cfg.rfc2136.defaultTtl}             ; minimum ttl
+          60                                             ; minimum ttl
           )
                           IN    NS      ${config.networking.hostName}.${cfg.domain}.
           ; External-DNS managed records will be dynamically added here

@@ -83,6 +83,18 @@
       #     };
       #   };
       # };
+      keybindings = [
+        {
+          key = "shift+enter";
+          command = "claude-code.insertLineBreak";
+          when = "editorTextFocus && claude-code.active";
+        }
+        {
+          key = "alt+enter";
+          command = "-claude-code.insertLineBreak";
+          when = "editorTextFocus && claude-code.active";
+        }
+      ];
       userSettings = {
         "[go]".editor.defaultFormatter = "golang.go";
         "[go]".toolsManagement.autoUpdate = true;

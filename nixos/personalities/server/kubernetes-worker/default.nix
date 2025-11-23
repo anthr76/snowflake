@@ -135,7 +135,7 @@
     };
   };
 
-  boot.kernelModules = ["br_netfilter" "overlay"];
+  boot.kernelModules = ["br_netfilter" "overlay" "rbd"];
 
   boot.kernel.sysctl = {
     "net.bridge.bridge-nf-call-iptables" = lib.mkDefault 1;
@@ -149,32 +149,18 @@
 
   environment.systemPackages = with pkgs; [
     cri-tools
+    cni-plugins
   ];
 
   systemd.tmpfiles.rules = [
     "d /var/lib/kubernetes 0750 root root -"
     "d /var/lib/kubelet 0750 root root -"
     "d /var/lib/kubelet/pki 0750 root root -"
-    "d /opt/cni 0755 root root -"
-    "d /opt/cni/bin 0755 root root -"
+    "d /var/lib/kubelet/plugins 0750 root root -"
+    "d /var/lib/kubelet/pods 0750 root root -"
+    "d /var/lib/kubelet/plugins_registry 0750 root root -"
     "d /etc/cni/net.d 0755 root root -"
   ];
-
-  # Link CNI plugins after directories are created
-  systemd.services.link-cni-plugins = {
-    description = "Link CNI plugins to /opt/cni/bin";
-    wantedBy = ["multi-user.target"];
-    after = ["local-fs.target"];
-    before = ["kubelet.service"];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    script = ''
-      rm -rf /opt/cni/bin/*
-      ln -sf ${pkgs.cni-plugins}/bin/* /opt/cni/bin/
-    '';
-  };
 
   swapDevices = lib.mkForce [];
   zramSwap.enable = lib.mkForce false;
@@ -195,7 +181,7 @@
     directories = [
       "/var/lib/containerd"
       "/etc/cni"
-      "/opt/cni"
+      "/var/lib/rook"
     ];
   };
 }
