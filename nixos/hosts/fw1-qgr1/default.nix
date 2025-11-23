@@ -65,6 +65,7 @@
     cloudflaredomains = [
       "fw1.qgr1.rabbito.tech"
       "qgr1.rabbito.tech"
+      "cluster-0-external-gateway.qgr1.rabbito.tech"
     ];
     # TODO: Fixup
     tailscaleRoutes = [
@@ -178,7 +179,7 @@
         value = "192.168.8.60";
       }
       {
-        name = "cluster-0-ge";
+        name = "cluster-0-external-gateway.qgr1.rabbito.tech";
         type = "A";
         value = "10.45.0.43";
       }
