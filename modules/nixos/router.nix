@@ -206,16 +206,34 @@ with lib; let
 
   customDnsZoneDefinitions = mapAttrsToList mkCustomZoneDefinition cfg.customDnsZones;
 
+  # UniFi discovery DNS zone
+  unifiDnsZone = optionals cfg.unifiDiscovery.enable [
+    (mkCustomZoneDefinition "unifi" {
+      records = [
+        {
+          name = "@";
+          type = "A";
+          value = cfg.unifiDiscovery.controllerAddress;
+          ttl = null;
+          priority = null;
+        }
+      ];
+      soaEmail = "admin.rabbito.tech";
+      ttl = 300;
+    })
+  ];
+
   customDnsZones = listToAttrs (map (zone: {
       name = zone.zoneName;
       value = zone.zoneAttr;
     })
-    customDnsZoneDefinitions);
+    (customDnsZoneDefinitions ++ unifiDnsZone));
 
   zoneTemplateDefinitions =
     [mainZoneDefinition]
     ++ reverseDnsZoneDefinitions
     ++ customDnsZoneDefinitions
+    ++ unifiDnsZone
     ++ optionals (cfg.rfc2136.enable) _rfc2136Config.externalDnsZoneDefinitions;
 
   zoneTmpfilesRules =
@@ -794,6 +812,18 @@ in {
           description = "HTTPS to web server";
         }
       ];
+    };
+
+    # UniFi Controller Discovery configuration
+    unifiDiscovery = {
+      enable = mkEnableOption "UniFi controller discovery via DNS";
+
+      controllerAddress = mkOption {
+        type = types.str;
+        default = "";
+        description = "IP address of the UniFi controller";
+        example = "10.45.0.6";
+      };
     };
 
     # Fail2ban configuration
@@ -1766,6 +1796,11 @@ in {
         iptables -I FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
         iptables -t mangle -I FORWARD -o tailscale0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
         iptables -t mangle -I FORWARD -i tailscale0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+
+        # SNAT LAN traffic going to Tailscale for cross-site routing
+        ${optionalString cfg.enableLan ''
+          iptables -t nat -A POSTROUTING -s ${cfg.lanSubnet} -o tailscale0 -j MASQUERADE
+        ''}
       '';
     };
 

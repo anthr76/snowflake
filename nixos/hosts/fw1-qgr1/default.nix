@@ -24,6 +24,10 @@
   services.router = {
     enable = true;
     domain = "qgr1.rabbito.tech";
+    unifiDiscovery = {
+      enable = true;
+      controllerAddress = "10.45.0.6";
+    };
     udevRules = ''
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:7c:14:f8:4a:d5", NAME="lan"
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:7c:14:f8:4a:d0", NAME="wan"

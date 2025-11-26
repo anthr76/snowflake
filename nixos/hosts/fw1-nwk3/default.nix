@@ -40,6 +40,11 @@
     enable = true;
     domain = "nwk3.rabbito.tech";
 
+    unifiDiscovery = {
+      enable = true;
+      controllerAddress = "10.45.0.6";
+    };
+
     ipv6 = {
       enable = true;
       enableRadvd = true;
