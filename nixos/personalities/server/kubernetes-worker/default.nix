@@ -68,6 +68,7 @@
 
       extraOpts = lib.concatStringsSep " " [
         "--config=/etc/kubernetes/kubelet-config.yaml"
+        "--root-dir=/var/lib/kubelet"
         "--bootstrap-kubeconfig=/var/lib/kubernetes/bootstrap-kubeconfig"
         "--kubeconfig=/var/lib/kubernetes/kubeconfig"
         "--cert-dir=/var/lib/kubernetes/pki"
@@ -135,13 +136,40 @@
     };
   };
 
-  boot.kernelModules = ["br_netfilter" "overlay" "rbd"];
+  boot.kernelModules = ["br_netfilter" "overlay" "rbd" "nbd"];
 
   boot.kernel.sysctl = {
+    # Kubernetes networking
     "net.bridge.bridge-nf-call-iptables" = lib.mkDefault 1;
     "net.bridge.bridge-nf-call-ip6tables" = lib.mkDefault 1;
     "net.ipv4.ip_forward" = lib.mkDefault 1;
     "net.ipv6.conf.all.forwarding" = lib.mkDefault 1;
+
+    # Network performance tuning
+    "net.core.default_qdisc" = lib.mkDefault "fq";
+    "net.core.rmem_max" = lib.mkDefault 67108864; # 64 MB for high-throughput apps (cloudflared QUIC, etc)
+    "net.core.wmem_max" = lib.mkDefault 67108864; # 64 MB
+    "net.ipv4.tcp_congestion_control" = lib.mkDefault "bbr";
+    "net.ipv4.tcp_fastopen" = lib.mkDefault 3;
+    "net.ipv4.tcp_mtu_probing" = lib.mkDefault 1;
+    "net.ipv4.tcp_rmem" = lib.mkDefault "4096 87380 33554432";
+    "net.ipv4.tcp_window_scaling" = lib.mkDefault 1;
+    "net.ipv4.tcp_wmem" = lib.mkDefault "4096 65536 33554432";
+
+    # ARP cache tuning for large number of pods
+    "net.ipv4.neigh.default.gc_thresh1" = lib.mkDefault 4096;
+    "net.ipv4.neigh.default.gc_thresh2" = lib.mkDefault 8192;
+    "net.ipv4.neigh.default.gc_thresh3" = lib.mkDefault 16384;
+
+    # NFS client tuning
+    "sunrpc.tcp_max_slot_table_entries" = lib.mkDefault 128;
+    "sunrpc.tcp_slot_table_entries" = lib.mkDefault 128;
+
+    # User namespaces for rootless containers
+    "user.max_user_namespaces" = lib.mkDefault 11255;
+
+    # Huge pages for performance
+    "vm.nr_hugepages" = lib.mkDefault 1024;
   };
 
   # TODO: Should we care about this?
@@ -159,7 +187,6 @@
     "d /var/lib/kubelet/plugins 0750 root root -"
     "d /var/lib/kubelet/pods 0750 root root -"
     "d /var/lib/kubelet/plugins_registry 0750 root root -"
-    "d /etc/cni/net.d 0755 root root -"
   ];
 
   swapDevices = lib.mkForce [];
@@ -182,6 +209,8 @@
       "/var/lib/containerd"
       "/etc/cni"
       "/var/lib/rook"
+      # TODO: Audit this?
+      "/opt/cni/bin"
     ];
   };
 }

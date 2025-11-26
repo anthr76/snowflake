@@ -752,6 +752,50 @@ in {
       };
     };
 
+    # Port forwarding configuration
+    portForwarding = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          protocol = mkOption {
+            type = types.enum ["tcp" "udp" "both"];
+            description = "Protocol to forward (tcp, udp, or both)";
+          };
+
+          externalPort = mkOption {
+            type = types.int;
+            description = "External port to forward from";
+          };
+
+          internalIP = mkOption {
+            type = types.str;
+            description = "Internal IP address to forward to";
+          };
+
+          internalPort = mkOption {
+            type = types.int;
+            description = "Internal port to forward to";
+          };
+
+          description = mkOption {
+            type = types.str;
+            default = "";
+            description = "Human-readable description of this port forward rule";
+          };
+        };
+      });
+      default = [];
+      description = "List of port forwarding rules from WAN to internal hosts";
+      example = [
+        {
+          protocol = "tcp";
+          externalPort = 443;
+          internalIP = "192.168.1.100";
+          internalPort = 443;
+          description = "HTTPS to web server";
+        }
+      ];
+    };
+
     # Fail2ban configuration
     fail2ban = {
       enable = mkEnableOption "Fail2ban intrusion prevention";
@@ -987,6 +1031,30 @@ in {
       # Exclude Tailscale CGNAT range from NAT - traffic to 100.64.0.0/10 should route via Tailscale
       # internalIPs = ["100.64.0.0/10"];
       # externalIP = "!100.64.0.0/10";
+
+      # Port forwarding rules
+      forwardPorts =
+        flatten (map (rule:
+          if rule.protocol == "both"
+          then [
+            {
+              destination = "${rule.internalIP}:${toString rule.internalPort}";
+              proto = "tcp";
+              sourcePort = rule.externalPort;
+            }
+            {
+              destination = "${rule.internalIP}:${toString rule.internalPort}";
+              proto = "udp";
+              sourcePort = rule.externalPort;
+            }
+          ]
+          else [
+            {
+              destination = "${rule.internalIP}:${toString rule.internalPort}";
+              proto = rule.protocol;
+              sourcePort = rule.externalPort;
+            }
+          ]) cfg.portForwarding);
 
       # Enable IPv6 forwarding if IPv6 is enabled
       enableIPv6 = cfg.ipv6.enable;
@@ -1687,8 +1755,10 @@ in {
         ++ optional cfg.enableLan cfg.lanInterface;
       interfaces = {
         ${cfg.wanInterface} = {
-          allowedTCPPorts = [22];
-          allowedUDPPorts = [];
+          allowedTCPPorts =
+            [22]
+            ++ (unique (map (rule: rule.externalPort) (filter (rule: rule.protocol == "tcp" || rule.protocol == "both") cfg.portForwarding)));
+          allowedUDPPorts = unique (map (rule: rule.externalPort) (filter (rule: rule.protocol == "udp" || rule.protocol == "both") cfg.portForwarding));
         };
       };
 
