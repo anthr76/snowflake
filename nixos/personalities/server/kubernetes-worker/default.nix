@@ -41,7 +41,6 @@
     };
   };
 
-  # Disable the NixOS kubernetes module components we don't want
   services.kubernetes = {
     roles = [];
     masterAddress = "qgr1-k8s.mole-bowfin.ts.net";

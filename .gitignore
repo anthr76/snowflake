@@ -2,3 +2,4 @@ result
 .direnv/
 **.qcow2
 .crush/
+.claude

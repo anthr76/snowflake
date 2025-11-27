@@ -930,6 +930,7 @@ in {
         description = "Fail2ban log level";
       };
     };
+
   };
 
   config = mkIf cfg.enable {
@@ -1810,6 +1811,11 @@ in {
       reflector = true;
       nssmdns4 = true;
       nssmdns6 = true;
+      ipv4 = true;
+      ipv6 = cfg.ipv6.enable;
+      publish.enable = true;
+      publish.addresses = true;
+      publish.workstation = false;
       allowInterfaces =
         map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface

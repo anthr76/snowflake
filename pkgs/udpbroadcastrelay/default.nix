@@ -11,7 +11,6 @@ stdenv.mkDerivation {
     sha256 = "sha256-sZ4K0W608enGmugFVebt2HRpY7eUPItFVwjMLVjRnRs=";
   };
 
-
   installPhase = ''
     mkdir -p $out/bin
     cp udpbroadcastrelay $out/bin/
