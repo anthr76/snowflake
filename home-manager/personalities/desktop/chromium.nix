@@ -3,19 +3,14 @@
   home.sessionVariables = {
     GOOGLE_DEFAULT_CLIENT_ID = "77185425430.apps.googleusercontent.com";
     GOOGLE_DEFAULT_CLIENT_SECRET = "OTJgUOQcT7lO7GsGZq2G4IlT";
+    # Ensure VA-API picks the AMD/Mesa driver.
+    LIBVA_DRIVER_NAME = "radeonsi";
   };
   programs.chromium = {
     enable = true;
-    package =
-      let
-        stablePkgs = import inputs.nixpkgs-stable {
-          system = pkgs.system;
-          config.allowUnfree = true;
-        };
-      in
-      stablePkgs.chromium.override {
-        enableWideVine = true;
-      };
+    package = pkgs.chromium.override {
+      enableWideVine = true;
+    };
     extensions = [
       { id = "nngceckbapebfimnlniiiahkandclblb"; } # Bitwarden
       { id = "ckhlfagjncfmdieecfekjbpnnaekhlhd"; } # No Mouse Wheel Zoom
@@ -31,10 +26,23 @@
       }
     ];
     commandLineArgs = [
-      "--enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,AcceleratedVideoDecodeLinuxZeroCopyGL,AcceleratedVideoEncoder,VaapiIgnoreDriverChecks,UseMultiPlaneFormatForHardwareVideo"
+      # Wayland-stable path: ANGLE with GL backend (not Vulkan).
       "--use-gl=angle"
-      "--use-angle=vulkan"
-      "--ozone-platform-hint=x11"
+      "--use-angle=gl"
+      # Enable VA-API decode/encode; keep NVIDIA hints harmlessly present.
+      "--enable-features=VaapiVideoDecoder,AcceleratedVideoEncoder,VaapiOnNvidiaGPUs,VaapiIgnoreDriverChecks"
+      # Disable Vulkan/ANGLE Vulkan and zero-copy paths that commonly cause artifacts on AMD.
+      "--disable-features=Vulkan,DefaultANGLEVulkan,VulkanFromANGLE,AcceleratedVideoDecodeLinuxZeroCopyGL,UseMultiPlaneFormatForHardwareVideo"
+      # Zero-copy can still be toggled independently; force it off.
+      "--disable-zero-copy"
+      # WebGPU (Dawn) can try Vulkan/EGL paths and spam errors; not needed for video playback.
+      "--disable-webgpu"
+      # Prefer Wayland; remove x11 hint to avoid mismatched compositor paths.
+      "--ozone-platform=wayland"
+      # Allow software fallback if GL context init fails (prevents blank content); remove after validation.
+      # "--disable-software-rasterizer"
+      # Useful logging when testing.
+      "--enable-logging=stderr"
     ];
   };
   catppuccin.chromium.enable = true;

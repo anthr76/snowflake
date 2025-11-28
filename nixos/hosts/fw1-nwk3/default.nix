@@ -40,6 +40,11 @@
     enable = true;
     domain = "nwk3.rabbito.tech";
 
+    unifiDiscovery = {
+      enable = true;
+      controllerAddress = "10.45.0.6";
+    };
+
     ipv6 = {
       enable = true;
       enableRadvd = true;
@@ -77,7 +82,7 @@
       "nwk2.rabbito.tech" = {
         forwarders = ["10.30.99.1"];
       };
-      "scr1.rabbito.tech" = {
+      "qgr1.rabbito.tech" = {
         forwarders = ["10.20.99.1"];
       };
     };

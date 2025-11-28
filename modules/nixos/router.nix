@@ -107,7 +107,7 @@ with lib; let
     3600                    ; refresh
     900                     ; retry
     1209600                 ; expire
-    1800                    ; ttl
+    60                      ; ttl
     )
                         IN    NS      ${config.networking.hostName}.${cfg.domain}.
     ${config.networking.hostName}             IN    A       ${(findFirst (v: v.id == 99) (head cfg.vlans) cfg.vlans).router}
@@ -142,7 +142,7 @@ with lib; let
       3600                    ; refresh
       900                     ; retry
       1209600                 ; expire
-      1800                    ; ttl
+      60                      ; ttl
       )
                       IN    NS      ${config.networking.hostName}.${cfg.domain}.
       ${optionalString (vlan.id == 99) "1               IN    PTR     ${config.networking.hostName}.${cfg.domain}."}
@@ -182,7 +182,7 @@ with lib; let
       3600                    ; refresh
       900                     ; retry
       1209600                 ; expire
-      1800                    ; ttl
+      60                      ; ttl
       )
                       IN    NS      ${config.networking.hostName}.${cfg.domain}.
       ${concatStringsSep "\n" (map formatDnsRecord zoneConfig.records)}
@@ -206,16 +206,34 @@ with lib; let
 
   customDnsZoneDefinitions = mapAttrsToList mkCustomZoneDefinition cfg.customDnsZones;
 
+  # UniFi discovery DNS zone
+  unifiDnsZone = optionals cfg.unifiDiscovery.enable [
+    (mkCustomZoneDefinition "unifi" {
+      records = [
+        {
+          name = "@";
+          type = "A";
+          value = cfg.unifiDiscovery.controllerAddress;
+          ttl = null;
+          priority = null;
+        }
+      ];
+      soaEmail = "admin.rabbito.tech";
+      ttl = 300;
+    })
+  ];
+
   customDnsZones = listToAttrs (map (zone: {
       name = zone.zoneName;
       value = zone.zoneAttr;
     })
-    customDnsZoneDefinitions);
+    (customDnsZoneDefinitions ++ unifiDnsZone));
 
   zoneTemplateDefinitions =
     [mainZoneDefinition]
     ++ reverseDnsZoneDefinitions
     ++ customDnsZoneDefinitions
+    ++ unifiDnsZone
     ++ optionals (cfg.rfc2136.enable) _rfc2136Config.externalDnsZoneDefinitions;
 
   zoneTmpfilesRules =
@@ -254,7 +272,7 @@ with lib; let
           3600                    ; refresh
           900                     ; retry
           1209600                 ; expire
-          ${toString cfg.rfc2136.defaultTtl}             ; minimum ttl
+          60                                             ; minimum ttl
           )
                           IN    NS      ${config.networking.hostName}.${cfg.domain}.
           ; External-DNS managed records will be dynamically added here
@@ -686,7 +704,7 @@ in {
         type = types.listOf types.str;
         default = [];
         description = "DNS zones that external-dns should manage";
-        example = ["scr1.rabbito.tech" "kutara.io"];
+        example = ["qgr1.rabbito.tech" "kutara.io"];
       };
 
       bindAddress = mkOption {
@@ -749,6 +767,62 @@ in {
         type = types.int;
         default = 56;
         description = "Length of delegated prefix to request (typically 56 or 60)";
+      };
+    };
+
+    # Port forwarding configuration
+    portForwarding = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          protocol = mkOption {
+            type = types.enum ["tcp" "udp" "both"];
+            description = "Protocol to forward (tcp, udp, or both)";
+          };
+
+          externalPort = mkOption {
+            type = types.int;
+            description = "External port to forward from";
+          };
+
+          internalIP = mkOption {
+            type = types.str;
+            description = "Internal IP address to forward to";
+          };
+
+          internalPort = mkOption {
+            type = types.int;
+            description = "Internal port to forward to";
+          };
+
+          description = mkOption {
+            type = types.str;
+            default = "";
+            description = "Human-readable description of this port forward rule";
+          };
+        };
+      });
+      default = [];
+      description = "List of port forwarding rules from WAN to internal hosts";
+      example = [
+        {
+          protocol = "tcp";
+          externalPort = 443;
+          internalIP = "192.168.1.100";
+          internalPort = 443;
+          description = "HTTPS to web server";
+        }
+      ];
+    };
+
+    # UniFi Controller Discovery configuration
+    unifiDiscovery = {
+      enable = mkEnableOption "UniFi controller discovery via DNS";
+
+      controllerAddress = mkOption {
+        type = types.str;
+        default = "";
+        description = "IP address of the UniFi controller";
+        example = "10.45.0.6";
       };
     };
 
@@ -856,6 +930,7 @@ in {
         description = "Fail2ban log level";
       };
     };
+
   };
 
   config = mkIf cfg.enable {
@@ -984,6 +1059,34 @@ in {
         ++ optional cfg.enableOob cfg.oobInterface
         ++ optional cfg.enableLan cfg.lanInterface;
 
+      # Exclude Tailscale CGNAT range from NAT - traffic to 100.64.0.0/10 should route via Tailscale
+      # internalIPs = ["100.64.0.0/10"];
+      # externalIP = "!100.64.0.0/10";
+
+      # Port forwarding rules
+      forwardPorts =
+        flatten (map (rule:
+          if rule.protocol == "both"
+          then [
+            {
+              destination = "${rule.internalIP}:${toString rule.internalPort}";
+              proto = "tcp";
+              sourcePort = rule.externalPort;
+            }
+            {
+              destination = "${rule.internalIP}:${toString rule.internalPort}";
+              proto = "udp";
+              sourcePort = rule.externalPort;
+            }
+          ]
+          else [
+            {
+              destination = "${rule.internalIP}:${toString rule.internalPort}";
+              proto = rule.protocol;
+              sourcePort = rule.externalPort;
+            }
+          ]) cfg.portForwarding);
+
       # Enable IPv6 forwarding if IPv6 is enabled
       enableIPv6 = cfg.ipv6.enable;
     };
@@ -1079,9 +1182,18 @@ in {
       })
     ];
     # Configure Tailscale
-    services.tailscale.extraUpFlags = mkIf (cfg.tailscaleRoutes != []) [
-      "--advertise-routes=${concatStringsSep "," cfg.tailscaleRoutes}"
-    ];
+    services.tailscale = {
+      extraSetFlags =
+        (optionals (cfg.tailscaleRoutes != []) [
+          "--advertise-routes=${concatStringsSep "," cfg.tailscaleRoutes}"
+        ])
+        ++ [
+          "--accept-routes"
+          "--snat-subnet-routes=false"
+        ];
+      openFirewall = true;
+      useRoutingFeatures = "both";
+    };
 
     # Configure DHCP
     services.kea.dhcp4 = {
@@ -1674,10 +1786,23 @@ in {
         ++ optional cfg.enableLan cfg.lanInterface;
       interfaces = {
         ${cfg.wanInterface} = {
-          allowedTCPPorts = [22];
-          allowedUDPPorts = [];
+          allowedTCPPorts =
+            [22]
+            ++ (unique (map (rule: rule.externalPort) (filter (rule: rule.protocol == "tcp" || rule.protocol == "both") cfg.portForwarding)));
+          allowedUDPPorts = unique (map (rule: rule.externalPort) (filter (rule: rule.protocol == "udp" || rule.protocol == "both") cfg.portForwarding));
         };
       };
+
+      extraCommands = ''
+        iptables -I FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+        iptables -t mangle -I FORWARD -o tailscale0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+        iptables -t mangle -I FORWARD -i tailscale0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+
+        # SNAT LAN traffic going to Tailscale for cross-site routing
+        ${optionalString cfg.enableLan ''
+          iptables -t nat -A POSTROUTING -s ${cfg.lanSubnet} -o tailscale0 -j MASQUERADE
+        ''}
+      '';
     };
 
     # Configure additional services
@@ -1686,6 +1811,11 @@ in {
       reflector = true;
       nssmdns4 = true;
       nssmdns6 = true;
+      ipv4 = true;
+      ipv6 = cfg.ipv6.enable;
+      publish.enable = true;
+      publish.addresses = true;
+      publish.workstation = false;
       allowInterfaces =
         map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface

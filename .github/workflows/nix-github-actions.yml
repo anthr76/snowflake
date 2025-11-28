@@ -13,8 +13,9 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: DeterminateSystems/nix-installer-action@45a18a69953f27af3c2bfad0a5e01c38ef2da462
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: DeterminateSystems/nix-installer-action@c5a866b6ab867e88becbed4467b93592bce69f8a
+      - uses: DeterminateSystems/magic-nix-cache-action@c6a5746789488c8753af0d61fc6b5d79a80391f3
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
       - id: set-matrix
         name: Generate Nix Matrix
         run: |
@@ -30,14 +31,14 @@ jobs:
       fail-fast: false # let it build all the targets
       matrix: ${{fromJSON(needs.nix-matrix.outputs.matrix)}}
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - uses: DeterminateSystems/nix-installer-action@45a18a69953f27af3c2bfad0a5e01c38ef2da462
-      - uses: DeterminateSystems/magic-nix-cache-action@9934a5f127967bcd92e99961e365730ba57253de
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+      - uses: DeterminateSystems/nix-installer-action@c5a866b6ab867e88becbed4467b93592bce69f8a
+      - uses: DeterminateSystems/magic-nix-cache-action@c6a5746789488c8753af0d61fc6b5d79a80391f3
       - uses: cachix/cachix-action@0fc020193b5a1fa3ac4575aa3a7d3aa6a35435ad # v16
         with:
           name: snowflake
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      - uses: nixbuild/nixbuild-action@dbe499ad719473b76eb13ba1bc2236b583b7d958 # v22
+      - uses: nixbuild/nixbuild-action@449fa4b22e69f407614a9f448584f7ae8801334c # v24
         with:
           nixbuild_token: ${{ secrets.NIXBUILD_AUTH_TOKEN }}
           generate_summary_for: 'workflow'

@@ -5,9 +5,12 @@
   ...
 }: {
   # TODO: See if we can just include in a overlay for vscode.
-  home.packages = [
-    pkgs.helm-ls
-  ];
+  home.packages =
+    [
+      pkgs.helm-ls
+      # Playwright MCP dependencies
+      pkgs.playwright-driver
+    ];
   catppuccin.vscode.profiles.default = {
     enable = true;
     icons.enable = true;
@@ -66,29 +69,32 @@
         "hashicorp.terraform"
         "ms-vscode-remote.remote-ssh"
       ];
-      userMcp = {
-        servers = {
-          github = {
-            type = "http";
-            url = "https://api.githubcopilot.com/mcp/";
-          };
-          nixos = {
-            type = "stdio";
-            command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
-            args = ["--"];
-          };
-          gk = {
-            type = "stdio";
-            command = "${pkgs.gk-cli}/bin/gk";
-            args = ["mcp"];
-          };
-          mcp-k8s-go = {
-            type = "stdio";
-            command = "${pkgs.mcp-k8s-go}/bin/mcp-k8s-go";
-            args = ["--readonly"];
-          };
-        };
-      };
+      # userMcp = {
+      #   servers = {
+      #     nixos = {
+      #       type = "stdio";
+      #       command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
+      #       args = ["--"];
+      #     };
+      #     gk = {
+      #       type = "stdio";
+      #       command = "${pkgs.gk-cli}/bin/gk";
+      #       args = ["mcp"];
+      #     };
+      #   };
+      # };
+      keybindings = [
+        {
+          key = "shift+enter";
+          command = "claude-code.insertLineBreak";
+          when = "editorTextFocus && claude-code.active";
+        }
+        {
+          key = "alt+enter";
+          command = "-claude-code.insertLineBreak";
+          when = "editorTextFocus && claude-code.active";
+        }
+      ];
       userSettings = {
         "[go]".editor.defaultFormatter = "golang.go";
         "[go]".toolsManagement.autoUpdate = true;
@@ -202,6 +208,9 @@
         update = {
           mode = "manual";
           showReleaseNotes = false;
+        };
+        claude-code = {
+          useTerminal = true;
         };
         github = {
           copilot = {

@@ -1,31 +1,23 @@
 ---
-keys:
-  # Users
-  - &anthony age12t69fa3kqmnxdx4sca7ecv6lfu3wrfwm95zuuhujcfk3ukcn8dzsk40u6x
-  # Hosts
-  - &bkp1 age1s4dj2x94j7ep6462vkp87tj7zayn83ylavt2vyxwfphvvn0wyuustc8g3t
-  - &lga-test1 age1td7hkcms0fmrt438ta2kmxxfmp0lget6gdae7me60apprll543sqr525jy
-  - &e39 age1a4uumamqg8248ntjjl088ppq7m75p6zyhu5r8yyaqjvvk5yjpuksqspeea
-  - &octo age1mntfkg0jyv698z8kg6mlq8mr72ecpyt0dmn8y0skux9r26km4uzsge8h9q
-  - &f80 age17j2dw9kdpqntanmk9ndfw3gfu2cld22teuwzfuhnu8j7xpm2yf5se8d2f7
-  - &fw1-nwk3 age1hfg2qhhgkun0jz3ez383slf3ruldxyhvcr4488nuhn6vuuaje4rqhp0h96
-  - &fw1-nwk2 age1n84nrpcndeduskpx7psc5p3758vcp8ynme5qacdergyrkhhtremsdewm8g
-  - &lattice age1w0gxlxdt4p63ggundtdwvhar4kgkl5z09vmxxdg2r94f8hugsegq6nx2gw
-  - &cdgc age19s90gaf8wlqyms20mtqsgn5jkqfmnquuf5q45tcrwn4pmkunqc9sfvcu4u
-  - &fw1-scr1 age1qhhv0axhjgpf4gthcehaqfcu0p367l2yvvxn0y2244evlg4asc6sk6z87v
-
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$
     key_groups:
-    - age:
-      - *anthony
-      - *bkp1
-      - *lga-test1
-      - *e39
-      - *octo
-      - *f80
-      - *fw1-nwk3
-      - *fw1-nwk2
-      - *lattice
-      - *cdgc
-      - *fw1-scr1
+      - age:
+          # Users
+          - age12t69fa3kqmnxdx4sca7ecv6lfu3wrfwm95zuuhujcfk3ukcn8dzsk40u6x # anthony
+          # Hosts
+          - age1s4dj2x94j7ep6462vkp87tj7zayn83ylavt2vyxwfphvvn0wyuustc8g3t # bkp1
+          - age1td7hkcms0fmrt438ta2kmxxfmp0lget6gdae7me60apprll543sqr525jy # lga-test1
+          - age1a4uumamqg8248ntjjl088ppq7m75p6zyhu5r8yyaqjvvk5yjpuksqspeea # e39
+          - age1mntfkg0jyv698z8kg6mlq8mr72ecpyt0dmn8y0skux9r26km4uzsge8h9q # octo
+          - age17j2dw9kdpqntanmk9ndfw3gfu2cld22teuwzfuhnu8j7xpm2yf5se8d2f7 # f80
+          - age1hfg2qhhgkun0jz3ez383slf3ruldxyhvcr4488nuhn6vuuaje4rqhp0h96 # fw1-nwk3
+          - age1n84nrpcndeduskpx7psc5p3758vcp8ynme5qacdergyrkhhtremsdewm8g # fw1-nwk2
+          - age1w0gxlxdt4p63ggundtdwvhar4kgkl5z09vmxxdg2r94f8hugsegq6nx2gw # lattice
+          - age19s90gaf8wlqyms20mtqsgn5jkqfmnquuf5q45tcrwn4pmkunqc9sfvcu4u # cdgc
+          - age1qhhv0axhjgpf4gthcehaqfcu0p367l2yvvxn0y2244evlg4asc6sk6z87v # fw1-qgr1
+          - age1ymtykwsy36gv5wk46ll2nm4t6dw4jpwma0hsg9l76c8pf34jzvsqh0gjrj # worker-3
+          - age1nnt9ajpx7kgahmjqw8uz36qfcd90czmjf3ut7kfad67ndfz205mszx7ey5 # worker-1
+          - age1nvyg2ek848s05a9p9tca5797eww2uls5l68nyy0naxnfqlnk23fqh37wcp # worker-2
+          - age1vveh5m8xgz5uuu372vzs4m6eqmsqs0flz7tm6fl3lnvhm890cv0smg69qm # worker-5
+          - age1tpyzpthdk5rpz0cwaxh9yrg4nuev5thxz5j7axadrzectsnyedyqcz6lgp # worker-4

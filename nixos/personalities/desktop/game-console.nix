@@ -34,6 +34,8 @@
   hardware.xpadneo.enable = false;
   services.fwupd.enable = true;
   environment.systemPackages = with pkgs; [
+    lsfg-vk-ui
+    lsfg-vk
     mangohud
     vim
     vulkan-tools
@@ -49,7 +51,8 @@
     # Dreamcast
     flycast
     # Saturn
-    yabause
+    # Currently Broken
+    #yabause
     # N64
     mupen64plus
     # SNES

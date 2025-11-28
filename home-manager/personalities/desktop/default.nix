@@ -8,6 +8,7 @@
     ./fonts.nix
     ./wezterm.nix
     ./chromium.nix
+    ./zen.nix
     ./firefox.nix
     ./email.nix
     ./chat
@@ -24,17 +25,16 @@
     # zoom-us
     system76-keyboard-configurator
     uhk-agent
-    podman-desktop
-    mumble
     murmur
     bottles
     lightworks
     darktable
-    shadps4
-    yuki-iptv
+    # TODO: Currently broken
+    # shadps4
     vorta
     prismlauncher
     minicom
+    high-tide
   ];
   #TODO:https://github.com/NixOS/nixpkgs/pull/429473
   nixpkgs.config.permittedInsecurePackages = [

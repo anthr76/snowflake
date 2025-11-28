@@ -28,6 +28,11 @@
     enable = true;
     domain = "nwk2.rabbito.tech";
 
+    unifiDiscovery = {
+      enable = true;
+      controllerAddress = "10.45.0.6";
+    };
+
     udevRules = ''
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:e0:67:27:82:e9", NAME="lan"
       SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:e0:67:27:82:e8", NAME="wan"
@@ -64,7 +69,7 @@
       "nwk3.rabbito.tech" = {
         forwarders = ["10.40.99.1"];
       };
-      "scr1.rabbito.tech" = {
+      "qgr1.rabbito.tech" = {
         forwarders = ["10.20.99.1"];
       };
     };

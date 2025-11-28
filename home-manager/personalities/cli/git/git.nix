@@ -7,12 +7,15 @@ in {
   home.packages = with pkgs; [ git-ssh-signingkey git-extras pre-commit lazygit ];
   catppuccin.delta.enable = true;
   catppuccin.lazygit.enable = true;
+  programs.delta = {
+    enableGitIntegration = true;
+
+  };
   # TODO: This needs to be modularized..
   programs.git = {
     enable = true;
     userName = "Anthony Rabbito";
     userEmail = "hello@anthonyrabbito.com";
-    delta.enable = true;
     # error: The option `programs.git.signing.key' is used but not defined. Issa bug
     # signing.signByDefault = true;
     ignores = [ ".direnv" "result" ];
