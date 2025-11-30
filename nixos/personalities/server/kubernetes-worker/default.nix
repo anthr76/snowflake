@@ -2,6 +2,7 @@
   lib,
   pkgs,
   config,
+  inputs,
   ...
 }: {
   sops.secrets = {
@@ -177,7 +178,8 @@
   environment.systemPackages = with pkgs; [
     cri-tools
     cni-plugins
-    ceph-client
+    # TODO: https://github.com/NixOS/nixpkgs/pull/466427
+    inputs.nixpkgs-stable.legacyPackages.${pkgs.system}.ceph-client
   ];
 
   systemd.tmpfiles.rules = [
