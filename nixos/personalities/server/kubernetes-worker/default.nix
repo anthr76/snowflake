@@ -177,6 +177,7 @@
   environment.systemPackages = with pkgs; [
     cri-tools
     cni-plugins
+    ceph-client
   ];
 
   systemd.tmpfiles.rules = [
