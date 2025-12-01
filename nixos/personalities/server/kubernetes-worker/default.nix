@@ -30,9 +30,13 @@
       version = 2;
       plugins."io.containerd.grpc.v1.cri" = {
         sandbox_image = "registry.k8s.io/pause:3.9";
-        containerd.runtimes.runc = {
-          runtime_type = "io.containerd.runc.v2";
-          options.SystemdCgroup = true;
+        registry.config_path = "/etc/containerd/certs.d";
+        containerd = {
+          discard_unpacked_layers = false;
+          runtimes.runc = {
+            runtime_type = "io.containerd.runc.v2";
+            options.SystemdCgroup = true;
+          };
         };
         cni = {
           bin_dir = "/opt/cni/bin";
