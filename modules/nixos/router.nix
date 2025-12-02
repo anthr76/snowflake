@@ -1245,6 +1245,10 @@ in {
           persist = true;
           type = "memfile";
         };
+        control-socket = {
+          socket-type = "unix";
+          socket-name = "/run/kea/dhcp4-ctrl-socket";
+        };
         rebind-timer = 2000;
         renew-timer = 1000;
         valid-lifetime = 4000;
@@ -1750,6 +1754,11 @@ in {
         dns-server-timeout = 1000; # 1 second timeout
         ncr-protocol = "UDP";
         ncr-format = "JSON";
+
+        control-socket = {
+          socket-type = "unix";
+          socket-name = "/run/kea/dhcp-ddns-ctrl-socket";
+        };
 
         tsig-keys = [
           {
