@@ -1245,6 +1245,13 @@ in {
           persist = true;
           type = "memfile";
         };
+        hooks-libraries = [
+          {
+            # Enable lease commands over control socket (lease4-get, lease4-get-all, etc.)
+            library = "${pkgs.kea}/lib/kea/hooks/libdhcp_lease_cmds.so";
+            parameters = {};
+          }
+        ];
         control-socket = {
           socket-type = "unix";
           socket-name = "/run/kea/dhcp4-ctrl-socket";

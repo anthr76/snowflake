@@ -1,4 +1,8 @@
-{config, ...}:
+{
+  config,
+  pkgs,
+  ...
+}:
 {
 
   sops.secrets.ddns-tsig-key = {
