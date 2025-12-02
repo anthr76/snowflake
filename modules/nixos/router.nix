@@ -930,7 +930,6 @@ in {
         description = "Fail2ban log level";
       };
     };
-
   };
 
   config = mkIf cfg.enable {
@@ -1064,28 +1063,28 @@ in {
       # externalIP = "!100.64.0.0/10";
 
       # Port forwarding rules
-      forwardPorts =
-        flatten (map (rule:
-          if rule.protocol == "both"
-          then [
-            {
-              destination = "${rule.internalIP}:${toString rule.internalPort}";
-              proto = "tcp";
-              sourcePort = rule.externalPort;
-            }
-            {
-              destination = "${rule.internalIP}:${toString rule.internalPort}";
-              proto = "udp";
-              sourcePort = rule.externalPort;
-            }
-          ]
-          else [
-            {
-              destination = "${rule.internalIP}:${toString rule.internalPort}";
-              proto = rule.protocol;
-              sourcePort = rule.externalPort;
-            }
-          ]) cfg.portForwarding);
+      forwardPorts = flatten (map (rule:
+        if rule.protocol == "both"
+        then [
+          {
+            destination = "${rule.internalIP}:${toString rule.internalPort}";
+            proto = "tcp";
+            sourcePort = rule.externalPort;
+          }
+          {
+            destination = "${rule.internalIP}:${toString rule.internalPort}";
+            proto = "udp";
+            sourcePort = rule.externalPort;
+          }
+        ]
+        else [
+          {
+            destination = "${rule.internalIP}:${toString rule.internalPort}";
+            proto = rule.protocol;
+            sourcePort = rule.externalPort;
+          }
+        ])
+      cfg.portForwarding);
 
       # Enable IPv6 forwarding if IPv6 is enabled
       enableIPv6 = cfg.ipv6.enable;
@@ -1193,6 +1192,42 @@ in {
         ];
       openFirewall = true;
       useRoutingFeatures = "both";
+    };
+
+    # Configure Kea Control Agent
+    services.kea.ctrl-agent = {
+      enable = true;
+      settings = {
+        http-host = "127.0.0.1";
+        http-port = 8000;
+
+        control-sockets = {
+          dhcp4 = {
+            socket-type = "unix";
+            socket-name = "/run/kea/dhcp4-ctrl-socket";
+          };
+          dhcp6 = {
+            socket-type = "unix";
+            socket-name = "/run/kea/dhcp6-ctrl-socket";
+          };
+          d2 = {
+            socket-type = "unix";
+            socket-name = "/run/kea/dhcp-ddns-ctrl-socket";
+          };
+        };
+
+        loggers = [
+          {
+            name = "kea-ctrl-agent";
+            output_options = [
+              {
+                output = "stdout";
+              }
+            ];
+            severity = "INFO";
+          }
+        ];
+      };
     };
 
     # Configure DHCP
