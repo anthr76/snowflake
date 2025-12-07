@@ -5,7 +5,7 @@
   programs.ghostty = {
     enable = true;
     enableFishIntegration = true;
-    systemd.enable = true;
+    systemd.enable = config.lib.stdenv.isLinux or false;
     settings = {
       gtk-titlebar = false;
       font-family = config.fontProfiles.monospace.family;
