@@ -28,7 +28,8 @@
         "ss10"
       ];
 
-      font-size = 16;
+      shell-integration = "detect";
+      shell-integration-features = "ssh-terminfo,ssh-env";
 
       keybind = [
         "shift+enter=text:\\n"

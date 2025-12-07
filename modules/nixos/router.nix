@@ -826,6 +826,14 @@ in {
       };
     };
 
+    # Extra interfaces for miniupnpd (NAT-PMP)
+    miniupnpdExtraInterfaces = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "Additional interfaces to include in miniupnpd internalIPs";
+      example = ["br0" "wlan0"];
+    };
+
     # Fail2ban configuration
     fail2ban = {
       enable = mkEnableOption "Fail2ban intrusion prevention";
@@ -1881,7 +1889,8 @@ in {
       internalIPs =
         map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface
-        ++ optional cfg.enableLan cfg.lanInterface;
+        ++ optional cfg.enableLan cfg.lanInterface
+        ++ cfg.miniupnpdExtraInterfaces;
     };
 
     # Ensure miniupnpd waits for network interfaces and NAT to be ready
