@@ -31,7 +31,7 @@
       font-size = 16;
 
       keybind = [
-        "shift+enter=text:\n"
+        "shift+enter=text:\\n"
 
         "ctrl+h=unbind"
         "ctrl+l=unbind"
