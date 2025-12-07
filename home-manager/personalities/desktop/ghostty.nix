@@ -1,9 +1,14 @@
-{config, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   catppuccin.ghostty = {
     enable = true;
   };
   programs.ghostty = {
     enable = true;
+    package = if pkgs.stdenv.isDarwin then pkgs.ghostty-bin else pkgs.ghostty;
     enableFishIntegration = true;
     systemd.enable = config.lib.stdenv.isLinux or false;
     settings = {
