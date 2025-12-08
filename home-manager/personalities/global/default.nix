@@ -1,5 +1,5 @@
 { outputs, pkgs, lib, ... }: {
-  imports = [ ../cli ] ++ (builtins.attrValues outputs.homeManagerModules);
+  imports = [ ../cli ./sops.nix ] ++ (builtins.attrValues outputs.homeManagerModules);
   home.activation = {
     diff = lib.hm.dag.entryBefore [ "installPackages" ] ''
       [[ -z "''${oldGenPath:-}" ]] || [[ "$oldGenPath" = "$newGenPath" ]] || \

@@ -10,7 +10,7 @@
     enable = true;
     package = if pkgs.stdenv.isDarwin then pkgs.ghostty-bin else pkgs.ghostty;
     enableFishIntegration = true;
-    systemd.enable = config.lib.stdenv.isLinux or false;
+    systemd.enable = pkgs.stdenv.isLinux;
     settings = {
       gtk-titlebar = false;
       font-family = config.fontProfiles.monospace.family;

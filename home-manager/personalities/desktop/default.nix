@@ -17,6 +17,7 @@
     ./obs.nix
     ./agentic-coding.nix
     ./ghostty.nix
+    ./halloy.nix
     # ./syncthing.nix
   ];
   home.packages = with pkgs; [
