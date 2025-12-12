@@ -68,6 +68,7 @@
         "eamodio.gitlens"
         "hashicorp.terraform"
         "ms-vscode-remote.remote-ssh"
+        "drblury.protobuf-vsc"
       ];
       # userMcp = {
       #   servers = {
@@ -145,6 +146,11 @@
         };
         path-autocomplete = {
           triggerOutsideStrings = true;
+        };
+        protobuf = {
+          protoc = {
+            path = "${pkgs.protobuf}/bin/protoc";
+          };
         };
         todo-tree = {
           highlights = {
