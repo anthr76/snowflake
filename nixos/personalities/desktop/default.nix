@@ -14,7 +14,6 @@
     ./print.nix
     ../physical
     ./gaming.nix
-    ./geoclue.nix
     ./vm.nix
     inputs.catppuccin.nixosModules.catppuccin
 
