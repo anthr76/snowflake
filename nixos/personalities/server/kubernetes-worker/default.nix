@@ -223,7 +223,6 @@
 
       if [[ "$booted_system" != "$new_system" ]]; then
         echo -e "\033[33m>>> Reboot required: system configuration changed\033[0m"
-        # Write sentinel file for external tooling (e.g., kured)
         echo "NixOS: booted $booted_system, current $new_system" > /var/run/reboot-required
       else
         rm -f /var/run/reboot-required
