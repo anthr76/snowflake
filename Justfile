@@ -77,7 +77,6 @@ deploy-workers ACTION="switch":
         echo "======================================"
         env NIX_SSHOPTS="-A" nixos-rebuild {{ACTION}} -L \
             --flake ".#$worker" \
-            --option builders '' \
             --sudo \
             --use-remote-sudo \
             --target-host "anthony@${worker}.qgr1.rabbito.tech" || {
@@ -108,7 +107,6 @@ deploy-worker WORKER ACTION="switch":
     echo "Deploying {{WORKER}} (nixos-rebuild {{ACTION}})..."
     env NIX_SSHOPTS="-A" nixos-rebuild {{ACTION}} -L \
         --flake ".#{{WORKER}}" \
-        --option builders '' \
         --sudo \
         --use-remote-sudo \
         --target-host "anthony@{{WORKER}}.qgr1.rabbito.tech"

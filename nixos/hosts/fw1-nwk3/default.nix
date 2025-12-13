@@ -111,6 +111,33 @@
         name = "endusers";
         subnet = "192.168.14.0/24";
         router = "192.168.14.1";
+        staticReservations = [
+          {
+            hostname = "sonos-arc-ultra";
+            mac = "c4:38:75:1f:13:62";
+            ip = "192.168.14.25";
+          }
+          {
+            hostname = "sonos-era-100-office";
+            mac = "80:4a:f2:9a:61:36";
+            ip = "192.168.14.24";
+          }
+          {
+            hostname = "sonos-era-100-bedroom";
+            mac = "74:ca:60:75:b4:2c";
+            ip = "192.168.14.23";
+          }
+          {
+            hostname = "sonos-roam-bathroom";
+            mac = "74:ca:60:51:49:5a";
+            ip = "192.168.14.21";
+          }
+          {
+            hostname = "sonos-roam-kitchen";
+            mac = "74:ca:60:54:46:e0";
+            ip = "192.168.14.22";
+          }
+        ];
       }
       {
         id = 101;
