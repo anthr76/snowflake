@@ -1,5 +1,9 @@
-{ pkgs, lib, ... }: {
-  imports = [ ../../default.nix ];
+{
+  pkgs,
+  lib,
+  ...
+}: {
+  imports = [../../default.nix];
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   gtk.iconCache.enable = true;
   # TODO: Enable keyring without ssh by overlay
@@ -12,7 +16,7 @@
   services = {
     xserver = {
       enable = true;
-      desktopManager.gnome = { enable = true; };
+      desktopManager.gnome = {enable = true;};
       displayManager.gdm = {
         enable = true;
         wayland = true;

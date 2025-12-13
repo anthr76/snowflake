@@ -1,4 +1,8 @@
-{ inputs, lib, ... }: {
+{
+  inputs,
+  lib,
+  ...
+}: {
   imports = [
     inputs.disko.nixosModules.disko
     inputs.impermanence.nixosModules.impermanence
@@ -15,5 +19,4 @@
   facter.reportPath = ./facter.json;
 
   fileSystems."/persist".neededForBoot = true;
-
 }

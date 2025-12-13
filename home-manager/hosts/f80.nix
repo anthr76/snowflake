@@ -6,5 +6,4 @@
     ../personalities/desktop/mangohud.nix
     # ../personalities/desktop/wayland-wm/hyprland
   ];
-
 }

@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   imports = [
     # TODO: Restore when Podman works
     # ../../personalities/base/podman.nix
@@ -8,7 +8,7 @@
       isNormalUser = true;
       initialPassword = "wolf";
       linger = true;
-      extraGroups = [ "wheel" "networkmanager" "input" ];
+      extraGroups = ["wheel" "networkmanager" "input"];
     };
   };
   services.udev.extraRules = ''
@@ -57,8 +57,8 @@
     ];
   };
   networking.firewall = {
-    allowedTCPPorts = [ 47984 47989 48010 ];
-    allowedUDPPorts = [ 47999 47998 48000 48010 ];
+    allowedTCPPorts = [47984 47989 48010];
+    allowedUDPPorts = [47999 47998 48000 48010];
     allowedUDPPortRanges = [
       {
         from = 48100;

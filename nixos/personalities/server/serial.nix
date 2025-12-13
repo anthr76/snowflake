@@ -1,5 +1,9 @@
-{ config, lib, pkgs, ... }:
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   # Based on https://unix.stackexchange.com/questions/16578/resizable-serial-console-window
   resize = pkgs.writeShellScriptBin "resize" ''
     export PATH=${pkgs.coreutils}/bin
@@ -23,15 +27,13 @@ let
     stty "$old"
     stty cols "$cols" rows "$rows"
   '';
-in
-{
-    # TODO: Verify this is safe.
-    boot.kernelParams = [ "console=tty0" "console=ttyS0,115200n8" ];
+in {
+  # TODO: Verify this is safe.
+  boot.kernelParams = ["console=tty0" "console=ttyS0,115200n8"];
 
-    # set terminal size once after login
-    environment.loginShellInit = "${resize}/bin/resize";
+  # set terminal size once after login
+  environment.loginShellInit = "${resize}/bin/resize";
 
-    # allows user to change terminal size when it changed locally
-    environment.systemPackages = [ resize ];
-
+  # allows user to change terminal size when it changed locally
+  environment.systemPackages = [resize];
 }

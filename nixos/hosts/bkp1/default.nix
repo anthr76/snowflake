@@ -1,5 +1,4 @@
-{ inputs, ... }: {
-
+{inputs, ...}: {
   imports = [
     inputs.disko.nixosModules.disko
     ../../personalities/base

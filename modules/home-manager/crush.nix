@@ -1,8 +1,11 @@
-{ config, lib, pkgs, inputs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
+with lib; let
   cfg = config.programs.crush;
 
   lspConfigType = types.submodule {
@@ -24,7 +27,7 @@ let
         type = types.attrsOf types.str;
         default = {};
         description = "Environment variables to set for the LSP server.";
-        example = { GOTOOLCHAIN = "go1.24.5"; };
+        example = {GOTOOLCHAIN = "go1.24.5";};
       };
 
       options = mkOption {
@@ -74,7 +77,7 @@ let
         type = types.attrsOf types.str;
         default = {};
         description = "Environment variables to set for the MCP server.";
-        example = { NODE_ENV = "production"; };
+        example = {NODE_ENV = "production";};
       };
 
       url = mkOption {
@@ -88,7 +91,7 @@ let
         type = types.attrsOf types.str;
         default = {};
         description = "HTTP headers for HTTP/SSE MCP servers.";
-        example = { Authorization = "$(echo Bearer $EXAMPLE_MCP_TOKEN)"; };
+        example = {Authorization = "$(echo Bearer $EXAMPLE_MCP_TOKEN)";};
       };
 
       disabled = mkOption {
@@ -104,7 +107,6 @@ let
       };
     };
   };
-
 in {
   options.programs.crush = {
     enable = mkEnableOption "Crush, an AI-powered assistant";
@@ -186,7 +188,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages = [ cfg.package ];
+    home.packages = [cfg.package];
 
     # Create configuration file
     home.file.".config/crush/crush.json" = mkIf (cfg.lsp != {} || cfg.mcp != {} || cfg.extraConfig != {}) {
@@ -194,8 +196,8 @@ in {
         {
           "$schema" = "https://charm.land/crush.json";
         }
-        // (optionalAttrs (cfg.lsp != {}) { lsp = cfg.lsp; })
-        // (optionalAttrs (cfg.mcp != {}) { mcp = cfg.mcp; })
+        // (optionalAttrs (cfg.lsp != {}) {lsp = cfg.lsp;})
+        // (optionalAttrs (cfg.mcp != {}) {mcp = cfg.mcp;})
         // cfg.extraConfig
       );
     };

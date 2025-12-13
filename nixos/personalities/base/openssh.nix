@@ -1,12 +1,17 @@
-{ outputs, lib, config, pkgs, ... }:
-
-let
+{
+  outputs,
+  lib,
+  config,
+  pkgs,
+  ...
+}: let
   inherit (config.networking) hostName;
   hosts = outputs.nixosConfigurations;
 
   # Check if impermanence is enabled
   # Use builtins.hasAttr to safely check without causing evaluation errors
-  hasOptinPersistence = builtins.hasAttr "persistence" config.environment
+  hasOptinPersistence =
+    builtins.hasAttr "persistence" config.environment
     && config.environment.persistence ? "/persist";
 in {
   services.openssh = {

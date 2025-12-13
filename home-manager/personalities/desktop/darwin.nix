@@ -1,7 +1,7 @@
-{ pkgs, ...}: {
+{pkgs, ...}: {
   imports = [
     ./vscode
     ./fonts.nix
   ];
-  home.packages = with pkgs; [ iterm2 rectangle ];
+  home.packages = with pkgs; [iterm2 rectangle];
 }

@@ -129,7 +129,7 @@ in {
 
     # Firewall configuration
     networking.firewall = mkIf cfg.openFirewall {
-      allowedTCPPorts = [ 179 ];
+      allowedTCPPorts = [179];
     };
   };
 }

@@ -1,5 +1,10 @@
-{ config, outputs, pkgs, lib, ... }:
 {
+  config,
+  outputs,
+  pkgs,
+  lib,
+  ...
+}: {
   # TODO Set up blocklist
   # Ensure resolution without DNS.
   # systemd.timers.dnscrypt-proxy2-blocklists = {
@@ -24,7 +29,7 @@
   services.dnscrypt-proxy = {
     enable = true;
     settings = {
-      listen_addresses = [ "127.0.0.1:53" ];
+      listen_addresses = ["127.0.0.1:53"];
       # blocked_names = {
       #   blocked_names_file = "/var/lib/dnscrypt-proxy/blocklist.txt";
       # };
@@ -71,7 +76,6 @@
       "192.168.4.0/24"
       "10.20.99.0/24"
       "10.5.0.0/24"
-
     ];
     extraOptions = ''
       dnssec-validation no;

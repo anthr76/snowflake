@@ -1,5 +1,10 @@
-{ outputs, lib, pkgs, ... }:
-let hostnames = builtins.attrNames outputs.nixosConfigurations;
+{
+  outputs,
+  lib,
+  pkgs,
+  ...
+}: let
+  hostnames = builtins.attrNames outputs.nixosConfigurations;
 in {
   # TODO: Enable in new release.
   # services.ssh-agent.enable = true;
@@ -13,9 +18,8 @@ in {
         host = builtins.concatStringsSep " " hostnames;
         forwardAgent = true;
       };
-      trusted = lib.hm.dag.entryBefore [ "net" ] {
-        host =
-          "rabbito.tech *.nwk3.rabbito.tech *.nwk2.rabbito.tech *.qgr1.rabbito.tech";
+      trusted = lib.hm.dag.entryBefore ["net"] {
+        host = "rabbito.tech *.nwk3.rabbito.tech *.nwk2.rabbito.tech *.qgr1.rabbito.tech";
         forwardAgent = true;
       };
     };

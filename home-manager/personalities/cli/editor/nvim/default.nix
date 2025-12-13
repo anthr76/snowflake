@@ -1,5 +1,8 @@
-{inputs, pkgs, ...}:
 {
+  inputs,
+  pkgs,
+  ...
+}: {
   programs.neovim = {
     enable = true;
     defaultEditor = false;

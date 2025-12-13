@@ -3,8 +3,7 @@
     disk = {
       main = {
         type = "disk";
-        device =
-          "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_500GB_S4P2NF0M318838M";
+        device = "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_500GB_S4P2NF0M318838M";
         content = {
           type = "gpt";
           partitions = {
@@ -24,12 +23,12 @@
               size = "100%";
               content = {
                 type = "btrfs";
-                extraArgs = [ "-f" ];
+                extraArgs = ["-f"];
                 subvolumes = {
-                  "/rootfs" = { mountpoint = "/"; };
-                  "/home" = { mountpoint = "/home"; };
+                  "/rootfs" = {mountpoint = "/";};
+                  "/home" = {mountpoint = "/home";};
                   "/nix" = {
-                    mountOptions = [ "compress=zstd" "noatime" ];
+                    mountOptions = ["compress=zstd" "noatime"];
                     mountpoint = "/nix";
                   };
                 };
@@ -49,8 +48,8 @@
               size = "100%";
               content = {
                 type = "btrfs";
-                extraArgs = [ "-f" ];
-                subvolumes = { "/data" = { mountpoint = "/data"; }; };
+                extraArgs = ["-f"];
+                subvolumes = {"/data" = {mountpoint = "/data";};};
                 mountpoint = "/partition-data";
               };
             };

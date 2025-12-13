@@ -20,7 +20,10 @@
     nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel";
+    nix-cachyos-kernel.inputs.nixpkgs.follows = "nixpkgs";
+    proton-cachyos.url = "github:powerofthe69/proton-cachyos-nix";
+    proton-cachyos.inputs.nixpkgs.follows = "nixpkgs";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     nix4vscode = {
@@ -61,7 +64,6 @@
     nix-darwin,
     nixpkgs,
     home-manager,
-    chaotic,
     hardware,
     jovian-nixos,
     nix-github-actions,
@@ -127,13 +129,11 @@
         modules = [
           ./nixos/hosts/bkp1
           inputs.nixos-facter-modules.nixosModules.facter
-          chaotic.nixosModules.default
         ];
       };
       "octo" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
-          chaotic.nixosModules.default
           ./nixos/hosts/octo
           inputs.nixos-facter-modules.nixosModules.facter
         ];
@@ -141,7 +141,6 @@
       "cdgc" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
-          chaotic.nixosModules.default
           ./nixos/hosts/cdgc
         ];
       };
@@ -149,7 +148,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/f80
-          chaotic.nixosModules.default
           nix-flatpak.nixosModules.nix-flatpak
           nixified-ai.nixosModules.comfyui
           inputs.nixos-facter-modules.nixosModules.facter
@@ -158,7 +156,6 @@
       "lattice" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
-          chaotic.nixosModules.default
           hardware.nixosModules.framework-16-7040-amd
           inputs.nixos-facter-modules.nixosModules.facter
           ./nixos/hosts/lattice
@@ -168,7 +165,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/fw1-nwk3
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -176,7 +172,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/fw1-nwk2
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -184,7 +179,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/fw1-qgr1
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -192,7 +186,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-1
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -200,7 +193,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-2
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -208,7 +200,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-3
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -216,7 +207,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-4
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -224,7 +214,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-5
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };

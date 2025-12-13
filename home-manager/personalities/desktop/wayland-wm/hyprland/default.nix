@@ -1,5 +1,11 @@
-{ lib, config, pkgs, inputs, ... }: {
-  imports = [ inputs.hyprland.homeManagerModules.default ];
+{
+  lib,
+  config,
+  pkgs,
+  inputs,
+  ...
+}: {
+  imports = [inputs.hyprland.homeManagerModules.default];
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
@@ -14,8 +20,7 @@
       };
       dwindle.split_width_multiplier = 1.35;
 
-      animations = { enabled = true; };
-
+      animations = {enabled = true;};
     };
   };
 }

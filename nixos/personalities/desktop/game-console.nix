@@ -1,31 +1,36 @@
 # This is a steamOS steam console like setup.
 # Lots of duplication here between we defined things, but since this is a console things need to be insecure and different.
-{ pkgs, outputs, inputs, config, lib, ... }:
 {
-  imports = [
-    ../../personalities/base/bootloader.nix
-    ../../personalities/base/sops.nix
-    ../../personalities/base/openssh.nix
-    ../../personalities/base/nix.nix
-    ../../personalities/base/tmpfs.nix
-    # ./sunshine.nix
-    ./audio.nix
-    inputs.jovian-nixos.nixosModules.default
-  ] ++ (builtins.attrValues outputs.nixosModules);
+  pkgs,
+  outputs,
+  inputs,
+  config,
+  lib,
+  ...
+}: {
+  imports =
+    [
+      ../../personalities/base/bootloader.nix
+      ../../personalities/base/sops.nix
+      ../../personalities/base/openssh.nix
+      ../../personalities/base/nix.nix
+      ../../personalities/base/tmpfs.nix
+      # ./sunshine.nix
+      ./audio.nix
+      inputs.jovian-nixos.nixosModules.default
+    ]
+    ++ (builtins.attrValues outputs.nixosModules);
   nixpkgs = {
     overlays = [
       outputs.overlays.additions
       outputs.overlays.modifications
       outputs.overlays.flake-inputs
     ];
-    config = { allowUnfree = true; };
+    config = {allowUnfree = true;};
   };
   gaming-kernel.enable = false;
   # services.scx.enable = true;
   # services.scx.scheduler = "scx_lavd";
-  # chaotic.hdr.enable = true;
-  # chaotic.hdr.specialisation.enable	= false;
-  # chaotic.mesa-git.enable = true;
   services.desktopManager.plasma6.enable = true;
   services.flatpak.enable = true;
   xdg.portal.enable = true;
@@ -74,11 +79,11 @@
   programs.steam = {
     enable = true;
     package = pkgs.steam.override {
-      extraPkgs = pkgs: with pkgs; [ liberation_ttf wqy_zenhei ];
-      extraLibraries = pkgs: [ pkgs.xorg.libxcb ];
+      extraPkgs = pkgs: with pkgs; [liberation_ttf wqy_zenhei];
+      extraLibraries = pkgs: [pkgs.xorg.libxcb];
     };
     extest.enable = true;
-    extraCompatPackages = with pkgs; [ proton-ge-bin ];
+    extraCompatPackages = with pkgs; [proton-ge-bin];
   };
 
   services.xserver.displayManager.startx.enable = lib.mkForce false;
@@ -124,9 +129,9 @@
   networking = {
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 22 ];
+      allowedTCPPorts = [22];
     };
-    wireless = { iwd = { enable = true; }; };
+    wireless = {iwd = {enable = true;};};
     networkmanager = {
       enable = true;
       wifi.backend = "iwd";
@@ -173,7 +178,7 @@
     steamos.useSteamOSConfig = true;
     hardware.has.amd.gpu = true;
     decky-loader = {
-        enable = true;
+      enable = true;
     };
     steam = {
       enable = true;

@@ -1,10 +1,13 @@
-{ pkgs, ... }: {
-  home.packages = with pkgs; [ fzf fd ];
+{pkgs, ...}: {
+  home.packages = with pkgs; [fzf fd];
   programs.fish = {
     enable = true;
     shellAliases = {
       yssh = "${pkgs.openssh}/bin/ssh-add -s ${pkgs.yubico-piv-tool}/lib/libykcs11.so";
-      tssh = if pkgs.stdenv.isLinux then "${pkgs.openssh}/bin/ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so" else "echo Not supported.";
+      tssh =
+        if pkgs.stdenv.isLinux
+        then "${pkgs.openssh}/bin/ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so"
+        else "echo Not supported.";
     };
     functions = {
       fish_greeting = "";
@@ -25,7 +28,7 @@
   programs.atuin = {
     enable = true;
     enableFishIntegration = true;
-    flags = [ "--disable-up-arrow" ];
+    flags = ["--disable-up-arrow"];
     settings = {
       auto_sync = true;
       sync_frequency = "5m";
@@ -36,5 +39,4 @@
     };
   };
   catppuccin.atuin.enable = true;
-
 }

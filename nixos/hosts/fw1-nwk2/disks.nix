@@ -3,8 +3,7 @@
     disk = {
       main = {
         type = "disk";
-        device =
-          "/dev/disk/by-id/ata-BIWIN_SSD_2049061301404";
+        device = "/dev/disk/by-id/ata-BIWIN_SSD_2049061301404";
         content = {
           type = "gpt";
           partitions = {
@@ -18,23 +17,23 @@
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
-                mountOptions = [ "defaults" "umask=0077" ];
+                mountOptions = ["defaults" "umask=0077"];
               };
             };
             root = {
               size = "100%";
               content = {
                 type = "btrfs";
-                extraArgs = [ "-f" ];
+                extraArgs = ["-f"];
                 subvolumes = {
-                  "/rootfs" = { mountpoint = "/"; };
-                  "/home" = { mountpoint = "/home"; };
+                  "/rootfs" = {mountpoint = "/";};
+                  "/home" = {mountpoint = "/home";};
                   "/nix" = {
-                    mountOptions = [ "compress=zstd" "noatime" ];
+                    mountOptions = ["compress=zstd" "noatime"];
                     mountpoint = "/nix";
                   };
                   "/persist" = {
-                    mountOptions = [ "compress=zstd" "noatime" ];
+                    mountOptions = ["compress=zstd" "noatime"];
                     mountpoint = "/persist";
                   };
                 };
