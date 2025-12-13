@@ -213,19 +213,16 @@
     supportsDryActivation = true;
     text = ''
       booted="/run/booted-system"
-      if [[ ! -e "$booted" ]]; then
-        echo "needsreboot: /run/booted-system not found (first boot?), skipping check"
-        exit 0
-      fi
+      if [[ -e "$booted" ]]; then
+        booted_system=$(readlink -f "$booted")
+        new_system=$(readlink -f "$systemConfig")
 
-      booted_system=$(readlink -f "$booted")
-      new_system=$(readlink -f "$systemConfig")
-
-      if [[ "$booted_system" != "$new_system" ]]; then
-        echo -e "\033[33m>>> Reboot required: system configuration changed\033[0m"
-        echo "NixOS: booted $booted_system, current $new_system" > /var/run/reboot-required
-      else
-        rm -f /var/run/reboot-required
+        if [[ "$booted_system" != "$new_system" ]]; then
+          echo -e "\033[33m>>> Reboot required: system configuration changed\033[0m"
+          echo "NixOS: booted $booted_system, current $new_system" > /var/run/reboot-required
+        else
+          rm -f /var/run/reboot-required
+        fi
       fi
     '';
   };
