@@ -25,6 +25,10 @@
       outputs.overlays.additions
       outputs.overlays.modifications
       outputs.overlays.flake-inputs
+      # https://github.com/Jovian-Experiments/Jovian-NixOS/issues/303
+      (final: prev: {
+        steam = prev.steam.override {platformArgs = "";};
+      })
     ];
     config = {allowUnfree = true;};
   };
@@ -193,7 +197,44 @@
     STEAM_ALLOW_DRIVE_ADOPT = "0";
     # Ejecting doesn't work, either.
     STEAM_ALLOW_DRIVE_UNMOUNT = "1";
-    steamargs = ''("-steamos3" "-steampal" "-gamepadui")'';
+  };
+  # Low-latency audio for HDMI output to soundbar
+  # Reduces PipeWire buffer sizes to minimize audio delay
+  services.pipewire.extraConfig.pipewire = {
+    "10-game-console-low-latency" = {
+      "context.properties" = {
+        "default.clock.rate" = 48000;
+        "default.clock.quantum" = 512;
+        "default.clock.min-quantum" = 512;
+        "default.clock.max-quantum" = 1024;
+      };
+    };
+  };
+  services.pipewire.extraConfig.pipewire-pulse = {
+    "10-game-console-low-latency" = {
+      "pulse.properties" = {
+        "pulse.min.req" = "512/48000";
+        "pulse.default.req" = "512/48000";
+        "pulse.min.quantum" = "512/48000";
+      };
+    };
+  };
+  services.pipewire.wireplumber.extraConfig = {
+    "10-game-console-low-latency" = {
+      "monitor.alsa.rules" = [
+        {
+          matches = [{"node.name" = "~alsa_output.*";}];
+          actions = {
+            update-props = {
+              "api.alsa.period-size" = 512;
+              "api.alsa.headroom" = 1024;
+              # Prevent device from suspending (avoids re-sync delays)
+              "session.suspend-timeout-seconds" = 0;
+            };
+          };
+        }
+      ];
+    };
   };
   # environment.etc."xdg/gamescope-session/environment".text = ''
   #   STEAM_EXTRA_COMPAT_TOOLS_PATHS = "${pkgs.proton-ge-bin.steamcompattool}"
