@@ -24,6 +24,12 @@
   boot.extraModulePackages = [];
   system.stateVersion = "23.11";
   nixpkgs.hostPlatform = "x86_64-linux";
+
+  # TTL fix for HDHomeRun multicast traffic
+  networking.firewall.extraCommands = ''
+    iptables -t mangle -A FORWARD -s 192.168.7.21 -j TTL --ttl-set 64
+  '';
+
   services.router = {
     enable = true;
     domain = "nwk2.rabbito.tech";
@@ -103,6 +109,13 @@
         name = "servers";
         subnet = "192.168.7.0/24";
         router = "192.168.7.1";
+        staticReservations = [
+          {
+            hostname = "hdhr-10a8ee0f";
+            mac = "00:18:dd:0a:8e:e0";
+            ip = "192.168.7.21";
+          }
+        ];
       }
       {
         id = 99;
