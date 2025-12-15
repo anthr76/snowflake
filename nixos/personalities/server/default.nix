@@ -13,16 +13,7 @@
     overlays = [
       outputs.overlays.additions
       outputs.overlays.modifications
-
-      # You can also add overlays exported from other flakes:
-      # neovim-nightly-overlay.overlays.default
-
-      # Or define it inline, for example:
-      # (final: prev: {
-      #   hi = final.hello.overrideAttrs (oldAttrs: {
-      #     patches = [ ./change-hello-to-hi.patch ];
-      #   });
-      # })
+      inputs.nix-cachyos-kernel.overlays.default
     ];
     # Configure your nixpkgs instance
     config = {
@@ -43,7 +34,7 @@
     prosecuted by law. By accessing this system, you agree that your actions
     may be monitored if unauthorized usage is suspected.
   '';
-  boot.kernelPackages = pkgs.linuxPackages_cachyos-server;
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-server;
   services.scx = {
     enable = true;
     scheduler = "scx_bpfland";

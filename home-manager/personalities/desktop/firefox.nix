@@ -1,5 +1,8 @@
-{ inputs, pkgs, ...}:
 {
+  inputs,
+  pkgs,
+  ...
+}: {
   programs.firefox = {
     enable = true;
     profiles.anthony = {

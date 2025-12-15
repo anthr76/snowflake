@@ -1,6 +1,9 @@
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   options.services.udpbroadcastrelay = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -24,7 +27,7 @@
     };
     interfaces = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      example = [ "eth0" "eth1" ];
+      example = ["eth0" "eth1"];
       description = "List of interfaces to listen on and forward packets to.";
     };
     multicast = lib.mkOption {
@@ -35,7 +38,7 @@
     multicastAddresses = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [];
-      example = [ "239.255.255.250" "ff02::c" ];
+      example = ["239.255.255.250" "ff02::c"];
       description = "List of multicast addresses to relay (supports both IPv4 and IPv6).";
     };
     debug = lib.mkOption {
@@ -80,34 +83,33 @@
 
     systemd.services.udpbroadcastrelay = {
       description = "UDP Broadcast Relay Service";
-      after = [ "network-online.target" ];
-      wants = [ "network-online.target" ];
+      after = ["network-online.target"];
+      wants = ["network-online.target"];
       serviceConfig = {
-        ExecStart =
-          let
-            cfg = config.services.udpbroadcastrelay;
-            # Combine old multicast option with new multicastAddresses list
-            allMulticastAddrs =
-              lib.optionals (cfg.multicast != null) [ cfg.multicast ] ++
-              cfg.multicastAddresses;
-            debugFlags = lib.optionalString cfg.debug
-              (lib.concatStrings (lib.replicate cfg.debugLevel "-d "));
-          in
-          ''
-            ${cfg.package}/bin/udpbroadcastrelay \
-            --id ${toString cfg.id} \
-            --port ${toString cfg.port} \
-            ${lib.concatStringsSep " " (map (dev: "--dev ${dev}") cfg.interfaces)} \
-            ${lib.concatStringsSep " " (map (addr: "--multicast ${addr}") allMulticastAddrs)} \
-            ${lib.concatStringsSep " " (map (cidr: "--blockcidr ${cidr}") cfg.blockCidr)} \
-            ${lib.concatStringsSep " " (map (cidr: "--allowcidr ${cidr}") cfg.allowCidr)} \
-            ${lib.concatStringsSep " " (map (m: "--msearch ${m}") cfg.msearch)} \
-            ${debugFlags}
-          '';
+        ExecStart = let
+          cfg = config.services.udpbroadcastrelay;
+          # Combine old multicast option with new multicastAddresses list
+          allMulticastAddrs =
+            lib.optionals (cfg.multicast != null) [cfg.multicast]
+            ++ cfg.multicastAddresses;
+          debugFlags =
+            lib.optionalString cfg.debug
+            (lib.concatStrings (lib.replicate cfg.debugLevel "-d "));
+        in ''
+          ${cfg.package}/bin/udpbroadcastrelay \
+          --id ${toString cfg.id} \
+          --port ${toString cfg.port} \
+          ${lib.concatStringsSep " " (map (dev: "--dev ${dev}") cfg.interfaces)} \
+          ${lib.concatStringsSep " " (map (addr: "--multicast ${addr}") allMulticastAddrs)} \
+          ${lib.concatStringsSep " " (map (cidr: "--blockcidr ${cidr}") cfg.blockCidr)} \
+          ${lib.concatStringsSep " " (map (cidr: "--allowcidr ${cidr}") cfg.allowCidr)} \
+          ${lib.concatStringsSep " " (map (m: "--msearch ${m}") cfg.msearch)} \
+          ${debugFlags}
+        '';
         Restart = "always";
         User = "root";
       };
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = ["multi-user.target"];
     };
 
     # Firewall rules for multicast relay
@@ -115,25 +117,26 @@
       let
         cfg = config.services.udpbroadcastrelay;
         allMulticastAddrs =
-          lib.optionals (cfg.multicast != null) [ cfg.multicast ] ++
-          cfg.multicastAddresses;
+          lib.optionals (cfg.multicast != null) [cfg.multicast]
+          ++ cfg.multicastAddresses;
 
         # Detect if an address is IPv6
         isIPv6 = addr: lib.hasInfix ":" addr;
 
         # Generate firewall rules for each multicast address
         mkMulticastRules = addr:
-          if isIPv6 addr then ''
+          if isIPv6 addr
+          then ''
             # IPv6 multicast traffic for ${addr}
             ip6tables -A INPUT -p udp -d ${addr} --dport ${toString cfg.port} -j ACCEPT
             ip6tables -A FORWARD -p udp -d ${addr} --dport ${toString cfg.port} -j ACCEPT
-          '' else ''
+          ''
+          else ''
             # IPv4 multicast traffic for ${addr}
             iptables -A INPUT -p udp -d ${addr} --dport ${toString cfg.port} -j ACCEPT
             iptables -A FORWARD -p udp -d ${addr} --dport ${toString cfg.port} -j ACCEPT
           '';
-      in
-      ''
+      in ''
         # IGMP for IPv4 multicast group management
         iptables -A INPUT -p igmp -j ACCEPT
         iptables -A FORWARD -p igmp -j ACCEPT

@@ -1,10 +1,14 @@
-{ pkgs, config, ... }: {
-  environment.systemPackages = with pkgs; [ logiops ];
+{
+  pkgs,
+  config,
+  ...
+}: {
+  environment.systemPackages = with pkgs; [logiops];
   systemd.services.logiops = {
     description = "An unofficial userspace driver for HID++ Logitech devices";
     enable = true;
-    restartTriggers = [ config.environment.etc."logid.cfg".source ];
-    wantedBy = [ "multi-user.target" ];
+    restartTriggers = [config.environment.etc."logid.cfg".source];
+    wantedBy = ["multi-user.target"];
     serviceConfig = {
       Type = "simple";
       ExecStart = "${pkgs.logiops}/bin/logid";

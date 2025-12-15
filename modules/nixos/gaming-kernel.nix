@@ -1,9 +1,14 @@
 # TODO: Make this much more robust if it proves useful.
-{ pkgs, lib, config, ... }: {
-
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: {
   options = {
     gaming-kernel = {
-      enable = lib.mkEnableOption
+      enable =
+        lib.mkEnableOption
         "Kernel With various patches and tweaks for gaming and HDR.";
     };
   };
@@ -16,15 +21,17 @@
       }
     ];
     # ath12k_pci is struggling on newer kernels, let's go LTS.
-    boot.kernelPackages = lib.mkForce pkgs.linuxPackages_cachyos-lts;
-    programs.gamescope.capSysNice =  lib.mkForce false;
+    boot.kernelPackages = lib.mkForce pkgs.cachyosKernels.linuxPackages-cachyos-lts;
+    programs.gamescope.capSysNice = lib.mkForce false;
     nixpkgs = {
       overlays = [
-      (final: prev: {
+        (final: prev: {
           gamescope = prev.gamescope.overrideAttrs (oldAttrs: {
-            patches = oldAttrs.patches ++ [
-              ./0001-allow-gamescope-to-set-ctx-priority.patch
-            ];
+            patches =
+              oldAttrs.patches
+              ++ [
+                ./0001-allow-gamescope-to-set-ctx-priority.patch
+              ];
           });
         })
       ];
@@ -32,3 +39,4 @@
   };
 }
 # env DXVK_HDR=1 gamescope --adaptive-sync --force-grab-cursor --rt -f -W 3840 -H 2160 -r 240 --prefer-vk-device 1002:744c  --hdr-enabled --hdr-debug-force-output -- env MANGOHUD=1 gamemoderun %command%
+

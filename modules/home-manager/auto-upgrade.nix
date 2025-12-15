@@ -1,11 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.services.home.autoUpgrade;
 
-  timerConfigType = types.submodule ({ ... }: {
+  timerConfigType = types.submodule ({...}: {
     options = {
       onCalendar = mkOption {
         type = types.str;
@@ -36,14 +38,13 @@ let
 
       wantedBy = mkOption {
         type = types.listOf types.str;
-        default = [ "timers.target" ];
+        default = ["timers.target"];
         description = "Targets that want to pull in the timer.";
       };
     };
   });
 
   escapeArgs = args: concatMapStringsSep " " escapeShellArg args;
-
 in {
   options.services.home.autoUpgrade = {
     enable = mkEnableOption "automatic Home Manager upgrades";
@@ -166,14 +167,14 @@ in {
 
   config = mkIf cfg.enable (
     let
-
       baseFlake = assert cfg.flake != null; cfg.flake;
 
       flakeRef =
-        if cfg.configuration == null then baseFlake
+        if cfg.configuration == null
+        then baseFlake
         else "${baseFlake}#${cfg.configuration}";
 
-      pathValue = lib.makeBinPath (cfg.pathPackages ++ [ cfg.homeManagerPackage ]);
+      pathValue = lib.makeBinPath (cfg.pathPackages ++ [cfg.homeManagerPackage]);
 
       hmBin = "${cfg.homeManagerPackage}/bin/home-manager";
 
@@ -194,7 +195,7 @@ in {
       '';
 
       serviceEnv =
-        [ "PATH=${pathValue}" ]
+        ["PATH=${pathValue}"]
         ++ mapAttrsToList (name: value: "${name}=${value}") cfg.environment;
 
       timerCfg = cfg.timer;
@@ -208,10 +209,10 @@ in {
 
       systemd.user.services.${cfg.serviceName} = {
         Unit = mkMerge [
-          { Description = cfg.description; }
+          {Description = cfg.description;}
           (optionalAttrs cfg.requiresNetwork {
-            After = [ "network-online.target" ];
-            Wants = [ "network-online.target" ];
+            After = ["network-online.target"];
+            Wants = ["network-online.target"];
           })
           cfg.unitConfig
         ];

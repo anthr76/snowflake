@@ -1,7 +1,7 @@
 {
-    networking.firewall = {
+  networking.firewall = {
     enable = true;
-    trustedInterfaces = [ "tailscale0" "vlan8" "vlan10" "vlan99" "vlan100" "vlan101" ];
+    trustedInterfaces = ["tailscale0" "vlan8" "vlan10" "vlan99" "vlan100" "vlan101"];
     interfaces = {
       wan = {
         allowedTCPPorts = [

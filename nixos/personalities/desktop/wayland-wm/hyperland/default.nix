@@ -1,6 +1,11 @@
-{ inputs, lib, config, pkgs, ... }: {
-
-  imports = [ ../rofi.nix ../sddm.nix ../waybar.nix ../../default.nix ];
+{
+  inputs,
+  lib,
+  config,
+  pkgs,
+  ...
+}: {
+  imports = [../rofi.nix ../sddm.nix ../waybar.nix ../../default.nix];
   programs.hyprland = {
     enable = true;
     package = null;

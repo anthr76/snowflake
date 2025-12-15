@@ -1,14 +1,19 @@
-{ inputs, config, pkgs, lib, ... }:
 {
- imports = [
-   ../default.nix
-   ../tailscale.nix
-   ../../base
-   ./ddns.nix
-   ./dhcp.nix
-   ./dns.nix
-   ./firewall.nix
- ];
+  inputs,
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
+  imports = [
+    ../default.nix
+    ../tailscale.nix
+    ../../base
+    ./ddns.nix
+    ./dhcp.nix
+    ./dns.nix
+    ./firewall.nix
+  ];
   # Typically enabled in base but since we're a router we want all the control
   networking.networkmanager.enable = lib.mkForce false;
   environment.systemPackages = with pkgs; [
@@ -49,18 +54,35 @@
       useDHCP = true;
     };
     lan = {
-      ipv4.addresses = [{
-        address = "192.168.1.1";
-        prefixLength = 24;
-      }];
+      ipv4.addresses = [
+        {
+          address = "192.168.1.1";
+          prefixLength = 24;
+        }
+      ];
     };
   };
   networking.vlans = {
-    vlan8 = { id=8; interface="lan"; };
-    vlan10 = { id=10; interface="lan"; };
-    vlan99 = { id=99; interface="lan"; };
-    vlan100 = { id=100; interface="lan"; };
-    vlan101 = { id=101; interface="lan"; };
+    vlan8 = {
+      id = 8;
+      interface = "lan";
+    };
+    vlan10 = {
+      id = 10;
+      interface = "lan";
+    };
+    vlan99 = {
+      id = 99;
+      interface = "lan";
+    };
+    vlan100 = {
+      id = 100;
+      interface = "lan";
+    };
+    vlan101 = {
+      id = 101;
+      interface = "lan";
+    };
   };
   services.avahi = {
     enable = true;
@@ -73,7 +95,7 @@
     package = pkgs.udpbroadcastrelay;
     port = 5353;
     id = 2;
-    interfaces = [ "vlan101" "vlan100" ];
+    interfaces = ["vlan101" "vlan100"];
     multicast = "224.0.0.251";
   };
   services.miniupnpd = {

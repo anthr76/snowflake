@@ -1,7 +1,4 @@
-{
-  outputs,
-  ...
-}: {
+{outputs, ...}: {
   imports =
     [
       ./sops.nix

@@ -1,4 +1,11 @@
-{ inputs, lib, modulesPath, pkgs, config, ... }: {
+{
+  inputs,
+  lib,
+  modulesPath,
+  pkgs,
+  config,
+  ...
+}: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
@@ -10,23 +17,21 @@
     ../../personalities/server/tailscale.nix
   ];
 
-  boot.initrd.availableKernelModules =
-    [ "amdgpu" "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ "amdgpu" ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.initrd.availableKernelModules = ["amdgpu" "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod"];
+  boot.initrd.kernelModules = ["amdgpu"];
+  boot.kernelModules = ["kvm-amd"];
   hardware.enableAllFirmware = true;
-  services.xserver.videoDrivers = [ "amdgpu" ];
-  boot.extraModulePackages = [ ];
+  services.xserver.videoDrivers = ["amdgpu"];
+  boot.extraModulePackages = [];
   time.timeZone = "America/Dominica";
 
-  swapDevices = [ ];
+  swapDevices = [];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "cdgc";
   networking.domain = "nwk3.rabbito.tech";
   system.stateVersion = "23.11";
-  environment.systemPackages = [ pkgs.gdb ];
-  chaotic.nyx.overlay.onTopOf = "user-pkgs";
+  environment.systemPackages = [pkgs.gdb];
   system.autoUpgrade = {
     enable = true;
     flake = "github:anthr76/snowflake/stable";

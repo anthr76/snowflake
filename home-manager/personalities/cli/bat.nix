@@ -1,7 +1,7 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   programs.bat = {
     enable = true;
-    extraPackages = [ pkgs.bat-extras.batman ];
+    extraPackages = [pkgs.bat-extras.batman];
   };
   home.shellAliases = {
     "cat" = "bat -pp";

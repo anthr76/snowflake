@@ -92,6 +92,14 @@
     debug = false;
   };
 
+  # TODO: Make stable
+  system.autoUpgrade = {
+    enable = true;
+    flake = "github:anthr76/snowflake";
+    operation = "boot";
+    persistent = true;
+  };
+
   # Kubelet configuration file
   environment.etc."kubernetes/kubelet-config.yaml".text = lib.generators.toYAML {} {
     apiVersion = "kubelet.config.k8s.io/v1beta1";
@@ -198,6 +206,26 @@
 
   swapDevices = lib.mkForce [];
   zramSwap.enable = lib.mkForce false;
+
+  # Check if reboot is needed after activation
+  # Compares booted system with new system - any difference triggers sentinel
+  system.activationScripts.needsreboot = {
+    supportsDryActivation = true;
+    text = ''
+      booted="/run/booted-system"
+      if [[ -e "$booted" ]]; then
+        booted_system=$(readlink -f "$booted")
+        new_system=$(readlink -f "$systemConfig")
+
+        if [[ "$booted_system" != "$new_system" ]]; then
+          echo -e "\033[33m>>> Reboot required: system configuration changed\033[0m"
+          echo "NixOS: booted $booted_system, current $new_system" > /var/run/reboot-required
+        else
+          rm -f /var/run/reboot-required
+        fi
+      fi
+    '';
+  };
 
   services.scuttle = {
     enable = true;

@@ -3,7 +3,6 @@
   rustPlatform,
   fetchFromGitHub,
 }:
-
 rustPlatform.buildRustPackage rec {
   pname = "led_matrix_monitoring";
   version = "0.3.1";
@@ -19,7 +18,7 @@ rustPlatform.buildRustPackage rec {
 
   # requires nightly features
   env.RUSTC_BOOTSTRAP = 1;
-  env.RUSTFLAGS="--cfg tokio_unstable --cfg=tokio_unstable";
+  env.RUSTFLAGS = "--cfg tokio_unstable --cfg=tokio_unstable";
   doCheck = false;
 
   meta = {

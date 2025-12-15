@@ -1,9 +1,11 @@
 # This is your home-manager configuration file
 # Use this to configure your home environment (it replaces ~/.config/nixpkgs/home.nix)
-
-{ outputs, lib, ... }: {
-
-  imports = [ ../../personalities/desktop/steam.nix ./linux.nix ];
+{
+  outputs,
+  lib,
+  ...
+}: {
+  imports = [../../personalities/desktop/steam.nix ./linux.nix];
   nixpkgs = {
     overlays = [
       outputs.overlays.additions
@@ -11,7 +13,7 @@
     ];
     config = {
       allowUnfree = true;
-      allowUnfreePredicate = (_: true);
+      allowUnfreePredicate = _: true;
     };
   };
   programs.home-manager.enable = true;

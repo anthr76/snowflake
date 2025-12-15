@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   # WIP
   programs.crush = {
     enable = false;

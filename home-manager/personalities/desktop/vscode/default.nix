@@ -5,12 +5,11 @@
   ...
 }: {
   # TODO: See if we can just include in a overlay for vscode.
-  home.packages =
-    [
-      pkgs.helm-ls
-      # Playwright MCP dependencies
-      pkgs.playwright-driver
-    ];
+  home.packages = [
+    pkgs.helm-ls
+    # Playwright MCP dependencies
+    pkgs.playwright-driver
+  ];
   catppuccin.vscode.profiles.default = {
     enable = true;
     icons.enable = true;

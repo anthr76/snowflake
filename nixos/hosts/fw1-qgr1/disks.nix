@@ -3,8 +3,7 @@
     disk = {
       main = {
         type = "disk";
-        device =
-          "/dev/disk/by-id/nvme-YSO256GTLCW-E3C-2_511241209057000444";
+        device = "/dev/disk/by-id/nvme-YSO256GTLCW-E3C-2_511241209057000444";
         content = {
           type = "gpt";
           partitions = {
@@ -24,12 +23,12 @@
               size = "100%";
               content = {
                 type = "btrfs";
-                extraArgs = [ "-f" ];
+                extraArgs = ["-f"];
                 subvolumes = {
-                  "/rootfs" = { mountpoint = "/"; };
-                  "/home" = { mountpoint = "/home"; };
+                  "/rootfs" = {mountpoint = "/";};
+                  "/home" = {mountpoint = "/home";};
                   "/nix" = {
-                    mountOptions = [ "compress=zstd" "noatime" ];
+                    mountOptions = ["compress=zstd" "noatime"];
                     mountpoint = "/nix";
                   };
                 };

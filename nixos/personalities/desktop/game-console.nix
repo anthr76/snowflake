@@ -1,31 +1,40 @@
 # This is a steamOS steam console like setup.
 # Lots of duplication here between we defined things, but since this is a console things need to be insecure and different.
-{ pkgs, outputs, inputs, config, lib, ... }:
 {
-  imports = [
-    ../../personalities/base/bootloader.nix
-    ../../personalities/base/sops.nix
-    ../../personalities/base/openssh.nix
-    ../../personalities/base/nix.nix
-    ../../personalities/base/tmpfs.nix
-    # ./sunshine.nix
-    ./audio.nix
-    inputs.jovian-nixos.nixosModules.default
-  ] ++ (builtins.attrValues outputs.nixosModules);
+  pkgs,
+  outputs,
+  inputs,
+  config,
+  lib,
+  ...
+}: {
+  imports =
+    [
+      ../../personalities/base/bootloader.nix
+      ../../personalities/base/sops.nix
+      ../../personalities/base/openssh.nix
+      ../../personalities/base/nix.nix
+      ../../personalities/base/tmpfs.nix
+      # ./sunshine.nix
+      ./audio.nix
+      inputs.jovian-nixos.nixosModules.default
+    ]
+    ++ (builtins.attrValues outputs.nixosModules);
   nixpkgs = {
     overlays = [
       outputs.overlays.additions
       outputs.overlays.modifications
       outputs.overlays.flake-inputs
+      # https://github.com/Jovian-Experiments/Jovian-NixOS/issues/303
+      (final: prev: {
+        steam = prev.steam.override {platformArgs = "";};
+      })
     ];
-    config = { allowUnfree = true; };
+    config = {allowUnfree = true;};
   };
   gaming-kernel.enable = false;
   # services.scx.enable = true;
   # services.scx.scheduler = "scx_lavd";
-  # chaotic.hdr.enable = true;
-  # chaotic.hdr.specialisation.enable	= false;
-  # chaotic.mesa-git.enable = true;
   services.desktopManager.plasma6.enable = true;
   services.flatpak.enable = true;
   xdg.portal.enable = true;
@@ -74,11 +83,11 @@
   programs.steam = {
     enable = true;
     package = pkgs.steam.override {
-      extraPkgs = pkgs: with pkgs; [ liberation_ttf wqy_zenhei ];
-      extraLibraries = pkgs: [ pkgs.xorg.libxcb ];
+      extraPkgs = pkgs: with pkgs; [liberation_ttf wqy_zenhei];
+      extraLibraries = pkgs: [pkgs.xorg.libxcb];
     };
     extest.enable = true;
-    extraCompatPackages = with pkgs; [ proton-ge-bin ];
+    extraCompatPackages = with pkgs; [proton-ge-bin];
   };
 
   services.xserver.displayManager.startx.enable = lib.mkForce false;
@@ -124,9 +133,9 @@
   networking = {
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 22 ];
+      allowedTCPPorts = [22];
     };
-    wireless = { iwd = { enable = true; }; };
+    wireless = {iwd = {enable = true;};};
     networkmanager = {
       enable = true;
       wifi.backend = "iwd";
@@ -173,7 +182,7 @@
     steamos.useSteamOSConfig = true;
     hardware.has.amd.gpu = true;
     decky-loader = {
-        enable = true;
+      enable = true;
     };
     steam = {
       enable = true;
@@ -188,7 +197,44 @@
     STEAM_ALLOW_DRIVE_ADOPT = "0";
     # Ejecting doesn't work, either.
     STEAM_ALLOW_DRIVE_UNMOUNT = "1";
-    steamargs = ''("-steamos3" "-steampal" "-gamepadui")'';
+  };
+  # Low-latency audio for HDMI output to soundbar
+  # Reduces PipeWire buffer sizes to minimize audio delay
+  services.pipewire.extraConfig.pipewire = {
+    "10-game-console-low-latency" = {
+      "context.properties" = {
+        "default.clock.rate" = 48000;
+        "default.clock.quantum" = 512;
+        "default.clock.min-quantum" = 512;
+        "default.clock.max-quantum" = 1024;
+      };
+    };
+  };
+  services.pipewire.extraConfig.pipewire-pulse = {
+    "10-game-console-low-latency" = {
+      "pulse.properties" = {
+        "pulse.min.req" = "512/48000";
+        "pulse.default.req" = "512/48000";
+        "pulse.min.quantum" = "512/48000";
+      };
+    };
+  };
+  services.pipewire.wireplumber.extraConfig = {
+    "10-game-console-low-latency" = {
+      "monitor.alsa.rules" = [
+        {
+          matches = [{"node.name" = "~alsa_output.*";}];
+          actions = {
+            update-props = {
+              "api.alsa.period-size" = 512;
+              "api.alsa.headroom" = 1024;
+              # Prevent device from suspending (avoids re-sync delays)
+              "session.suspend-timeout-seconds" = 0;
+            };
+          };
+        }
+      ];
+    };
   };
   # environment.etc."xdg/gamescope-session/environment".text = ''
   #   STEAM_EXTRA_COMPAT_TOOLS_PATHS = "${pkgs.proton-ge-bin.steamcompattool}"

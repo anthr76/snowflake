@@ -168,46 +168,6 @@
 
     dnsRecords = [
       {
-        name = "master-1";
-        type = "A";
-        value = "192.168.8.40";
-      }
-      {
-        name = "master-2";
-        type = "A";
-        value = "192.168.8.47";
-      }
-      {
-        name = "master-3";
-        type = "A";
-        value = "192.168.8.60";
-      }
-      {
-        name = "worker-1";
-        type = "A";
-        value = "192.168.8.20";
-      }
-      {
-        name = "worker-2";
-        type = "A";
-        value = "192.168.8.62";
-      }
-      {
-        name = "worker-3";
-        type = "A";
-        value = "192.168.8.61";
-      }
-      {
-        name = "worker-4";
-        type = "A";
-        value = "192.168.8.41";
-      }
-      {
-        name = "worker-5";
-        type = "A";
-        value = "192.168.8.144";
-      }
-      {
         name = "cluster-0-external-gateway";
         type = "A";
         value = "10.45.0.43";

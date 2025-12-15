@@ -1,5 +1,8 @@
-{ pkgs, inputs, ... }:
-let
+{
+  pkgs,
+  inputs,
+  ...
+}: let
   yubicoPackages = builtins.attrValues {
     inherit (pkgs) yubikey-manager yubico-piv-tool yubioath-flutter;
   };
@@ -18,11 +21,10 @@ in {
       PKCS11Provider "${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so"
   '';
   programs.ssh.startAgent = true;
-  programs.ssh.agentPKCS11Whitelist =
-    "${pkgs.yubico-piv-tool}/lib/libykcs11*,${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11*";
+  programs.ssh.agentPKCS11Whitelist = "${pkgs.yubico-piv-tool}/lib/libykcs11*,${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11*";
   services.pcscd = {
     enable = true;
   };
   services.fwupd.enable = true;
-  services.fwupd.extraRemotes = [ "lvfs-testing" ];
+  services.fwupd.extraRemotes = ["lvfs-testing"];
 }
