@@ -63,8 +63,10 @@
     scheduler.enable = lib.mkForce false;
     controllerManager.enable = lib.mkForce false;
     addonManager.enable = lib.mkForce false;
+    addons.dns.enable = lib.mkForce false;
     proxy.enable = lib.mkForce false;
     flannel.enable = lib.mkForce false;
+
 
     kubelet = {
       enable = true;

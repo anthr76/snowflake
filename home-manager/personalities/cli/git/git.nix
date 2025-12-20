@@ -16,7 +16,7 @@ in {
     userEmail = "hello@anthonyrabbito.com";
     # error: The option `programs.git.signing.key' is used but not defined. Issa bug
     # signing.signByDefault = true;
-    ignores = [".direnv" "result"];
+    ignores = [".direnv" "result" ".claude"];
     extraConfig = {
       commit.gpgsign = true;
       tag.forceSignAnnotated = true;

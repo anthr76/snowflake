@@ -12,7 +12,7 @@
   };
   programs.codex = {
     enable = true;
-    package = inputs.nix-ai-tools.packages.${pkgs.system}.codex;
+    # package = inputs.nix-ai-tools.packages.${pkgs.system}.codex;
     # TODO: Transform to TOML from VSCode?
     # settings = {
     #   mcp_servers = {
