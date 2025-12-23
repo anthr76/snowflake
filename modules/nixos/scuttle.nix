@@ -91,11 +91,9 @@ in {
     systemd.services.scuttle = {
       description = "Scuttle Kubelet before Shutdown";
       wantedBy = ["multi-user.target"];
-      after = ["multi-user.target"];
-      requires = [
-        "kubelet.service"
-        "network-online.target"
-      ];
+      after = ["multi-user.target" "kubelet.service" "network-online.target"];
+      bindsTo = ["kubelet.service"];
+      wants = ["network-online.target"];
       serviceConfig = {
         Type = "simple";
         TimeoutStopSec = 180;
