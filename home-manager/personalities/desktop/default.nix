@@ -18,7 +18,7 @@
     ./agentic-coding.nix
     ./ghostty.nix
     ./halloy.nix
-    # ./syncthing.nix
+    ./syncthing.nix
   ];
   home.packages = with pkgs; [
     moonlight-qt

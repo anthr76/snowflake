@@ -65,4 +65,12 @@
   hardware.keyboard.uhk.enable = true;
   catppuccin.tty.enable = true;
   catppuccin.fcitx5.enable = true;
+  #syncthing
+  networking.firewall = {
+    allowedTCPPorts = [22000];
+    allowedUDPPorts = [
+      21027
+      22000
+    ];
+  };
 }
