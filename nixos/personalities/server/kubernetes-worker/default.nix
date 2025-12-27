@@ -67,7 +67,6 @@
     proxy.enable = lib.mkForce false;
     flannel.enable = lib.mkForce false;
 
-
     kubelet = {
       enable = true;
       containerRuntimeEndpoint = "unix:///run/containerd/containerd.sock";

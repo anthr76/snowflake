@@ -4,6 +4,28 @@
   inputs,
   ...
 }: {
+  # Memory management tuning for gaming
+  # Reduces swap pressure and keeps more in RAM
+  boot.kernel.sysctl = {
+    # Only swap when absolutely necessary (default: 60)
+    "vm.swappiness" = 10;
+    # Keep file cache longer, important for game asset loading (default: 100)
+    "vm.vfs_cache_pressure" = 50;
+    # Start async writeback earlier to avoid I/O spikes (default: 10)
+    "vm.dirty_background_ratio" = 5;
+    # Force sync writeback threshold (default: 20)
+    "vm.dirty_ratio" = 10;
+    # Read single pages from swap, better for random access (default: 3)
+    "vm.page-cluster" = 0;
+    # Disable watermark boosting to reduce reclaim overhead
+    "vm.watermark_boost_factor" = 0;
+    # More aggressive page reclaim before hitting memory limits
+    "vm.watermark_scale_factor" = 125;
+    # Prefer reclaiming page cache over anonymous memory
+    "vm.zone_reclaim_mode" = 0;
+    # Compact memory more aggressively for huge pages
+    "vm.compaction_proactiveness" = 20;
+  };
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
