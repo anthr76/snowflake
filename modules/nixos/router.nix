@@ -495,6 +495,54 @@ in {
       example = ["192.168.14.0/24" "10.40.99.0/24"];
     };
 
+    qos = {
+      enable = mkEnableOption "QoS/Traffic Shaping using CAKE";
+
+      wanBandwidth = mkOption {
+        type = types.str;
+        default = "1gbit";
+        description = "WAN upload bandwidth limit (e.g., '100mbit', '1gbit')";
+        example = "500mbit";
+      };
+
+      rtt = mkOption {
+        type = types.str;
+        default = "100ms";
+        description = "Expected round-trip time to internet (affects queue size)";
+        example = "50ms";
+      };
+
+      diffserv = mkOption {
+        type = types.enum ["besteffort" "diffserv3" "diffserv4" "diffserv8"];
+        default = "diffserv8";
+        description = ''
+          Traffic prioritization mode:
+          - besteffort: No prioritization
+          - diffserv3: 3 tiers (bulk, best effort, voice)
+          - diffserv4: 4 tiers (bulk, best effort, video, voice)
+          - diffserv8: Full 8-tier DSCP support
+        '';
+      };
+
+      flowMode = mkOption {
+        type = types.enum ["flowblind" "srchost" "dsthost" "hosts" "flows" "dual-srchost" "dual-dsthost" "triple-isolate"];
+        default = "triple-isolate";
+        description = "Flow isolation mode for fairness";
+      };
+
+      nat = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Enable NAT mode for proper flow isolation behind NAT";
+      };
+
+      ackFilter = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Filter excess ACKs to improve throughput on asymmetric links";
+      };
+    };
+
     cloudflaredomains = mkOption {
       type = types.listOf types.str;
       default = [];
@@ -1862,6 +1910,37 @@ in {
           iptables -t nat -A POSTROUTING -s ${cfg.lanSubnet} -o tailscale0 -j MASQUERADE
         ''}
       '';
+    };
+
+    # QoS configuration using CAKE
+    boot.kernelModules = mkIf cfg.qos.enable ["sch_cake"];
+
+    systemd.services.qos-cake = mkIf cfg.qos.enable {
+      description = "CAKE QoS for WAN egress";
+      wantedBy = ["multi-user.target"];
+      after = ["network-online.target" "sys-subsystem-net-devices-${cfg.wanInterface}.device"];
+      wants = ["network-online.target"];
+      bindsTo = ["sys-subsystem-net-devices-${cfg.wanInterface}.device"];
+
+      path = [pkgs.iproute2];
+
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "qos-cake-start" ''
+          set -euo pipefail
+          tc qdisc replace dev ${cfg.wanInterface} root cake \
+            bandwidth ${cfg.qos.wanBandwidth} \
+            ${cfg.qos.diffserv} \
+            ${cfg.qos.flowMode} \
+            rtt ${cfg.qos.rtt} \
+            ${optionalString cfg.qos.nat "nat"} \
+            ${optionalString cfg.qos.ackFilter "ack-filter"}
+        '';
+        ExecStop = pkgs.writeShellScript "qos-cake-stop" ''
+          tc qdisc del dev ${cfg.wanInterface} root || true
+        '';
+      };
     };
 
     # Configure additional services

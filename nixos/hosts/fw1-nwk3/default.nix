@@ -163,5 +163,12 @@
 
       banAction = "iptables-multiport";
     };
+
+    qos = {
+      enable = true;
+      wanBandwidth = "35mbit"; # ~90% of 38 Mbit/s upload
+      rtt = "50ms";
+      diffserv = "diffserv8";
+    };
   };
 }
