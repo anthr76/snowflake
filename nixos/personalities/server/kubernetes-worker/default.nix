@@ -50,7 +50,7 @@
     roles = [];
     masterAddress = "qgr1-k8s.mole-bowfin.ts.net";
     package = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
-      version = "1.34.0";
+      version = "1.35.0";
       src = pkgs.fetchFromGitHub {
         owner = "kubernetes";
         repo = "kubernetes";
