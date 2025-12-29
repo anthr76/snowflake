@@ -12,7 +12,7 @@
       mode = "0644";
       owner = "root";
       group = "root";
-      restartUnits = ["kubelet.service"];
+      restartUnits = ["docker-kubelet.service"];
     };
     qgr1-bootstrap-kubeconfig = {
       sopsFile = ../../../../secrets/users.yaml;
@@ -20,7 +20,7 @@
       mode = "0600";
       owner = "root";
       group = "root";
-      restartUnits = ["kubelet.service"];
+      restartUnits = ["docker-kubelet.service"];
     };
   };
 
@@ -46,41 +46,40 @@
     };
   };
 
-  services.kubernetes = {
-    roles = [];
-    masterAddress = "qgr1-k8s.mole-bowfin.ts.net";
-    package = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
-      version = "1.35.0";
-      src = pkgs.fetchFromGitHub {
-        owner = "kubernetes";
-        repo = "kubernetes";
-        rev = "v${version}";
-        hash = "sha256-rKy4X01pX+kovJ8b2JHV0KuzHJ7PYZ08eDEO3GeuPoc=";
-      };
-    });
-
-    apiserver.enable = lib.mkForce false;
-    scheduler.enable = lib.mkForce false;
-    controllerManager.enable = lib.mkForce false;
-    addonManager.enable = lib.mkForce false;
-    addons.dns.enable = lib.mkForce false;
-    proxy.enable = lib.mkForce false;
-    flannel.enable = lib.mkForce false;
-
-    kubelet = {
-      enable = true;
-      containerRuntimeEndpoint = "unix:///run/containerd/containerd.sock";
-
-      extraOpts = lib.concatStringsSep " " [
+  virtualisation.oci-containers = {
+    backend = "docker";
+    containers.kubelet = {
+      # TODO: Build our own image
+      image = "ghcr.io/siderolabs/kubelet:v1.35.0";
+      autoStart = true;
+      extraOptions = [
+        "--network=host"
+        "--pid=host"
+        "--privileged"
+      ];
+      volumes = [
+        # NixOS symlink resolution (etc -> etc/static -> nix store)
+        "/nix/store:/nix/store:ro"
+        "/etc/static:/etc/static:ro"
+        "/etc/kubernetes:/etc/kubernetes:ro"
+        "/var/lib/kubelet:/var/lib/kubelet:rshared"
+        "/var/lib/kubernetes:/var/lib/kubernetes"
+        "/run:/run"
+        "/var/lib/containerd:/var/lib/containerd"
+        "/opt/cni/bin:/opt/cni/bin"
+        "/etc/cni/net.d:/etc/cni/net.d"
+        "/etc/machine-id:/etc/machine-id:ro"
+        "/etc/os-release:/etc/os-release:ro"
+        "/etc/resolv.conf:/etc/resolv.conf:ro"
+        "/sys/fs/cgroup:/sys/fs/cgroup:rw"
+        "/var/log:/var/log"
+      ];
+      cmd = [
         "--config=/etc/kubernetes/kubelet-config.yaml"
-        "--root-dir=/var/lib/kubelet"
         "--bootstrap-kubeconfig=/var/lib/kubernetes/bootstrap-kubeconfig"
-        "--kubeconfig=/var/lib/kubernetes/kubeconfig"
-        "--cert-dir=/var/lib/kubernetes/pki"
-        "--register-node=true"
-        "--node-labels=node.kubernetes.io/worker="
-        "--register-with-taints="
+        "--kubeconfig=/var/lib/kubelet/kubeconfig"
         "--hostname-override=${config.networking.hostName}"
+        "--node-labels=node.kubernetes.io/worker="
       ];
     };
   };
@@ -97,7 +96,7 @@
   system.autoUpgrade = {
     enable = true;
     flake = "github:anthr76/snowflake";
-    operation = "boot";
+    operation = "switch";
     persistent = true;
   };
 
@@ -203,24 +202,36 @@
     "d /var/lib/kubelet/plugins 0750 root root -"
     "d /var/lib/kubelet/pods 0750 root root -"
     "d /var/lib/kubelet/plugins_registry 0750 root root -"
+    "d /opt/cni/bin 0755 root root -"
   ];
+
+  # Ensure CNI plugins are symlinked
+  system.activationScripts.cni-plugins = {
+    text = ''
+      mkdir -p /opt/cni/bin
+      for plugin in ${pkgs.cni-plugins}/bin/*; do
+        ln -sf "$plugin" /opt/cni/bin/
+      done
+    '';
+    deps = [];
+  };
 
   swapDevices = lib.mkForce [];
   zramSwap.enable = lib.mkForce false;
 
   # Check if reboot is needed after activation
-  # Compares booted system with new system - any difference triggers sentinel
+  # Compares booted kernel with new kernel - only kernel changes trigger sentinel
   system.activationScripts.needsreboot = {
     supportsDryActivation = true;
     text = ''
       booted="/run/booted-system"
       if [[ -e "$booted" ]]; then
-        booted_system=$(readlink -f "$booted")
-        new_system=$(readlink -f "$systemConfig")
+        booted_kernel=$(readlink -f "$booted/kernel")
+        new_kernel=$(readlink -f "$systemConfig/kernel")
 
-        if [[ "$booted_system" != "$new_system" ]]; then
-          echo -e "\033[33m>>> Reboot required: system configuration changed\033[0m"
-          echo "NixOS: booted $booted_system, current $new_system" > /var/run/reboot-required
+        if [[ "$booted_kernel" != "$new_kernel" ]]; then
+          echo -e "\033[33m>>> Reboot required: kernel changed\033[0m"
+          echo "NixOS: booted kernel $booted_kernel, current $new_kernel" > /var/run/reboot-required
         else
           rm -f /var/run/reboot-required
         fi
@@ -231,8 +242,9 @@
   services.scuttle = {
     enable = true;
     platform = null;
-    kubeconfigPath = "/var/lib/kubernetes/kubeconfig";
+    kubeconfigPath = "/var/lib/kubelet/kubeconfig";
     nodeName = config.networking.hostName;
+    kubeletService = "docker-kubelet.service";
     drain = true;
     delete = true;
     uncordon = true;

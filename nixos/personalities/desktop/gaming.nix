@@ -36,12 +36,9 @@
       wqy_zenhei
       source-han-sans
     ];
-    extraPackages = with pkgs; [
-      gamemode
-    ];
     package = pkgs.steam.override {
       extraEnv = {STEAM_FORCE_DESKTOPUI_SCALING = "1.5";};
-      extraLibraries = pkgs: [pkgs.xorg.libxcb];
+      extraLibraries = pkgs: [pkgs.xorg.libxcb pkgs.gamemode];
     };
     extraCompatPackages = with pkgs; [
       proton-ge-bin
