@@ -8,7 +8,8 @@
     ./fonts.nix
     ./wezterm.nix
     ./chromium.nix
-    ./zen.nix
+    # TODO: Broken and not using currently
+    # ./zen.nix
     ./firefox.nix
     ./email.nix
     ./chat
