@@ -32,8 +32,7 @@
     bottles
     lightworks
     darktable
-    # TODO: Currently broken
-    # shadps4
+    shadps4
     vorta
     prismlauncher
     minicom
