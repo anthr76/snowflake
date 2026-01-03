@@ -29,16 +29,27 @@
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
-    extest.enable = false;
     protontricks.enable = true;
+    dedicatedServer.openFirewall = true;
+    localNetworkGameTransfers.openFirewall = true;
+    remotePlay.openFirewall = true;
     fontPackages = with pkgs; [
       liberation_ttf
       wqy_zenhei
       source-han-sans
     ];
     package = pkgs.steam.override {
-      extraEnv = {STEAM_FORCE_DESKTOPUI_SCALING = "1.5";};
-      extraLibraries = pkgs: [pkgs.xorg.libxcb pkgs.gamemode];
+      extraEnv = {
+        STEAM_FORCE_DESKTOPUI_SCALING = "1.5";
+        # Preload gamemode for pressure-vessel compatibility
+        LD_PRELOAD = "${pkgs.gamemode.lib}/lib/libgamemode.so:${pkgs.pkgsi686Linux.gamemode.lib}/lib/libgamemode.so";
+      };
+      extraLibraries = p:
+        with p; [
+          xorg.libxcb
+          gamemode.lib
+          freetype
+        ];
     };
     extraCompatPackages = with pkgs; [
       proton-ge-bin

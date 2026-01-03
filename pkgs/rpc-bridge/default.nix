@@ -7,13 +7,13 @@
 }:
 stdenv.mkDerivation rec {
   pname = "rpc-bridge";
-  version = "1.4.0.0";
+  version = "1.4.0.1";
 
   src = fetchFromGitHub {
     owner = "EnderIce2";
     repo = "rpc-bridge";
     rev = "v${version}";
-    sha256 = "sha256-Kamwrdn81/9DQWtFVqHDtZfktDk9nHgHUnUtwBGVsxs=";
+    sha256 = "sha256-NB3GqwlJ1dkI+MmbjDEDhiAvvAtRHOdC/PEEyIP2i28=";
   };
 
   nativeBuildInputs = [pkgsCross.mingwW64.stdenv.cc wine];
