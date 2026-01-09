@@ -36,7 +36,7 @@
     vorta
     prismlauncher
     minicom
-    high-tide
+      high-tide
   ];
   #TODO:https://github.com/NixOS/nixpkgs/pull/429473
   nixpkgs.config.permittedInsecurePackages = [

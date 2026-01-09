@@ -54,6 +54,8 @@
     nix-ai-tools.url = "github:numtide/nix-ai-tools";
     nix-ai-tools.inputs.nixpkgs.follows = "nixpkgs";
     nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";
+    nix-reshade.url = "github:LovingMelody/nix-reshade";
+    nix-reshade.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
