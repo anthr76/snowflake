@@ -58,7 +58,7 @@
     # TODO: Find replacement for PS1
     # duckstation
     # Dreamcast
-    flycast
+    inputs.nixpkgs-stable.legacyPackages.${pkgs.system}.flycast
     # Saturn
     # Currently Broken
     #yabause
