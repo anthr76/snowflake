@@ -21,7 +21,7 @@
       }
     ];
     # ath12k_pci is struggling on newer kernels, let's go LTS.
-    boot.kernelPackages = lib.mkForce pkgs.cachyosKernels.linuxPackages-cachyos;
+    boot.kernelPackages = lib.mkForce pkgs.cachyosKernels.linuxPackages-cachyos-latest;
     programs.gamescope.capSysNice = lib.mkForce false;
     nixpkgs = {
       overlays = [
