@@ -21,7 +21,7 @@
       }
     ];
     # ath12k_pci is struggling on newer kernels, let's go LTS.
-    boot.kernelPackages = lib.mkForce pkgs.cachyosKernels.linuxPackages-cachyos-lts;
+    boot.kernelPackages = lib.mkForce pkgs.cachyosKernels.linuxPackages-cachyos;
     programs.gamescope.capSysNice = lib.mkForce false;
     nixpkgs = {
       overlays = [
@@ -39,4 +39,3 @@
   };
 }
 # env DXVK_HDR=1 gamescope --adaptive-sync --force-grab-cursor --rt -f -W 3840 -H 2160 -r 240 --prefer-vk-device 1002:744c  --hdr-enabled --hdr-debug-force-output -- env MANGOHUD=1 gamemoderun %command%
-
