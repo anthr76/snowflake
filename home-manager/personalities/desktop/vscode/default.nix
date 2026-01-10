@@ -63,7 +63,7 @@
         "github.copilot-chat"
         "github.copilot"
         "openai.chatgpt"
-        "anthropic.claude-code"
+        #"anthropic.claude-code"
         "eamodio.gitlens"
         "hashicorp.terraform"
         "ms-vscode-remote.remote-ssh"
