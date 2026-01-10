@@ -67,7 +67,7 @@
         "eamodio.gitlens"
         "hashicorp.terraform"
         "ms-vscode-remote.remote-ssh"
-        "drblury.protobuf-vsc"
+        "bufbuild.vscode-buf"
       ];
       # userMcp = {
       #   servers = {
@@ -142,6 +142,7 @@
         "[terraform]".editor.defaultFormatter = "hashicorp.terraform";
         "[yaml]".editor.defaultFormatter = "esbenp.prettier-vscode";
         "[yml]".editor.defaultFormatter = "esbenp.prettier-vscode";
+        buf.commandLine.path = "${pkgs.buf}/bin/buf";
         kotlin.java.home = "${pkgs.jdk}/lib/openjdk";
         kotlin.languageServer.path = "${pkgs.kotlin-language-server}/bin/kotlin-language-server";
         kotlin.debugAdapter.path = "${pkgs.kotlin-debug-adapter}/bin/kotlin-debug-adapter";
@@ -185,11 +186,6 @@
         };
         path-autocomplete = {
           triggerOutsideStrings = true;
-        };
-        protobuf = {
-          protoc = {
-            path = "${pkgs.protobuf}/bin/protoc";
-          };
         };
         todo-tree = {
           highlights = {
