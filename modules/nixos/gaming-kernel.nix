@@ -20,8 +20,9 @@
         patch = ./cap_sys_nice_begone.patch;
       }
     ];
-    # ath12k_pci is struggling on newer kernels, let's go LTS.
-    boot.kernelPackages = lib.mkForce pkgs.cachyosKernels.linuxPackages-cachyos-latest;
+    # suspend is struggling on newer kernels, let's go LTS.
+    # pkgs.cachyosKernels.linuxPackages-cachyos-latest
+    boot.kernelPackages = lib.mkForce pkgs.cachyosKernels.linuxPackages-cachyos-lts;
     programs.gamescope.capSysNice = lib.mkForce false;
     nixpkgs = {
       overlays = [
