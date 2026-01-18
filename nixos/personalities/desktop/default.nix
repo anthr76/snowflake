@@ -50,6 +50,7 @@
 
   hardware.graphics = {enable = true;};
   hardware.amdgpu.opencl.enable = true;
+  services.usbmuxd.enable = true;
   hardware.graphics.extraPackages = [
     pkgs.mesa.opencl
     pkgs.rocmPackages.clr.icd
