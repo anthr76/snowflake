@@ -304,10 +304,18 @@
             self.nixosConfigurations)
         );
 
+        # Explicitly list Linux home configs to avoid evaluating darwin configs
+        linuxHomeConfigs = {
+          "anthony@bkp1" = self.homeConfigurations."anthony@bkp1";
+          "steam@octo" = self.homeConfigurations."steam@octo";
+          "anthony@f80" = self.homeConfigurations."anthony@f80";
+          "anthony@lattice" = self.homeConfigurations."anthony@lattice";
+          "anthony@generic" = self.homeConfigurations."anthony@generic";
+        };
         homeSet = withPrefix "home-" (
           lib.mapAttrs (name: x: x.activation-script)
           (lib.filterAttrs (name: x: x.pkgs.system == pkgs.system)
-            self.homeConfigurations)
+            linuxHomeConfigs)
         );
       in
         pkgsSet // nixosSet // homeSet
