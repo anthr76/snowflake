@@ -1,9 +1,14 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  ykcs11Lib =
+    if pkgs.stdenv.isDarwin
+    then "${pkgs.yubico-piv-tool}/lib/libykcs11.dylib"
+    else "${pkgs.yubico-piv-tool}/lib/libykcs11.so";
+in {
   home.packages = with pkgs; [fzf fd];
   programs.fish = {
     enable = true;
     shellAliases = {
-      yssh = "${pkgs.openssh}/bin/ssh-add -s ${pkgs.yubico-piv-tool}/lib/libykcs11.so";
+      yssh = "${pkgs.openssh}/bin/ssh-add -s ${ykcs11Lib}";
       tssh =
         if pkgs.stdenv.isLinux
         then "${pkgs.openssh}/bin/ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so"

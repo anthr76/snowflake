@@ -12,7 +12,7 @@
       example = "Fira Code";
     };
     package = lib.mkOption {
-      type = lib.types.package;
+      type = lib.types.nullOr lib.types.package;
       default = null;
       description = "Package for ${kind} font profile";
       example = "pkgs.fira-code";
@@ -34,7 +34,7 @@ in {
           example = "Noto Color Emoji";
         };
         package = lib.mkOption {
-          type = lib.types.package;
+          type = lib.types.nullOr lib.types.package;
           default = pkgs.noto-fonts-emoji;
           description = "Package for emoji font profile";
           example = "pkgs.noto-fonts-emoji";
@@ -50,7 +50,7 @@ in {
           example = "Symbols Nerd Font Mono";
         };
         package = lib.mkOption {
-          type = lib.types.package;
+          type = lib.types.nullOr lib.types.package;
           default = pkgs.nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];};
           description = "Package for icon font profile";
           example = "pkgs.nerdfonts";

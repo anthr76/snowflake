@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   inputs,
   ...
 }: {
@@ -15,7 +16,11 @@
     };
     emoji = {
       family = "Apple Color Emoji";
-      package = inputs.apple-color-emoji.packages.${pkgs.system}.default;
+      # macOS has Apple Color Emoji built-in, only need the package on Linux
+      package =
+        if pkgs.stdenv.isLinux
+        then inputs.apple-color-emoji.packages.${pkgs.system}.default
+        else null;
     };
     icon = {
       family = "Symbols Nerd Font Mono";

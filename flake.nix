@@ -80,8 +80,9 @@
     inherit (self) outputs;
     lib = nixpkgs.lib // home-manager.lib;
     systems = ["x86_64-linux" "aarch64-linux"];
+    allSystems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
     forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
-    pkgsFor = lib.genAttrs systems (
+    pkgsFor = lib.genAttrs allSystems (
       system:
         import nixpkgs {
           inherit system;
@@ -124,6 +125,20 @@
     overlays = import ./overlays {inherit inputs outputs;};
     nixosModules = import ./modules/nixos;
     homeManagerModules = import ./modules/home-manager;
+
+    darwinConfigurations = let
+      mac-studio-config = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nix-darwin/hosts/mac-studio.nwk3.rabbito.tech
+        ];
+      };
+    in {
+      "mac-studio.nwk3.rabbito.tech" = mac-studio-config;
+      "mac-studio" = mac-studio-config;
+      "Mac-Studio" = mac-studio-config;
+    };
 
     nixosConfigurations = {
       "bkp1" = lib.nixosSystem {
@@ -259,6 +274,14 @@
         extraSpecialArgs = {inherit inputs outputs;};
         modules = [
           ./home-manager/hosts/generic.nix
+          catppuccin.homeModules.catppuccin
+        ];
+      };
+      "anthony@mac-studio" = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.aarch64-darwin;
+        extraSpecialArgs = {inherit inputs outputs;};
+        modules = [
+          ./home-manager/hosts/mac-studio.nix
           catppuccin.homeModules.catppuccin
         ];
       };
