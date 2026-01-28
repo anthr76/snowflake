@@ -21,7 +21,7 @@ in {
       PKCS11Provider "${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so"
   '';
   programs.ssh.startAgent = true;
-  programs.ssh.agentPKCS11Whitelist = "${pkgs.yubico-piv-tool}/lib/libykcs11*,${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11*";
+  programs.ssh.agentPKCS11Whitelist = "/nix/store/*";
   services.pcscd = {
     enable = true;
   };

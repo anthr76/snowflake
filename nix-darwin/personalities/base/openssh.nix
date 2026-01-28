@@ -8,8 +8,10 @@
   inherit (config.networking) hostName;
   hosts = outputs.nixosConfigurations;
   pubKey = host: ../../../nixos/hosts/${host}/ssh_host_ed25519_key.pub;
-  pkcs11Whitelist = "${pkgs.yubico-piv-tool}/lib/libykcs11*";
+  pkcs11Whitelist = "/nix/store/*";
   sshAgentWrapper = pkgs.writeShellScript "ssh-agent-wrapper" ''
+    # Remove stale socket if it exists
+    rm -f "$HOME/.ssh/agent.sock"
     exec ${pkgs.openssh}/bin/ssh-agent -D -a "$HOME/.ssh/agent.sock" -P "${pkcs11Whitelist}"
   '';
 in {

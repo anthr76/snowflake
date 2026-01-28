@@ -5,6 +5,15 @@
   outputs,
   ...
 }: {
+  # Increase file descriptor limits for Nix builds
+  launchd.daemons.limit-maxfiles = {
+    serviceConfig = {
+      Label = "limit.maxfiles";
+      ProgramArguments = ["/bin/launchctl" "limit" "maxfiles" "524288" "524288"];
+      RunAtLoad = true;
+    };
+  };
+
   nixpkgs = {
     overlays = [
       outputs.overlays.additions
