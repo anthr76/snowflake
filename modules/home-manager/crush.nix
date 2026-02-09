@@ -113,8 +113,8 @@ in {
 
     package = mkOption {
       type = types.package;
-      default = inputs.nix-ai-tools.packages.${pkgs.system}.crush;
-      defaultText = literalExpression "inputs.nix-ai-tools.packages.\${pkgs.system}.crush";
+      default = inputs.llm-agents.packages.${pkgs.system}.crush;
+      defaultText = literalExpression "inputs.llm-agents.packages.\${pkgs.system}.crush";
       description = "The Crush package to install.";
     };
 

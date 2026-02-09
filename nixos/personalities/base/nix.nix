@@ -12,6 +12,7 @@
     registry = lib.mapAttrs (_: value: {flake = value;}) inputs;
     settings = {
       substituters = [
+        "https://cache.numtide.com"
         "https://hyprland.cachix.org"
         "https://nix-community.cachix.org"
         "https://snowflake.cachix.org"
@@ -22,6 +23,7 @@
         "https://cache.garnix.io"
       ];
       trusted-public-keys = [
+        "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
         "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         "snowflake.cachix.org-1:p9pP30w7PFDuzkJ2v4TQ446cXLUglrnBUhN6tUzp2sA="
