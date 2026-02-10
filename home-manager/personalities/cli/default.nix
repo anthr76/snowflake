@@ -13,6 +13,7 @@
     ./direnv.nix
     ./nh.nix
     ./crush.nix
+    ./attic.nix
   ];
   home.packages = with pkgs;
     [

@@ -56,6 +56,7 @@
     nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";
     nix-reshade.url = "github:LovingMelody/nix-reshade";
     nix-reshade.inputs.nixpkgs.follows = "nixpkgs";
+    attic.url = "github:zhaofengli/attic";
   };
 
   outputs = {
