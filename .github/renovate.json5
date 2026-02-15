@@ -1,14 +1,16 @@
 {
   extends: [
-    "github>bjw-s/renovate-config",
-    "github>bjw-s/renovate-config:automerge-github-actions",
+    'github>bjw-s/renovate-config',
+    'github>bjw-s/renovate-config:automerge-github-actions',
   ],
-  "nix": {
-    "enabled": true
+  nix: {
+    enabled: true,
   },
-  "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true,
-    "schedule": ["before 6am every day"]
-  }
+  lockFileMaintenance: {
+    enabled: true,
+    automerge: true,
+    schedule: [
+      'before 6am',
+    ],
+  },
 }
