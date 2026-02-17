@@ -22,6 +22,7 @@
       enableExtensionUpdateCheck = false;
       extensions = pkgs.nix4vscode.forVscode [
         "golang.go"
+	"mkhl.direnv"
         "jnoortheen.nix-ide"
         "mrmlnc.vscode-json5"
         "ms-azuretools.vscode-docker"

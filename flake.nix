@@ -51,11 +51,12 @@
     catppuccin.inputs.nixpkgs.follows = "nixpkgs";
     apple-color-emoji.url = "github:samuelngs/apple-emoji-linux";
     apple-color-emoji.inputs.nixpkgs.follows = "nixpkgs";
-    nix-ai-tools.url = "github:numtide/nix-ai-tools";
-    nix-ai-tools.inputs.nixpkgs.follows = "nixpkgs";
+    llm-agents.url = "github:numtide/llm-agents.nix";
+    llm-agents.inputs.nixpkgs.follows = "nixpkgs";
     nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";
     nix-reshade.url = "github:LovingMelody/nix-reshade";
     nix-reshade.inputs.nixpkgs.follows = "nixpkgs";
+    attic.url = "github:zhaofengli/attic";
   };
 
   outputs = {
