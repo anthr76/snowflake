@@ -13,7 +13,7 @@
     overlays = [
       outputs.overlays.additions
       outputs.overlays.modifications
-      inputs.nix-cachyos-kernel.overlays.default
+      inputs.nix-cachyos-kernel.overlays.pinned
     ];
     # Configure your nixpkgs instance
     config = {

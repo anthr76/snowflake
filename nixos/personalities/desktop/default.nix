@@ -29,7 +29,7 @@
       outputs.overlays.modifications
       outputs.overlays.flake-inputs
       inputs.proton-cachyos.overlays.default
-      inputs.nix-cachyos-kernel.overlays.default
+      inputs.nix-cachyos-kernel.overlays.pinned
 
       # You can also add overlays exported from other flakes:
       # neovim-nightly-overlay.overlays.default
