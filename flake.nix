@@ -126,6 +126,7 @@
     overlays = import ./overlays {inherit inputs outputs;};
     nixosModules = import ./modules/nixos;
     homeManagerModules = import ./modules/home-manager;
+    darwinModules = import ./modules/nix-darwin;
 
     darwinConfigurations = let
       mac-studio-config = nix-darwin.lib.darwinSystem {

@@ -33,7 +33,7 @@
     settings = {
       trusted-users = ["root" "@admin"];
       builders-use-substitutes = true;
-      experimental-features = ["nix-command" "flakes"];
+      experimental-features = ["nix-command" "flakes" "dynamic-derivations"];
       warn-dirty = false;
       flake-registry = ""; # Disable global flake registry
       substituters = [
