@@ -12,7 +12,7 @@
   };
   home.packages = [
     # TODO: Currently broken
-    gemini-cli
+    pkgs.gemini-cli
     #inputs.llm-agents.packages.${pkgs.system}.gemini-cli
   ];
   programs.codex = {
