@@ -11,7 +11,9 @@
     #mcpServers = config.programs.vscode.profiles.default.userMcp.servers;
   };
   home.packages = [
-    inputs.llm-agents.packages.${pkgs.system}.gemini-cli
+    # TODO: Currently broken
+    gemini-cli
+    #inputs.llm-agents.packages.${pkgs.system}.gemini-cli
   ];
   programs.codex = {
     enable = true;
