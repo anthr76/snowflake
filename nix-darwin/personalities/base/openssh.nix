@@ -36,5 +36,4 @@ in {
     };
   };
 
-  environment.variables.SSH_AUTH_SOCK = "$HOME/.ssh/agent.sock";
 }

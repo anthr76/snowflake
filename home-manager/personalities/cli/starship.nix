@@ -7,7 +7,7 @@
       };
       custom.fqdn = {
         command = "hostname -f";
-        detect_env_vars = ["SSH_CLIENT"];
+        when = ''[ -n "$SSH_CLIENT" ]'';
         format = "🌐 [$output]($style) ";
         style = "bold green";
       };

@@ -11,11 +11,11 @@
     #mcpServers = config.programs.vscode.profiles.default.userMcp.servers;
   };
   home.packages = [
-    inputs.llm-agents.packages.${pkgs.system}.gemini-cli
+    pkgs.gemini-cli
   ];
   programs.codex = {
     enable = true;
-    package = inputs.llm-agents.packages.${pkgs.system}.codex;
+    package = pkgs.codex;
     # TODO: Transform to TOML from VSCode?
     # settings = {
     #   mcp_servers = {
