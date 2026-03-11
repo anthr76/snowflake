@@ -48,10 +48,10 @@
         RuntimeWatchdogSec = "20s";
       };
     };
-    sleep.extraConfig = ''
-      AllowSuspend=no
-      AllowHibernation=no
-    '';
+    sleep.settings.Sleep = {
+      AllowSuspend = "no";
+      AllowHibernation = "no";
+    };
   };
   # use TCP BBR has significantly increased throughput and reduced latency for connections
   boot.kernel.sysctl = {
