@@ -12,12 +12,14 @@ in {
   # TODO: This needs to be modularized..
   programs.git = {
     enable = true;
-    userName = "Anthony Rabbito";
-    userEmail = "hello@anthonyrabbito.com";
     # error: The option `programs.git.signing.key' is used but not defined. Issa bug
     # signing.signByDefault = true;
     ignores = [".direnv" "result" ".claude"];
-    extraConfig = {
+    settings = {
+      user = {
+        name = "Anthony Rabbito";
+        email = "hello@anthonyrabbito.com";
+      };
       commit.gpgsign = true;
       tag.forceSignAnnotated = true;
       tag.gpgsign = true;
