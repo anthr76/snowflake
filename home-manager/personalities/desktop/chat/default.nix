@@ -5,8 +5,8 @@
 }: {
   home.packages = with pkgs;
     [
-      slack
       discord
+      signal-desktop
     ]
     ++ lib.optionals pkgs.stdenv.isLinux [
       fractal

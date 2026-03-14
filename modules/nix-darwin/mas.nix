@@ -5,7 +5,8 @@
   pkgs,
   ...
 }: let
-  inherit (lib)
+  inherit
+    (lib)
     attrValues
     concatStringsSep
     escapeShellArg
@@ -29,95 +30,104 @@
   homebrewIds = sort builtins.lessThan (map toString (attrValues config.homebrew.masApps));
   hasWork = cfg.update || cfg.packages != {} || cfg.cleanup || homebrewIds != [];
 
+  # The inner script runs entirely as cfg.user so mas can access the
+  # user's App Store session.  We write it to a temp file and execute it
+  # via a single sudo (or directly when already the right user) to avoid
+  # repeated password prompts.
+  masScript = pkgs.writeShellScript "mas-activate" ''
+    set -euo pipefail
+
+    MAS=${getExe cfg.package}
+
+    list_status=0
+    list_output="$( $MAS list 2>&1 )" || list_status=$?
+
+    if [ "$list_status" -ne 0 ]; then
+      echo >&2 "warning: mas list failed (exit $list_status):"
+      echo >&2 "$list_output"
+      if printf '%s' "$list_output" | grep -qi "not signed in"; then
+        echo >&2 "login required; skipping App Store installs/updates/cleanup"
+        exit 0
+      fi
+    fi
+
+    installed_ids=()
+    while IFS= read -r line; do
+      [ -z "$line" ] && continue
+      app_id="$(printf '%s' "$line" | awk '{print $1}')"
+      [ -n "$app_id" ] && installed_ids+=("$app_id")
+    done < <(printf '%s\n' "$list_output")
+
+    desired_ids=(
+    ${concatStringsSep "\n" (map (id: "  \"" + id + "\"") desiredIds)}
+    )
+
+    homebrew_ids=(
+    ${concatStringsSep "\n" (map (id: "  \"" + id + "\"") homebrewIds)}
+    )
+
+    if ${
+      if cfg.update
+      then "true"
+      else "false"
+    }; then
+      $MAS upgrade || true
+    fi
+
+    is_installed() {
+      local needle=$1
+      local installed_id
+      for installed_id in "''${installed_ids[@]}"; do
+        if [ "$installed_id" = "$needle" ]; then
+          return 0
+        fi
+      done
+      return 1
+    }
+
+    for app_id in "''${desired_ids[@]}"; do
+      [ -z "$app_id" ] && continue
+      is_installed "$app_id" && continue
+      $MAS install "$app_id" || true
+    done
+
+    if ${
+      if cfg.cleanup
+      then "true"
+      else "false"
+    }; then
+      keep_ids=("''${desired_ids[@]}" "''${homebrew_ids[@]}")
+
+      for installed_id in "''${installed_ids[@]}"; do
+        keep=false
+        for keep_id in "''${keep_ids[@]}"; do
+          if [ "$installed_id" = "$keep_id" ]; then
+            keep=true
+            break
+          fi
+        done
+
+        if ! $keep; then
+          echo >&2 "removing App Store app id $installed_id"
+          $MAS uninstall "$installed_id" || true
+        fi
+      done
+    fi
+  '';
+
   activationScript =
     if hasWork
     then ''
       echo >&2 "setting up App Store apps (mas)..."
-
-      ${getExe pkgs.bash} <<'MAS_EOF'
-      set -euo pipefail
-
-      run_as_user() {
+      if [ "$(id -un)" = ${escapeShellArg cfg.user} ]; then
+        ${masScript}
+      else
         sudo \
           --preserve-env=PATH \
           --set-home \
           --user=${escapeShellArg cfg.user} \
-          "$@"
-      }
-
-      list_status=0
-      list_output="$(
-        run_as_user ${getExe cfg.package} list 2>&1
-      )" || list_status=$?
-
-      if [ "$list_status" -ne 0 ]; then
-        echo >&2 "warning: mas list failed (exit ''${list_status}):"
-        echo >&2 "$list_output"
-        if printf '%s' "$list_output" | grep -qi "not signed in"; then
-          echo >&2 "login required; skipping App Store installs/updates/cleanup"
-          exit 0
-        fi
+          ${masScript}
       fi
-
-      installed_ids=()
-      while IFS= read -r line; do
-        [ -z "$line" ] && continue
-        app_id="$(printf '%s' "$line" | awk '{print $1}')"
-        [ -n "$app_id" ] && installed_ids+=("$app_id")
-      done < <(printf '%s\n' "$list_output")
-
-      desired_ids=(
-      ${concatStringsSep "\n" (map (id: "  \"" + id + "\"") desiredIds)}
-      )
-
-      homebrew_ids=(
-      ${concatStringsSep "\n" (map (id: "  \"" + id + "\"") homebrewIds)}
-      )
-
-      if ${if cfg.update then "true" else "false"}; then
-        run_as_user ${getExe cfg.package} update || true
-      fi
-
-      is_installed() {
-        local needle=$1
-        local installed_id
-        for installed_id in "''${installed_ids[@]}"; do
-          if [ "$installed_id" = "$needle" ]; then
-            return 0
-          fi
-        done
-        return 1
-      }
-
-      for app_id in "''${desired_ids[@]}"; do
-        if [ -z "$app_id" ]; then
-          continue
-        fi
-        if is_installed "$app_id"; then
-          continue
-        fi
-        run_as_user ${getExe cfg.package} install "$app_id" || true
-      done
-
-      if ${if cfg.cleanup then "true" else "false"}; then
-        keep_ids=("''${desired_ids[@]}" "''${homebrew_ids[@]}")
-
-        for installed_id in "''${installed_ids[@]}"; do
-          keep=false
-          for keep_id in "''${keep_ids[@]}"; do
-            if [ "$installed_id" = "$keep_id" ]; then
-              keep=true
-              break
-            fi
-          done
-
-          if ! $keep; then
-            echo >&2 "removing App Store app id $installed_id"
-            run_as_user ${getExe cfg.package} uninstall "$installed_id" || true
-          fi
-        done
-      fi
-      MAS_EOF
     ''
     else "";
 in {

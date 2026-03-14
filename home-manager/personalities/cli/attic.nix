@@ -1,4 +1,8 @@
-{inputs, pkgs, ...}: {
+{
+  inputs,
+  pkgs,
+  ...
+}: {
   home.packages = [inputs.attic.packages.${pkgs.system}.attic-client];
   programs.fish.functions = {
     nix-build-push = {
