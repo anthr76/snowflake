@@ -6,7 +6,7 @@
 
   system.primaryUser = "anthony";
 
-  networking.hostName = "mac-studio";
-  networking.localHostName = "mac-studio";
-  networking.computerName = "mac-studio";
+  networking.hostName = "Anthonys-Mac-Studio";
+  networking.localHostName = "Anthonys-Mac-Studio";
+  networking.computerName = "Anthonys-Mac-Studio";
 }

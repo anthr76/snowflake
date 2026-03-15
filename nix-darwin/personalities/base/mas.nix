@@ -25,6 +25,7 @@
       "Telegram" = "747648890";
       "Xnip" = "1221250572";
       "Bitwarden" = "1352778147";
+      "uBlock Origin Lite" = "6745342698";
     };
   };
 }

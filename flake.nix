@@ -146,7 +146,7 @@
     in {
       "mac-studio.nwk3.rabbito.tech" = mac-studio-config;
       "mac-studio" = mac-studio-config;
-      "Mac-Studio" = mac-studio-config;
+      "Anthonys-Mac-Studio" = mac-studio-config;
       "macbook-pro.nwk3.rabbito.tech" = macbook-pro-config;
       "macbook-pro" = macbook-pro-config;
       "Anthonys-MacBook-Pro" = macbook-pro-config;
