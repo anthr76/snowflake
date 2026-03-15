@@ -26,6 +26,7 @@
       "Xnip" = "1221250572";
       "Bitwarden" = "1352778147";
       "uBlock Origin Lite" = "6745342698";
+      "Raycast Companion" = "6738274497";
     };
   };
 }
