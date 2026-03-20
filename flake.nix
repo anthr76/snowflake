@@ -57,6 +57,9 @@
     nix-reshade.url = "github:LovingMelody/nix-reshade";
     nix-reshade.inputs.nixpkgs.follows = "nixpkgs";
     attic.url = "github:zhaofengli/attic";
+    direnv-instant.url = "github:Mic92/direnv-instant";
+    go-overlay.url = "github:purpleclay/go-overlay";
+    go-overlay.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -91,6 +94,7 @@
           overlays = [
             gomod2nix.overlays.default
             nix4vscode.overlays.forVscode
+            inputs.go-overlay.overlays.default
           ];
         }
     );
@@ -255,6 +259,7 @@
         modules = [
           ./home-manager/hosts/bkp1.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
       "steam@octo" = lib.homeManagerConfiguration {
@@ -263,6 +268,7 @@
         modules = [
           ./home-manager/hosts/octo.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
       "anthony@f80" = lib.homeManagerConfiguration {
@@ -270,6 +276,7 @@
         extraSpecialArgs = {inherit inputs outputs;};
         modules = [
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
           ./home-manager/hosts/f80.nix
         ];
       };
@@ -279,6 +286,7 @@
         modules = [
           ./home-manager/hosts/lattice.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
       "anthony@generic" = lib.homeManagerConfiguration {
@@ -287,6 +295,7 @@
         modules = [
           ./home-manager/hosts/generic.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
       "anthony@mac-studio" = lib.homeManagerConfiguration {
@@ -295,6 +304,7 @@
         modules = [
           ./home-manager/hosts/mac-studio.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
       "anthony@macbook-pro" = lib.homeManagerConfiguration {
@@ -303,6 +313,7 @@
         modules = [
           ./home-manager/hosts/macbook-pro.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
       "anthony@Anthonys-MacBook-Pro" = lib.homeManagerConfiguration {
@@ -311,6 +322,7 @@
         modules = [
           ./home-manager/hosts/macbook-pro.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
     };

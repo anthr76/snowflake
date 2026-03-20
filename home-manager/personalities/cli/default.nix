@@ -11,6 +11,7 @@
     ./lsd.nix
     ./bat.nix
     ./direnv.nix
+    ./go.nix
     ./nh.nix
     ./crush.nix
     ./attic.nix
