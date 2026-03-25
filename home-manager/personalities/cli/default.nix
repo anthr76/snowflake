@@ -15,6 +15,7 @@
     ./nh.nix
     ./crush.nix
     ./attic.nix
+    ./coreutils.nix
   ];
   home.packages = with pkgs;
     [
