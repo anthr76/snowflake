@@ -32,6 +32,11 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
+    direnv = prev.direnv.overrideAttrs (oldAttrs: {
+      postPatch = (oldAttrs.postPatch or "") + ''
+        substituteInPlace GNUmakefile --replace-fail " -linkmode=external" ""
+      '';
+    });
     # xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
     #   version = "git.74dd867";
     #   src = final.fetchFromGitHub {
