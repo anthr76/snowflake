@@ -7,5 +7,5 @@
     nix-direnv.enable = true;
   };
 
-  programs.direnv-instant.enable = true;
+  programs.direnv-instant.enable = false;
 }
