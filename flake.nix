@@ -298,20 +298,11 @@
           inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
-      "anthony@mac-studio" = lib.homeManagerConfiguration {
+      "anthony@Anthonys-Mac-Studio" = lib.homeManagerConfiguration {
         pkgs = pkgsFor.aarch64-darwin;
         extraSpecialArgs = {inherit inputs outputs;};
         modules = [
           ./home-manager/hosts/mac-studio.nix
-          catppuccin.homeModules.catppuccin
-          inputs.direnv-instant.homeModules.direnv-instant
-        ];
-      };
-      "anthony@macbook-pro" = lib.homeManagerConfiguration {
-        pkgs = pkgsFor.aarch64-darwin;
-        extraSpecialArgs = {inherit inputs outputs;};
-        modules = [
-          ./home-manager/hosts/macbook-pro.nix
           catppuccin.homeModules.catppuccin
           inputs.direnv-instant.homeModules.direnv-instant
         ];
