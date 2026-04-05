@@ -32,9 +32,6 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
-    direnv = prev.direnv.overrideAttrs (old: {
-      env = (old.env or {}) // {CGO_ENABLED = "1";};
-    });
     # xpadneo = prev.xpadneo.overrideAttrs (oldAttrs: {
     #   version = "git.74dd867";
     #   src = final.fetchFromGitHub {
