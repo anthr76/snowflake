@@ -54,7 +54,10 @@
     lanAddress = "192.168.1.1";
 
     ipv6 = {
-      enable = false;
+      enable = true;
+      enableRadvd = true;
+      radvdVlans = [99 100];
+      publicPrefixVlan = 100;
     };
 
     cloudflaredomains = [
