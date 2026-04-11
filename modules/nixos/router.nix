@@ -1707,6 +1707,13 @@ in {
 
     services.bind = {
       enable = true;
+      # Disable build-time `named-checkconf -z` because `extraConfig` includes
+      # a sops-decrypted TSIG key at /run/secrets/... which only exists at
+      # activation time, not in the Nix build sandbox. Upstream nixpkgs added
+      # the `-z` flag to the bind module's check phase, which follows
+      # includes and causes this to fail with "file not found". The syntax
+      # check still runs when bind itself starts.
+      checkConfig = false;
       forward = "only";
       forwarders = ["127.0.0.1"];
       directory = "/var/lib/bind";
