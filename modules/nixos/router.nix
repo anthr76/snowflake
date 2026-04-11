@@ -1409,6 +1409,14 @@ in {
       enable = true;
       settings = {
         listen_addresses = ["127.0.0.1:53"];
+        # Bootstrap without depending on /etc/resolv.conf so dnscrypt-proxy
+        # can resolve its upstream DoH/DoT hostnames even when the host
+        # resolver is empty or stale (e.g. during slow DHCP on WAN after an
+        # ISP change). ignore_system_dns forces use of these resolvers for
+        # the initial hostname resolution instead of reading resolv.conf,
+        # eliminating a boot-time chicken-and-egg for the router's own DNS.
+        bootstrap_resolvers = ["1.1.1.1:53" "9.9.9.9:53"];
+        ignore_system_dns = true;
         allowed_names = {
           allowed_names_file = pkgs.writeText "allow_list.txt" ''
             # Rabbit Cloud
