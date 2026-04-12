@@ -1707,6 +1707,10 @@ in {
 
     services.bind = {
       enable = true;
+      # Pin BIND to nixos-25.05 stable. The unstable channel's BIND has been
+      # segfaulting in our router setup; stable is the last known-good.
+      # Uses the `stable` overlay wired up in the server personality.
+      package = pkgs.stable.bind;
       # Disable build-time `named-checkconf -z` because `extraConfig` includes
       # a sops-decrypted TSIG key at /run/secrets/... which only exists at
       # activation time, not in the Nix build sandbox. Upstream nixpkgs added
