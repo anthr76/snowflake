@@ -166,7 +166,7 @@
 
     qos = {
       enable = true;
-      wanBandwidth = "35mbit"; # ~90% of 38 Mbit/s upload
+      wanBandwidth = "35mbit";
       rtt = "50ms";
       diffserv = "diffserv8";
     };
