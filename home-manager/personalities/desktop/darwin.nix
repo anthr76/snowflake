@@ -5,6 +5,7 @@
 }: {
   imports = [
     ./vscode
+    ./goland.nix
     ./fonts.nix
     ./ghostty.nix
     ./chat
