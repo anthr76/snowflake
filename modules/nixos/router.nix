@@ -1965,7 +1965,7 @@ in {
     # Configure additional services
     services.avahi = {
       enable = true;
-      reflector = false;
+      reflector = true;
       nssmdns4 = true;
       nssmdns6 = true;
       ipv4 = true;
