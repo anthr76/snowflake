@@ -30,7 +30,7 @@
     enable = true;
     allowedTCPPorts = [22];
   };
-  services.openssh.banner = ''
+  services.openssh.settings.Banner = pkgs.writeText "ssh-banner" ''
     WARNING:  Unauthorized access to this system is forbidden and will be
     prosecuted by law. By accessing this system, you agree that your actions
     may be monitored if unauthorized usage is suspected.
