@@ -1,7 +1,7 @@
 {config, pkgs, ...}: {
   programs.direnv = {
     enable = true;
-    package = pkgs.stable.direnv;
+    package = pkgs.direnv;
     config.whitelist.prefix = ["${config.home.homeDirectory}/dev"];
     config.load_dotenv = true;
     config.warn_timeout = 0;
