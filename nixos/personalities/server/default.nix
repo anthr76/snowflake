@@ -30,11 +30,12 @@
     enable = true;
     allowedTCPPorts = [22];
   };
-  services.openssh.banner = ''
+  environment.etc."ssh/banner".text = ''
     WARNING:  Unauthorized access to this system is forbidden and will be
     prosecuted by law. By accessing this system, you agree that your actions
     may be monitored if unauthorized usage is suspected.
   '';
+  services.openssh.settings.Banner = "/etc/ssh/banner";
   boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-server;
   services.scx = {
     enable = true;
