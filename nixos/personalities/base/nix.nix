@@ -21,6 +21,7 @@
         "https://catppuccin.cachix.org"
         "https://attic.xuyh0120.win/lantian"
         "https://cache.garnix.io"
+        "https://cache.flox.dev"
       ];
       trusted-public-keys = [
         "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
@@ -32,6 +33,7 @@
         "catppuccin.cachix.org-1:noG/4HkbhJb+lUAdKrph6LaozJvAeEEZj4N732IysmU="
         "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
         "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+        "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
       ];
       trusted-users = ["root" "@wheel"];
       builders-use-substitutes = true;

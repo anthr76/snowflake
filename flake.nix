@@ -60,6 +60,7 @@
     direnv-instant.url = "github:Mic92/direnv-instant";
     go-overlay.url = "github:purpleclay/go-overlay";
     go-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    flox.url = "github:flox/flox/latest";
   };
 
   outputs = {
