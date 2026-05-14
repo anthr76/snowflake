@@ -11,7 +11,7 @@
     ./chromium.nix
     # TODO: Broken and not using currently
     # ./zen.nix
-    ./firefox.nix
+    #./firefox.nix
     ./email.nix
     ./chat
     ./wayland-wm/common
