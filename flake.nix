@@ -49,8 +49,6 @@
     };
     catppuccin.url = "github:catppuccin/nix";
     catppuccin.inputs.nixpkgs.follows = "nixpkgs";
-    apple-color-emoji.url = "github:samuelngs/apple-emoji-linux";
-    apple-color-emoji.inputs.nixpkgs.follows = "nixpkgs";
     llm-agents.url = "github:numtide/llm-agents.nix";
     llm-agents.inputs.nixpkgs.follows = "nixpkgs";
     nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";

@@ -1,7 +1,6 @@
 {
   pkgs,
   lib,
-  inputs,
   ...
 }: {
   fontProfiles = {
@@ -14,13 +13,9 @@
       family = "Roboto";
       package = pkgs.roboto;
     };
-    emoji = {
+    emoji = lib.mkIf pkgs.stdenv.isDarwin {
       family = "Apple Color Emoji";
-      # macOS has Apple Color Emoji built-in, only need the package on Linux
-      package =
-        if pkgs.stdenv.isLinux
-        then inputs.apple-color-emoji.packages.${pkgs.system}.default
-        else null;
+      package = null;
     };
     icon = {
       family = "Symbols Nerd Font Mono";
