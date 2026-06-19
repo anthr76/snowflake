@@ -35,8 +35,8 @@
     '';
     enableLan = true;
     lanInterface = "lan";
-    lanSubnet = "192.168.1.0/24";
-    lanAddress = "192.168.1.1";
+    lanSubnet = "192.168.6.0/24";
+    lanAddress = "192.168.6.1";
     enableOob = true;
     oobInterface = "oob";
     oobSubnet = "10.10.10.0/24";
@@ -151,12 +151,6 @@
         name = "management";
         subnet = "10.20.99.0/24";
         router = "10.20.99.1";
-      }
-      {
-        id = 100;
-        name = "endusers";
-        subnet = "192.168.6.0/24";
-        router = "192.168.6.1";
       }
       {
         id = 101;

@@ -64,6 +64,8 @@
   };
 
   hardware.keyboard.uhk.enable = true;
+  catppuccin.enable = true;
+  catppuccin.autoEnable = false;
   catppuccin.tty.enable = true;
   catppuccin.fcitx5.enable = true;
   #syncthing

@@ -81,6 +81,32 @@ with lib; let
     )
     cfg.vlans;
 
+  # Helper to build the per-network ULA prefix (without the ::1 host part)
+  ipv6Hextet = id: "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString id}";
+
+  # Unified list of IPv6 networks that receive a ULA prefix + radvd. Built from the
+  # radvd VLANs plus an optional untagged lan entry, so the lan interface reaches IPv6
+  # parity with a VLAN without duplicating logic at every consumer.
+  ipv6Networks =
+    (map (vlanId: let
+        vlan = findFirst (v: v.id == vlanId) null (filter (v: v.enabled) cfg.vlans);
+      in {
+        interface = "vlan${toString vlanId}";
+        ulaId = vlanId;
+        isPublic = cfg.ipv6.publicPrefixVlan == vlanId;
+        subnet =
+          if vlan != null
+          then vlan.subnet
+          else null;
+      })
+      cfg.ipv6.radvdVlans)
+    ++ optional (cfg.ipv6.enable && cfg.ipv6.lan.enableRadvd) {
+      interface = cfg.lanInterface;
+      ulaId = cfg.ipv6.lan.ulaId;
+      isPublic = cfg.ipv6.lan.publicPrefix;
+      subnet = cfg.lanSubnet;
+    };
+
   # Helper function to format DNS records for BIND zone file
   formatDnsRecord = record: let
     ttlPart =
@@ -164,7 +190,17 @@ with lib; let
     };
   };
 
-  reverseDnsZoneDefinitions = map mkReverseDnsZoneDefinition cfg.vlans;
+  # Reverse zone for the untagged lan network. The lan interface is not a VLAN, so it
+  # needs its own reverse zone (skipped if a VLAN already owns the same /24).
+  lanReverseDnsZoneDefinitions =
+    optional
+    (cfg.enableLan && !(any (v: mkReverseDnsZone v.subnet == mkReverseDnsZone cfg.lanSubnet) cfg.vlans))
+    (mkReverseDnsZoneDefinition {
+      subnet = cfg.lanSubnet;
+      id = 201;
+    });
+
+  reverseDnsZoneDefinitions = (map mkReverseDnsZoneDefinition cfg.vlans) ++ lanReverseDnsZoneDefinitions;
 
   reverseDnsZones = listToAttrs (map (zone: {
       name = zone.zoneName;
@@ -816,6 +852,26 @@ in {
         default = 56;
         description = "Length of delegated prefix to request (typically 56 or 60)";
       };
+
+      lan = {
+        enableRadvd = mkOption {
+          type = types.bool;
+          default = false;
+          description = "Advertise IPv6 (ULA + optional delegated prefix) on the untagged lan interface.";
+        };
+
+        ulaId = mkOption {
+          type = types.int;
+          default = 100;
+          description = "Hextet used in the lan ULA prefix fdXX:YYYY:<ulaId>::/64. Reuse the old VLAN id to keep addressing identical.";
+        };
+
+        publicPrefix = mkOption {
+          type = types.bool;
+          default = false;
+          description = "Deliver the ISP-delegated prefix to the lan interface (replaces publicPrefixVlan).";
+        };
+      };
     };
 
     # Port forwarding configuration
@@ -1054,14 +1110,23 @@ in {
         };
       }
       // (optionalAttrs cfg.enableLan {
-        ${cfg.lanInterface} = {
-          ipv4.addresses = [
-            {
-              address = cfg.lanAddress;
-              prefixLength = toInt (last (splitString "/" cfg.lanSubnet));
-            }
-          ];
-        };
+        ${cfg.lanInterface} =
+          {
+            ipv4.addresses = [
+              {
+                address = cfg.lanAddress;
+                prefixLength = toInt (last (splitString "/" cfg.lanSubnet));
+              }
+            ];
+          }
+          // (optionalAttrs (cfg.ipv6.enable && cfg.ipv6.lan.enableRadvd) {
+            ipv6.addresses = [
+              {
+                address = "${ipv6Hextet cfg.ipv6.lan.ulaId}::1";
+                prefixLength = 64;
+              }
+            ];
+          });
       })
       // (optionalAttrs cfg.enableOob {
         ${cfg.oobInterface} = {
@@ -1149,12 +1214,8 @@ in {
     # Configure Router Advertisement Daemon (radvd) for IPv6
     services.radvd = mkIf (cfg.ipv6.enable && cfg.ipv6.enableRadvd) {
       enable = true;
-      config = concatStringsSep "\n" (map (vlanId: let
-        vlan = findFirst (v: v.id == vlanId) null (filter (v: v.enabled) cfg.vlans);
-        isPublicVlan = cfg.ipv6.publicPrefixVlan == vlanId;
-      in
-        optionalString (vlan != null) ''
-          interface vlan${toString vlanId} {
+      config = concatStringsSep "\n" (map (net: ''
+          interface ${net.interface} {
             AdvSendAdvert on;
             AdvManagedFlag off;
             AdvOtherConfigFlag on;
@@ -1165,7 +1226,7 @@ in {
             AdvRetransTimer 0;
 
             # Use ULA prefix for internal networks (always advertised)
-            prefix fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::/64 {
+            prefix ${ipv6Hextet net.ulaId}::/64 {
               AdvOnLink on;
               AdvAutonomous on;
               AdvRouterAddr off;
@@ -1173,8 +1234,8 @@ in {
               AdvValidLifetime 86400;
             };
 
-            ${optionalString isPublicVlan ''
-            # Auto-advertise delegated prefix only on the designated public VLAN
+            ${optionalString net.isPublic ''
+            # Auto-advertise delegated prefix only on the designated public network
             prefix ::/64 {
               AdvOnLink on;
               AdvAutonomous on;
@@ -1183,7 +1244,7 @@ in {
           ''}
 
             # RDNSS for DNS - use management VLAN DNS server
-            RDNSS fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:99::1 {
+            RDNSS ${ipv6Hextet 99}::1 {
               AdvRDNSSLifetime 3600;
             };
 
@@ -1193,7 +1254,7 @@ in {
             };
           };
         '')
-      cfg.ipv6.radvdVlans);
+        ipv6Networks);
     };
 
     # Configure DHCPv6 Prefix Delegation on WAN interface
@@ -1213,7 +1274,10 @@ in {
         extraConfig = ''
           # Enable IPv6 Router Solicitation on WAN only
           interface ${cfg.wanInterface}
-            ${optionalString (cfg.ipv6.publicPrefixVlan != null) "ia_pd ${toString cfg.ipv6.publicPrefixVlan}/::/64 vlan${toString cfg.ipv6.publicPrefixVlan}/0/64"}
+            ${let
+            pub = findFirst (n: n.isPublic) null ipv6Networks;
+          in
+            optionalString (pub != null) "ia_pd ${toString pub.ulaId}/::/64 ${pub.interface}/0/64"}
 
           # Explicitly configure all other interfaces as static
           ${concatStringsSep "\n" (map (vlan: ''
@@ -1730,13 +1794,14 @@ in {
       ];
       cacheNetworks =
         map (vlan: vlan.subnet) cfg.vlans
+        ++ (optional cfg.enableLan cfg.lanSubnet)
         ++ [
           # Tailscale
           "100.64.0.0/10"
         ]
         # Add IPv6 ULA networks when IPv6 is enabled
         ++ (optionals cfg.ipv6.enable (
-          map (vlanId: "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::/64") cfg.ipv6.radvdVlans
+          map (net: "${ipv6Hextet net.ulaId}::/64") ipv6Networks
         ));
       extraOptions = ''
         dnssec-validation no;
@@ -1866,8 +1931,8 @@ in {
         };
         reverse-ddns = {
           ddns-domains =
-            map (vlan: {
-              name = mkReverseDnsZone vlan.subnet;
+            map (subnet: {
+              name = mkReverseDnsZone subnet;
               key-name = "dhcp-update-key";
               dns-servers = [
                 {
@@ -1877,7 +1942,8 @@ in {
                 }
               ];
             })
-            cfg.vlans;
+            ((map (vlan: vlan.subnet) cfg.vlans)
+              ++ optional (cfg.enableLan && !(any (v: mkReverseDnsZone v.subnet == mkReverseDnsZone cfg.lanSubnet) cfg.vlans)) cfg.lanSubnet);
         };
       };
     };

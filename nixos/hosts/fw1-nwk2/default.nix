@@ -50,14 +50,19 @@
     oobAddress = "10.10.10.1";
     enableLan = true;
     lanInterface = "lan";
-    lanSubnet = "192.168.1.0/24";
-    lanAddress = "192.168.1.1";
+    lanSubnet = "192.168.11.0/24";
+    lanAddress = "192.168.11.1";
 
     ipv6 = {
       enable = true;
       enableRadvd = true;
-      radvdVlans = [99 100];
-      publicPrefixVlan = 100;
+      radvdVlans = [99];
+      publicPrefixVlan = null;
+      lan = {
+        enableRadvd = true;
+        ulaId = 100;
+        publicPrefix = true;
+      };
     };
 
     cloudflaredomains = [
@@ -122,12 +127,6 @@
         name = "management";
         subnet = "10.30.99.0/24";
         router = "10.30.99.1";
-      }
-      {
-        id = 100;
-        name = "endusers";
-        subnet = "192.168.11.0/24";
-        router = "192.168.11.1";
       }
       {
         id = 101;
