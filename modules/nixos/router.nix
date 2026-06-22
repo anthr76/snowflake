@@ -1490,6 +1490,20 @@ in {
       };
     };
 
+    # Use IP-based NTP servers so timesyncd can sync the clock without
+    # waiting for DNS (dnscrypt-proxy). This breaks the boot-time deadlock
+    # where the wrong hardware clock (e.g. after power loss) prevents TLS
+    # cert validation, which blocks DNS, which blocks NTP.
+    services.timesyncd = {
+      enable = true;
+      servers = [
+        "162.159.200.1" # time.cloudflare.com
+        "162.159.200.123" # time.cloudflare.com
+        "216.239.35.0" # time.google.com
+        "216.239.35.4" # time.google.com
+      ];
+    };
+
     systemd.tmpfiles.rules =
       [
         "d /var/lib/bind 0775 named named -"
