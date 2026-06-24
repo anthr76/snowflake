@@ -50,7 +50,7 @@
     backend = "docker";
     containers.kubelet = {
       # TODO: Build our own image
-      image = "ghcr.io/siderolabs/kubelet:v1.35.0";
+      image = "ghcr.io/siderolabs/kubelet:v1.36.2";
       autoStart = true;
       extraOptions = [
         "--network=host"
