@@ -48,8 +48,13 @@
     ipv6 = {
       enable = true;
       enableRadvd = true;
-      radvdVlans = [99 100];
-      publicPrefixVlan = 100;
+      radvdVlans = [99];
+      publicPrefixVlan = null;
+      lan = {
+        enableRadvd = true;
+        ulaId = 100;
+        publicPrefix = true;
+      };
     };
 
     udevRules = ''
@@ -64,8 +69,8 @@
     oobAddress = "10.10.10.1";
     enableLan = true;
     lanInterface = "lan";
-    lanSubnet = "192.168.1.0/24";
-    lanAddress = "192.168.1.1";
+    lanSubnet = "192.168.14.0/24";
+    lanAddress = "192.168.14.1";
 
     cloudflaredomains = [
       "fw1.nwk3.rabbito.tech"
@@ -107,12 +112,6 @@
         router = "10.40.99.1";
       }
       {
-        id = 100;
-        name = "endusers";
-        subnet = "192.168.14.0/24";
-        router = "192.168.14.1";
-      }
-      {
         id = 101;
         name = "iot";
         subnet = "192.168.13.0/24";
@@ -135,6 +134,13 @@
       ];
 
       banAction = "iptables-multiport";
+    };
+
+    qos = {
+      enable = true;
+      wanBandwidth = "35mbit";
+      rtt = "50ms";
+      diffserv = "diffserv8";
     };
   };
 }

@@ -20,7 +20,10 @@
     nixpkgs-pr-169155.url = "github:nixos/nixpkgs?ref=2f0d2186cf8c98279625db83b527b1091107c61c";
     nixpkgs-pr-269415.url = "github:nixos/nixpkgs?ref=f4e7e4a19bb2ec8738caf0154ca2943776fca32b";
     jovian-nixos.url = "github:Jovian-Experiments/Jovian-NixOS";
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel";
+    nix-cachyos-kernel.inputs.nixpkgs.follows = "nixpkgs";
+    proton-cachyos.url = "github:powerofthe69/proton-cachyos-nix";
+    proton-cachyos.inputs.nixpkgs.follows = "nixpkgs";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     nix4vscode = {
@@ -46,11 +49,16 @@
     };
     catppuccin.url = "github:catppuccin/nix";
     catppuccin.inputs.nixpkgs.follows = "nixpkgs";
-    apple-color-emoji.url = "github:samuelngs/apple-emoji-linux";
-    apple-color-emoji.inputs.nixpkgs.follows = "nixpkgs";
-    nix-ai-tools.url = "github:numtide/nix-ai-tools";
-    nix-ai-tools.inputs.nixpkgs.follows = "nixpkgs";
+    llm-agents.url = "github:numtide/llm-agents.nix";
+    llm-agents.inputs.nixpkgs.follows = "nixpkgs";
     nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";
+    nix-reshade.url = "github:LovingMelody/nix-reshade";
+    nix-reshade.inputs.nixpkgs.follows = "nixpkgs";
+    attic.url = "github:zhaofengli/attic";
+    direnv-instant.url = "github:Mic92/direnv-instant";
+    go-overlay.url = "github:purpleclay/go-overlay";
+    go-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    flox.url = "github:flox/flox/latest";
   };
 
   outputs = {
@@ -61,7 +69,6 @@
     nix-darwin,
     nixpkgs,
     home-manager,
-    chaotic,
     hardware,
     jovian-nixos,
     nix-github-actions,
@@ -76,8 +83,9 @@
     inherit (self) outputs;
     lib = nixpkgs.lib // home-manager.lib;
     systems = ["x86_64-linux" "aarch64-linux"];
+    allSystems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
     forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
-    pkgsFor = lib.genAttrs systems (
+    pkgsFor = lib.genAttrs allSystems (
       system:
         import nixpkgs {
           inherit system;
@@ -85,6 +93,7 @@
           overlays = [
             gomod2nix.overlays.default
             nix4vscode.overlays.forVscode
+            inputs.go-overlay.overlays.default
           ];
         }
     );
@@ -120,6 +129,31 @@
     overlays = import ./overlays {inherit inputs outputs;};
     nixosModules = import ./modules/nixos;
     homeManagerModules = import ./modules/home-manager;
+    darwinModules = import ./modules/nix-darwin;
+
+    darwinConfigurations = let
+      mac-studio-config = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nix-darwin/hosts/mac-studio.nwk3.rabbito.tech
+        ];
+      };
+      macbook-pro-config = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nix-darwin/hosts/macbook-pro.nwk3.rabbito.tech
+        ];
+      };
+    in {
+      "mac-studio.nwk3.rabbito.tech" = mac-studio-config;
+      "mac-studio" = mac-studio-config;
+      "Anthonys-Mac-Studio" = mac-studio-config;
+      "macbook-pro.nwk3.rabbito.tech" = macbook-pro-config;
+      "macbook-pro" = macbook-pro-config;
+      "Anthonys-MacBook-Pro" = macbook-pro-config;
+    };
 
     nixosConfigurations = {
       "bkp1" = lib.nixosSystem {
@@ -127,13 +161,11 @@
         modules = [
           ./nixos/hosts/bkp1
           inputs.nixos-facter-modules.nixosModules.facter
-          chaotic.nixosModules.default
         ];
       };
       "octo" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
-          chaotic.nixosModules.default
           ./nixos/hosts/octo
           inputs.nixos-facter-modules.nixosModules.facter
         ];
@@ -141,7 +173,6 @@
       "cdgc" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
-          chaotic.nixosModules.default
           ./nixos/hosts/cdgc
         ];
       };
@@ -149,7 +180,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/f80
-          chaotic.nixosModules.default
           nix-flatpak.nixosModules.nix-flatpak
           nixified-ai.nixosModules.comfyui
           inputs.nixos-facter-modules.nixosModules.facter
@@ -158,7 +188,6 @@
       "lattice" = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
-          chaotic.nixosModules.default
           hardware.nixosModules.framework-16-7040-amd
           inputs.nixos-facter-modules.nixosModules.facter
           ./nixos/hosts/lattice
@@ -168,7 +197,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/fw1-nwk3
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -176,7 +204,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/fw1-nwk2
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -184,7 +211,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/fw1-qgr1
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -192,7 +218,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-1
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -200,7 +225,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-2
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -208,7 +232,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-3
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -216,7 +239,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-4
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -224,7 +246,6 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/worker-5
-          chaotic.nixosModules.default
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
@@ -237,6 +258,7 @@
         modules = [
           ./home-manager/hosts/bkp1.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
       "steam@octo" = lib.homeManagerConfiguration {
@@ -245,6 +267,7 @@
         modules = [
           ./home-manager/hosts/octo.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
       "anthony@f80" = lib.homeManagerConfiguration {
@@ -252,6 +275,7 @@
         extraSpecialArgs = {inherit inputs outputs;};
         modules = [
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
           ./home-manager/hosts/f80.nix
         ];
       };
@@ -261,6 +285,7 @@
         modules = [
           ./home-manager/hosts/lattice.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
       "anthony@generic" = lib.homeManagerConfiguration {
@@ -269,6 +294,25 @@
         modules = [
           ./home-manager/hosts/generic.nix
           catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
+        ];
+      };
+      "anthony@Anthonys-Mac-Studio" = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.aarch64-darwin;
+        extraSpecialArgs = {inherit inputs outputs;};
+        modules = [
+          ./home-manager/hosts/mac-studio.nix
+          catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
+        ];
+      };
+      "anthony@Anthonys-MacBook-Pro" = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.aarch64-darwin;
+        extraSpecialArgs = {inherit inputs outputs;};
+        modules = [
+          ./home-manager/hosts/macbook-pro.nix
+          catppuccin.homeModules.catppuccin
+          inputs.direnv-instant.homeModules.direnv-instant
         ];
       };
     };
@@ -290,10 +334,18 @@
             self.nixosConfigurations)
         );
 
+        # Explicitly list Linux home configs to avoid evaluating darwin configs
+        linuxHomeConfigs = {
+          "anthony@bkp1" = self.homeConfigurations."anthony@bkp1";
+          "steam@octo" = self.homeConfigurations."steam@octo";
+          "anthony@f80" = self.homeConfigurations."anthony@f80";
+          "anthony@lattice" = self.homeConfigurations."anthony@lattice";
+          "anthony@generic" = self.homeConfigurations."anthony@generic";
+        };
         homeSet = withPrefix "home-" (
           lib.mapAttrs (name: x: x.activation-script)
           (lib.filterAttrs (name: x: x.pkgs.system == pkgs.system)
-            self.homeConfigurations)
+            linuxHomeConfigs)
         );
       in
         pkgsSet // nixosSet // homeSet

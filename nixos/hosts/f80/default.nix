@@ -1,4 +1,11 @@
-{ config, inputs, lib, modulesPath, pkgs, ... }: {
+{
+  config,
+  inputs,
+  lib,
+  modulesPath,
+  pkgs,
+  ...
+}: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
@@ -26,8 +33,8 @@
     "sd_mod"
     "amdgpu"
   ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.kernelParams = [ "initcall_blacklist=simpledrm_platform_driver_init" ];
+  boot.kernelModules = ["kvm-amd"];
+  boot.kernelParams = ["initcall_blacklist=simpledrm_platform_driver_init"];
   hardware.wirelessRegulatoryDatabase = true;
   boot.extraModprobeConfig = ''
     options cfg80211 internal_regdb=y
@@ -37,11 +44,11 @@
   hardware.enableAllFirmware = true;
 
   disko.devices = import ./disks.nix {
-    disks = [ "/dev/disk/by-id/nvme-Sabrent_SB-RKT4P-2TB_48821069801973" ];
+    disks = ["/dev/disk/by-id/nvme-Sabrent_SB-RKT4P-2TB_48821069801973"];
     luksCreds = config.sops.secrets.e39-luks-password.path;
   };
 
-  swapDevices = [ ];
+  swapDevices = [];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "f80";
@@ -50,9 +57,7 @@
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
   system.stateVersion = "23.05";
-  environment.variables.DXVK_FILTER_DEVICE_NAME =
-    "AMD Radeon RX 7900 XTX (RADV NAVI31)";
-  chaotic.nyx.overlay.onTopOf = "user-pkgs";
+  environment.variables.DXVK_FILTER_DEVICE_NAME = "AMD Radeon RX 7900 XTX (RADV NAVI31)";
   fonts.fontconfig = {
     antialias = false;
     subpixel.rgba = "none";

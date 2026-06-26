@@ -1,6 +1,4 @@
-{
-  ...
-}: {
+{...}: {
   # Default observability configuration for servers
   services.observability = {
     enable = true;
@@ -13,9 +11,9 @@
 
     # Default exporters for servers
     exporters = {
-      node = true;    # Always enable system metrics for servers
-      bind = false;   # Disabled by default, enable per host if needed
-      frr = false;    # Disabled by default, enable per host if needed
+      node = true; # Always enable system metrics for servers
+      bind = false; # Disabled by default, enable per host if needed
+      frr = false; # Disabled by default, enable per host if needed
     };
   };
 }

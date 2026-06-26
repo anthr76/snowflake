@@ -44,13 +44,13 @@
   environment.persistence."/persist" = {
     hideMounts = true;
     files = [
-      "/etc/machine-id"  # Prevents regeneration and mount conflicts
+      "/etc/machine-id" # Prevents regeneration and mount conflicts
     ];
     directories = [
-      "/var/lib/nixos"    # User/group IDs (prevents UID/GID reassignment)
-      "/var/lib/systemd"  # Systemd state (timers, etc.)
-      "/var/log"          # System logs
-      "/srv"              # Service data
+      "/var/lib/nixos" # User/group IDs (prevents UID/GID reassignment)
+      "/var/lib/systemd" # Systemd state (timers, etc.)
+      "/var/log" # System logs
+      "/srv" # Service data
     ];
   };
 

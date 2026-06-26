@@ -1,6 +1,8 @@
-{config, ...}:
 {
-
+  config,
+  pkgs,
+  ...
+}: {
   sops.secrets.ddns-tsig-key = {
     # TODO: poor secret name
     sopsFile = ../../../../secrets/users.yaml;

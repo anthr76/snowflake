@@ -65,6 +65,10 @@
         '';
     });
 
+    direnv = prev.direnv.overrideAttrs (_: {
+      doCheck = false;
+    });
+
     # Hehe I'm in danger
     tailscale = prev.tailscale.overrideAttrs (oldAttrs: {
       doCheck = false;

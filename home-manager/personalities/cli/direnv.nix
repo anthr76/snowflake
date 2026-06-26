@@ -1,9 +1,12 @@
-{config, ...}:{
-    programs.direnv = {
-      enable = true;
-      config.whitelist.prefix = [ "${config.home.homeDirectory}/dev" ];
-      config.load_dotenv = true;
-      config.warn_timeout = 0;
-    };
-    programs.direnv.nix-direnv.enable = true;
+{config, pkgs, ...}: {
+  programs.direnv = {
+    enable = true;
+    package = pkgs.direnv;
+    config.whitelist.prefix = ["${config.home.homeDirectory}/dev"];
+    config.load_dotenv = true;
+    config.warn_timeout = 0;
+    nix-direnv.enable = true;
+  };
+
+  programs.direnv-instant.enable = true;
 }

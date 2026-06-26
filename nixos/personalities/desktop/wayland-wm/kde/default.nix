@@ -31,7 +31,6 @@
     wl-clipboard
     kdePackages.plasma-thunderbolt
     kdePackages.kcalc
-    kdePackages.kdenlive
     kdePackages.kup
     ladspaPlugins
     kdePackages.skanlite

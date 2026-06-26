@@ -1,5 +1,8 @@
-{ pkgs, config, ... }:
-let
+{
+  pkgs,
+  config,
+  ...
+}: let
   ifTheyExist = groups:
     builtins.filter (group: builtins.hasAttr group config.users.groups) groups;
 in {
@@ -8,13 +11,16 @@ in {
     anthony = {
       isNormalUser = true;
       shell = pkgs.fish;
-      extraGroups = [ "wheel" "dialout" ]
-        ++ ifTheyExist [ "tss" "networkmanager" "scanner" "lp" "gamemode" "docker"];
+      extraGroups =
+        ["wheel" "dialout"]
+        ++ ifTheyExist ["tss" "networkmanager" "scanner" "lp" "gamemode" "docker"];
       hashedPasswordFile = config.sops.secrets.anthony-password.path;
       openssh.authorizedKeys.keys = [
         (builtins.readFile ../../../home-manager/users/anthony/yubi.pub)
         (builtins.readFile ../../../home-manager/users/anthony/lattice_tpm2.pub)
         (builtins.readFile ../../../home-manager/users/anthony/f80_tpm2.pub)
+        (builtins.readFile ../../../home-manager/users/anthony/studio.pub)
+        (builtins.readFile ../../../home-manager/users/anthony/mbp.pub)
       ];
     };
   };

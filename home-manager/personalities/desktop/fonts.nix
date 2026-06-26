@@ -1,4 +1,8 @@
-{ pkgs, inputs, ... }: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   fontProfiles = {
     enable = true;
     monospace = {
@@ -9,9 +13,9 @@
       family = "Roboto";
       package = pkgs.roboto;
     };
-    emoji = {
+    emoji = lib.mkIf pkgs.stdenv.isDarwin {
       family = "Apple Color Emoji";
-      package = inputs.apple-color-emoji.packages.${pkgs.system}.default;
+      package = null;
     };
     icon = {
       family = "Symbols Nerd Font Mono";

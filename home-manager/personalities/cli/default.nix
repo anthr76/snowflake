@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, inputs, ...}: {
   imports = [
     ./fish.nix
     ./zoxide.nix
@@ -11,8 +11,11 @@
     ./lsd.nix
     ./bat.nix
     ./direnv.nix
+    ./go.nix
     ./nh.nix
     ./crush.nix
+    ./attic.nix
+    ./coreutils.nix
   ];
   home.packages = with pkgs;
     [
@@ -23,6 +26,7 @@
       cfssl
       sops
       devenv
+      inputs.flox.packages.${pkgs.system}.default
     ]
     ++ lib.optionals pkgs.stdenv.isLinux (with pkgs; [
       distrobox

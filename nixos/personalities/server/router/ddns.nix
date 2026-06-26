@@ -1,8 +1,10 @@
-{ config, lib, ... }:
-let
-  firstBindAddress = lib.head config.services.bind.listenOn;
-in
 {
+  config,
+  lib,
+  ...
+}: let
+  firstBindAddress = lib.head config.services.bind.listenOn;
+in {
   sops.secrets.cfApiToken = {
     sopsFile = ../../../../secrets/users.yaml;
   };
@@ -18,7 +20,7 @@ in
     # owner = config.systemd.services.kea-dhcp-ddns-server.serviceConfig.User;
     # group = config.systemd.services.kea-dhcp-ddns-server.serviceConfig.User;
     # TODO: Figure out why this is broken
-   mode = "0644";
+    mode = "0644";
   };
   services.cloudflare-dyndns = {
     enable = true;
@@ -44,15 +46,16 @@ in
           {
             name = "${config.networking.domain}.";
             key-name = "dhcp-update-key";
-            dns-servers = [{
-              hostname = "";
-              ip-address = "${firstBindAddress}";
-              port = 53;
-            }];
+            dns-servers = [
+              {
+                hostname = "";
+                ip-address = "${firstBindAddress}";
+                port = 53;
+              }
+            ];
           }
         ];
       };
     };
   };
-
 }

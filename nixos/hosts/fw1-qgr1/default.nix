@@ -35,8 +35,8 @@
     '';
     enableLan = true;
     lanInterface = "lan";
-    lanSubnet = "192.168.1.0/24";
-    lanAddress = "192.168.1.1";
+    lanSubnet = "192.168.6.0/24";
+    lanAddress = "192.168.6.1";
     enableOob = true;
     oobInterface = "oob";
     oobSubnet = "10.10.10.0/24";
@@ -153,12 +153,6 @@
         router = "10.20.99.1";
       }
       {
-        id = 100;
-        name = "endusers";
-        subnet = "192.168.6.0/24";
-        router = "192.168.6.1";
-      }
-      {
         id = 101;
         name = "guests";
         subnet = "192.168.12.0/24";
@@ -167,21 +161,6 @@
     ];
 
     dnsRecords = [
-      {
-        name = "master-01";
-        type = "A";
-        value = "192.168.8.40";
-      }
-      {
-        name = "master-02";
-        type = "A";
-        value = "192.168.8.47";
-      }
-      {
-        name = "master-03";
-        type = "A";
-        value = "192.168.8.60";
-      }
       {
         name = "cluster-0-external-gateway";
         type = "A";

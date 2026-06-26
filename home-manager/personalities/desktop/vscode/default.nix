@@ -5,12 +5,11 @@
   ...
 }: {
   # TODO: See if we can just include in a overlay for vscode.
-  home.packages =
-    [
-      pkgs.helm-ls
-      # Playwright MCP dependencies
-      pkgs.playwright-driver
-    ];
+  home.packages = [
+    pkgs.helm-ls
+    # Playwright MCP dependencies
+    pkgs.playwright-driver
+  ];
   catppuccin.vscode.profiles.default = {
     enable = true;
     icons.enable = true;
@@ -23,6 +22,7 @@
       enableExtensionUpdateCheck = false;
       extensions = pkgs.nix4vscode.forVscode [
         "golang.go"
+        "mkhl.direnv"
         "jnoortheen.nix-ide"
         "mrmlnc.vscode-json5"
         "ms-azuretools.vscode-docker"
@@ -68,6 +68,7 @@
         "eamodio.gitlens"
         "hashicorp.terraform"
         "ms-vscode-remote.remote-ssh"
+        "bufbuild.vscode-buf"
       ];
       # userMcp = {
       #   servers = {
@@ -96,12 +97,53 @@
         }
       ];
       userSettings = {
-        "[go]".editor.defaultFormatter = "golang.go";
-        "[go]".toolsManagement.autoUpdate = true;
+        "[go]" = {
+          editor = {
+            defaultFormatter = "golang.go";
+            insertSpaces = false;
+            formatOnSave = true;
+            formatOnSaveMode = "file";
+            stickyScroll.enabled = true;
+            codeActionsOnSave = {
+              "source.organizeImports" = "always";
+              "source.fixAll" = "always";
+            };
+          };
+        };
+        go = {
+          toolsManagement.autoUpdate = true;
+          useLanguageServer = true;
+          lintTool = "golangci-lint";
+          lintFlags = [
+            "--fast"
+            "--timeout"
+            "5m"
+            "--fix"
+          ];
+          enableCodeLens = {
+            runtest = true;
+          };
+          inlayHints = {
+            compositeLiteralFields = true;
+            compositeLiteralTypes = true;
+            functionTypeParameters = true;
+            parameterNames = true;
+            rangeVariableTypes = true;
+            constantValues = true;
+          };
+          diagnostic.vulncheck = "Imports";
+        };
+        gopls = {
+          "formatting.gofumpt" = true;
+          usePlaceholders = true;
+          "ui.semanticTokens" = true;
+          staticcheck = false;
+        };
         "[nix]".editor.defaultFormatter = "jnoortheen.nix-ide";
         "[terraform]".editor.defaultFormatter = "hashicorp.terraform";
         "[yaml]".editor.defaultFormatter = "esbenp.prettier-vscode";
         "[yml]".editor.defaultFormatter = "esbenp.prettier-vscode";
+        buf.commandLine.path = "${pkgs.buf}/bin/buf";
         kotlin.java.home = "${pkgs.jdk}/lib/openjdk";
         kotlin.languageServer.path = "${pkgs.kotlin-language-server}/bin/kotlin-language-server";
         kotlin.debugAdapter.path = "${pkgs.kotlin-debug-adapter}/bin/kotlin-debug-adapter";
@@ -161,6 +203,8 @@
           defaultFormatter = "esbenp.prettier-vscode";
           fontFamily = "${config.fontProfiles.monospace.family}";
           fontLigatures = "'calt', 'liga', 'ss06'";
+          cursorBlinking = "smooth";
+          autoIndent = "full";
           guides = {
             bracketPairs = true;
             bracketPairsHorizontal = true;

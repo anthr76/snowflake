@@ -14,7 +14,6 @@
     ./print.nix
     ../physical
     ./gaming.nix
-    ./geoclue.nix
     ./vm.nix
     inputs.catppuccin.nixosModules.catppuccin
 
@@ -29,6 +28,8 @@
       outputs.overlays.additions
       outputs.overlays.modifications
       outputs.overlays.flake-inputs
+      inputs.proton-cachyos.overlays.default
+      inputs.nix-cachyos-kernel.overlays.pinned
 
       # You can also add overlays exported from other flakes:
       # neovim-nightly-overlay.overlays.default
@@ -49,6 +50,7 @@
 
   hardware.graphics = {enable = true;};
   hardware.amdgpu.opencl.enable = true;
+  services.usbmuxd.enable = true;
   hardware.graphics.extraPackages = [
     pkgs.mesa.opencl
     pkgs.rocmPackages.clr.icd
@@ -62,6 +64,16 @@
   };
 
   hardware.keyboard.uhk.enable = true;
+  catppuccin.enable = true;
+  catppuccin.autoEnable = false;
   catppuccin.tty.enable = true;
   catppuccin.fcitx5.enable = true;
+  #syncthing
+  networking.firewall = {
+    allowedTCPPorts = [22000];
+    allowedUDPPorts = [
+      21027
+      22000
+    ];
+  };
 }

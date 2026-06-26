@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
   services.pipewire = {
@@ -9,11 +9,11 @@
     jack.enable = true;
     wireplumber.enable = true;
   };
-  environment.systemPackages = with pkgs; [ pavucontrol pulseaudio ];
+  environment.systemPackages = with pkgs; [pavucontrol pulseaudio];
   programs.noisetorch.enable = true;
   # Mumble for LAN use
   networking.firewall = {
-    allowedTCPPorts = [ 64738 ];
-    allowedUDPPorts = [ 64738 ];
+    allowedTCPPorts = [64738];
+    allowedUDPPorts = [64738];
   };
 }

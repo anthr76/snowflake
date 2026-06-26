@@ -1,5 +1,8 @@
-{ pkgs, inputs, ... }:
-let
+{
+  pkgs,
+  inputs,
+  ...
+}: let
   yubicoPackages = builtins.attrValues {
     inherit (pkgs) yubikey-manager yubico-piv-tool yubioath-flutter;
   };

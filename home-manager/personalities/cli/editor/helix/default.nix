@@ -1,5 +1,8 @@
-{inputs, pkgs, ...}:
 {
+  inputs,
+  pkgs,
+  ...
+}: {
   catppuccin.helix.enable = true;
   programs.helix = {
     enable = true;
@@ -9,7 +12,7 @@
         space.space = "file_picker";
         space.w = ":w";
         space.q = ":q";
-        esc = [ "collapse_selection" "keep_primary_selection" ];
+        esc = ["collapse_selection" "keep_primary_selection"];
       };
     };
   };

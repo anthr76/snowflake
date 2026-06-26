@@ -1,4 +1,11 @@
-{ inputs, lib, modulesPath, pkgs, config, ... }: {
+{
+  inputs,
+  lib,
+  modulesPath,
+  pkgs,
+  config,
+  ...
+}: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.disko.nixosModules.disko
@@ -9,21 +16,19 @@
     ../../personalities/desktop/game-console.nix
   ];
 
-  boot.initrd.availableKernelModules =
-    [ "amdgpu" "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ "amdgpu" ];
-  boot.kernelModules = [ "kvm-amd" ];
-  services.xserver.videoDrivers = [ "amdgpu" ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.availableKernelModules = ["amdgpu" "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod"];
+  boot.initrd.kernelModules = ["amdgpu"];
+  boot.kernelModules = ["kvm-amd"];
+  services.xserver.videoDrivers = ["amdgpu"];
+  boot.extraModulePackages = [];
   time.timeZone = "America/New_York";
 
-  swapDevices = [ ];
+  swapDevices = [];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "octo";
   networking.domain = "nwk3.rabbito.tech";
   system.stateVersion = "23.11";
-  environment.systemPackages = [ pkgs.gdb ];
-  chaotic.nyx.overlay.onTopOf = "user-pkgs";
+  environment.systemPackages = [pkgs.gdb];
   hardware.enableAllFirmware = true;
 }

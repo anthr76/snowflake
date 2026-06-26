@@ -85,17 +85,21 @@ in {
       default = [];
       description = "Extra command-line arguments to pass to scuttle";
     };
+
+    kubeletService = mkOption {
+      type = types.str;
+      default = "kubelet.service";
+      description = "Name of the kubelet systemd service to bind to";
+    };
   };
 
   config = mkIf cfg.enable {
     systemd.services.scuttle = {
       description = "Scuttle Kubelet before Shutdown";
       wantedBy = ["multi-user.target"];
-      after = ["multi-user.target"];
-      requires = [
-        "kubelet.service"
-        "network-online.target"
-      ];
+      after = ["multi-user.target" cfg.kubeletService "network-online.target"];
+      bindsTo = [cfg.kubeletService];
+      wants = ["network-online.target"];
       serviceConfig = {
         Type = "simple";
         TimeoutStopSec = 180;

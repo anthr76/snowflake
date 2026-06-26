@@ -6,13 +6,16 @@
 }: {
   programs.claude-code = {
     enable = true;
-    package = inputs.nix-ai-tools.packages.${pkgs.system}.claude-code;
+    package = inputs.llm-agents.packages.${pkgs.system}.claude-code;
     # TODO: Auth via env var https://github.com/github/github-mcp-server#environment-variables-recommended
     #mcpServers = config.programs.vscode.profiles.default.userMcp.servers;
   };
+  home.packages = [
+    pkgs.gemini-cli
+  ];
   programs.codex = {
     enable = true;
-    package = inputs.nix-ai-tools.packages.${pkgs.system}.codex;
+    package = pkgs.codex;
     # TODO: Transform to TOML from VSCode?
     # settings = {
     #   mcp_servers = {
@@ -29,7 +32,4 @@
     #   };
     # };
   };
-  home.packages = [
-    inputs.nix-ai-tools.packages.${pkgs.system}.catnip
-  ];
 }

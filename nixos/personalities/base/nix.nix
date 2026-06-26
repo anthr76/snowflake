@@ -12,28 +12,28 @@
     registry = lib.mapAttrs (_: value: {flake = value;}) inputs;
     settings = {
       substituters = [
+        "https://cache.numtide.com"
         "https://hyprland.cachix.org"
-        # KDE2Nix
         "https://nix-community.cachix.org"
-        # Chaotic Nyx
-        "https://nyx.chaotic.cx/"
-        # Snowflake
         "https://snowflake.cachix.org"
-        # Nix Gaming
         "https://nix-gaming.cachix.org"
-        # NixifedAI
         "https://ai.cachix.org"
-        # catppuccin
         "https://catppuccin.cachix.org"
+        "https://attic.xuyh0120.win/lantian"
+        "https://cache.garnix.io"
+        "https://cache.flox.dev"
       ];
       trusted-public-keys = [
+        "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
         "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "chaotic-nyx.cachix.org-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="
         "snowflake.cachix.org-1:p9pP30w7PFDuzkJ2v4TQ446cXLUglrnBUhN6tUzp2sA="
         "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
         "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
         "catppuccin.cachix.org-1:noG/4HkbhJb+lUAdKrph6LaozJvAeEEZj4N732IysmU="
+        "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
+        "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+        "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
       ];
       trusted-users = ["root" "@wheel"];
       builders-use-substitutes = true;

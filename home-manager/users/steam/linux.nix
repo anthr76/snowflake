@@ -1,4 +1,4 @@
-{ ... }: {
+{...}: {
   home = {
     username = "steam";
     homeDirectory = "/home/steam";

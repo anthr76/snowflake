@@ -1,8 +1,8 @@
 {
   boot = {
-    supportedFilesystems = [ "btrfs" ];
+    supportedFilesystems = ["btrfs"];
     loader = {
-      efi = { canTouchEfiVariables = true; };
+      efi = {canTouchEfiVariables = true;};
       systemd-boot = {
         enable = true;
         configurationLimit = 15;
@@ -12,7 +12,7 @@
       enable = true;
       systemd.enable = true;
       systemd.emergencyAccess = true;
-      supportedFilesystems = [ "btrfs" ];
+      supportedFilesystems = ["btrfs"];
     };
   };
 }

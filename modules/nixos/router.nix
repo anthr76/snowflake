@@ -81,6 +81,32 @@ with lib; let
     )
     cfg.vlans;
 
+  # Helper to build the per-network ULA prefix (without the ::1 host part)
+  ipv6Hextet = id: "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString id}";
+
+  # Unified list of IPv6 networks that receive a ULA prefix + radvd. Built from the
+  # radvd VLANs plus an optional untagged lan entry, so the lan interface reaches IPv6
+  # parity with a VLAN without duplicating logic at every consumer.
+  ipv6Networks =
+    (map (vlanId: let
+        vlan = findFirst (v: v.id == vlanId) null (filter (v: v.enabled) cfg.vlans);
+      in {
+        interface = "vlan${toString vlanId}";
+        ulaId = vlanId;
+        isPublic = cfg.ipv6.publicPrefixVlan == vlanId;
+        subnet =
+          if vlan != null
+          then vlan.subnet
+          else null;
+      })
+      cfg.ipv6.radvdVlans)
+    ++ optional (cfg.ipv6.enable && cfg.ipv6.lan.enableRadvd) {
+      interface = cfg.lanInterface;
+      ulaId = cfg.ipv6.lan.ulaId;
+      isPublic = cfg.ipv6.lan.publicPrefix;
+      subnet = cfg.lanSubnet;
+    };
+
   # Helper function to format DNS records for BIND zone file
   formatDnsRecord = record: let
     ttlPart =
@@ -164,7 +190,17 @@ with lib; let
     };
   };
 
-  reverseDnsZoneDefinitions = map mkReverseDnsZoneDefinition cfg.vlans;
+  # Reverse zone for the untagged lan network. The lan interface is not a VLAN, so it
+  # needs its own reverse zone (skipped if a VLAN already owns the same /24).
+  lanReverseDnsZoneDefinitions =
+    optional
+    (cfg.enableLan && !(any (v: mkReverseDnsZone v.subnet == mkReverseDnsZone cfg.lanSubnet) cfg.vlans))
+    (mkReverseDnsZoneDefinition {
+      subnet = cfg.lanSubnet;
+      id = 201;
+    });
+
+  reverseDnsZoneDefinitions = (map mkReverseDnsZoneDefinition cfg.vlans) ++ lanReverseDnsZoneDefinitions;
 
   reverseDnsZones = listToAttrs (map (zone: {
       name = zone.zoneName;
@@ -495,6 +531,54 @@ in {
       example = ["192.168.14.0/24" "10.40.99.0/24"];
     };
 
+    qos = {
+      enable = mkEnableOption "QoS/Traffic Shaping using CAKE";
+
+      wanBandwidth = mkOption {
+        type = types.str;
+        default = "1gbit";
+        description = "WAN upload bandwidth limit (e.g., '100mbit', '1gbit')";
+        example = "500mbit";
+      };
+
+      rtt = mkOption {
+        type = types.str;
+        default = "100ms";
+        description = "Expected round-trip time to internet (affects queue size)";
+        example = "50ms";
+      };
+
+      diffserv = mkOption {
+        type = types.enum ["besteffort" "diffserv3" "diffserv4" "diffserv8"];
+        default = "diffserv8";
+        description = ''
+          Traffic prioritization mode:
+          - besteffort: No prioritization
+          - diffserv3: 3 tiers (bulk, best effort, voice)
+          - diffserv4: 4 tiers (bulk, best effort, video, voice)
+          - diffserv8: Full 8-tier DSCP support
+        '';
+      };
+
+      flowMode = mkOption {
+        type = types.enum ["flowblind" "srchost" "dsthost" "hosts" "flows" "dual-srchost" "dual-dsthost" "triple-isolate"];
+        default = "triple-isolate";
+        description = "Flow isolation mode for fairness";
+      };
+
+      nat = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Enable NAT mode for proper flow isolation behind NAT";
+      };
+
+      ackFilter = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Filter excess ACKs to improve throughput on asymmetric links";
+      };
+    };
+
     cloudflaredomains = mkOption {
       type = types.listOf types.str;
       default = [];
@@ -768,6 +852,26 @@ in {
         default = 56;
         description = "Length of delegated prefix to request (typically 56 or 60)";
       };
+
+      lan = {
+        enableRadvd = mkOption {
+          type = types.bool;
+          default = false;
+          description = "Advertise IPv6 (ULA + optional delegated prefix) on the untagged lan interface.";
+        };
+
+        ulaId = mkOption {
+          type = types.int;
+          default = 100;
+          description = "Hextet used in the lan ULA prefix fdXX:YYYY:<ulaId>::/64. Reuse the old VLAN id to keep addressing identical.";
+        };
+
+        publicPrefix = mkOption {
+          type = types.bool;
+          default = false;
+          description = "Deliver the ISP-delegated prefix to the lan interface (replaces publicPrefixVlan).";
+        };
+      };
     };
 
     # Port forwarding configuration
@@ -824,6 +928,14 @@ in {
         description = "IP address of the UniFi controller";
         example = "10.45.0.6";
       };
+    };
+
+    # Extra interfaces for miniupnpd (NAT-PMP)
+    miniupnpdExtraInterfaces = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "Additional interfaces to include in miniupnpd internalIPs";
+      example = ["br0" "wlan0"];
     };
 
     # Fail2ban configuration
@@ -930,7 +1042,6 @@ in {
         description = "Fail2ban log level";
       };
     };
-
   };
 
   config = mkIf cfg.enable {
@@ -999,14 +1110,23 @@ in {
         };
       }
       // (optionalAttrs cfg.enableLan {
-        ${cfg.lanInterface} = {
-          ipv4.addresses = [
-            {
-              address = cfg.lanAddress;
-              prefixLength = toInt (last (splitString "/" cfg.lanSubnet));
-            }
-          ];
-        };
+        ${cfg.lanInterface} =
+          {
+            ipv4.addresses = [
+              {
+                address = cfg.lanAddress;
+                prefixLength = toInt (last (splitString "/" cfg.lanSubnet));
+              }
+            ];
+          }
+          // (optionalAttrs (cfg.ipv6.enable && cfg.ipv6.lan.enableRadvd) {
+            ipv6.addresses = [
+              {
+                address = "${ipv6Hextet cfg.ipv6.lan.ulaId}::1";
+                prefixLength = 64;
+              }
+            ];
+          });
       })
       // (optionalAttrs cfg.enableOob {
         ${cfg.oobInterface} = {
@@ -1064,28 +1184,28 @@ in {
       # externalIP = "!100.64.0.0/10";
 
       # Port forwarding rules
-      forwardPorts =
-        flatten (map (rule:
-          if rule.protocol == "both"
-          then [
-            {
-              destination = "${rule.internalIP}:${toString rule.internalPort}";
-              proto = "tcp";
-              sourcePort = rule.externalPort;
-            }
-            {
-              destination = "${rule.internalIP}:${toString rule.internalPort}";
-              proto = "udp";
-              sourcePort = rule.externalPort;
-            }
-          ]
-          else [
-            {
-              destination = "${rule.internalIP}:${toString rule.internalPort}";
-              proto = rule.protocol;
-              sourcePort = rule.externalPort;
-            }
-          ]) cfg.portForwarding);
+      forwardPorts = flatten (map (rule:
+        if rule.protocol == "both"
+        then [
+          {
+            destination = "${rule.internalIP}:${toString rule.internalPort}";
+            proto = "tcp";
+            sourcePort = rule.externalPort;
+          }
+          {
+            destination = "${rule.internalIP}:${toString rule.internalPort}";
+            proto = "udp";
+            sourcePort = rule.externalPort;
+          }
+        ]
+        else [
+          {
+            destination = "${rule.internalIP}:${toString rule.internalPort}";
+            proto = rule.protocol;
+            sourcePort = rule.externalPort;
+          }
+        ])
+      cfg.portForwarding);
 
       # Enable IPv6 forwarding if IPv6 is enabled
       enableIPv6 = cfg.ipv6.enable;
@@ -1094,12 +1214,8 @@ in {
     # Configure Router Advertisement Daemon (radvd) for IPv6
     services.radvd = mkIf (cfg.ipv6.enable && cfg.ipv6.enableRadvd) {
       enable = true;
-      config = concatStringsSep "\n" (map (vlanId: let
-        vlan = findFirst (v: v.id == vlanId) null (filter (v: v.enabled) cfg.vlans);
-        isPublicVlan = cfg.ipv6.publicPrefixVlan == vlanId;
-      in
-        optionalString (vlan != null) ''
-          interface vlan${toString vlanId} {
+      config = concatStringsSep "\n" (map (net: ''
+          interface ${net.interface} {
             AdvSendAdvert on;
             AdvManagedFlag off;
             AdvOtherConfigFlag on;
@@ -1110,7 +1226,7 @@ in {
             AdvRetransTimer 0;
 
             # Use ULA prefix for internal networks (always advertised)
-            prefix fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::/64 {
+            prefix ${ipv6Hextet net.ulaId}::/64 {
               AdvOnLink on;
               AdvAutonomous on;
               AdvRouterAddr off;
@@ -1118,8 +1234,8 @@ in {
               AdvValidLifetime 86400;
             };
 
-            ${optionalString isPublicVlan ''
-            # Auto-advertise delegated prefix only on the designated public VLAN
+            ${optionalString net.isPublic ''
+            # Auto-advertise delegated prefix only on the designated public network
             prefix ::/64 {
               AdvOnLink on;
               AdvAutonomous on;
@@ -1128,7 +1244,7 @@ in {
           ''}
 
             # RDNSS for DNS - use management VLAN DNS server
-            RDNSS fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:99::1 {
+            RDNSS ${ipv6Hextet 99}::1 {
               AdvRDNSSLifetime 3600;
             };
 
@@ -1138,7 +1254,7 @@ in {
             };
           };
         '')
-      cfg.ipv6.radvdVlans);
+        ipv6Networks);
     };
 
     # Configure DHCPv6 Prefix Delegation on WAN interface
@@ -1158,7 +1274,10 @@ in {
         extraConfig = ''
           # Enable IPv6 Router Solicitation on WAN only
           interface ${cfg.wanInterface}
-            ${optionalString (cfg.ipv6.publicPrefixVlan != null) "ia_pd ${toString cfg.ipv6.publicPrefixVlan}/::/64 vlan${toString cfg.ipv6.publicPrefixVlan}/0/64"}
+            ${let
+            pub = findFirst (n: n.isPublic) null ipv6Networks;
+          in
+            optionalString (pub != null) "ia_pd ${toString pub.ulaId}/::/64 ${pub.interface}/0/64"}
 
           # Explicitly configure all other interfaces as static
           ${concatStringsSep "\n" (map (vlan: ''
@@ -1195,6 +1314,42 @@ in {
       useRoutingFeatures = "both";
     };
 
+    # Configure Kea Control Agent
+    services.kea.ctrl-agent = {
+      enable = true;
+      settings = {
+        http-host = "127.0.0.1";
+        http-port = 8000;
+
+        control-sockets = {
+          dhcp4 = {
+            socket-type = "unix";
+            socket-name = "/run/kea/dhcp4-ctrl-socket";
+          };
+          dhcp6 = {
+            socket-type = "unix";
+            socket-name = "/run/kea/dhcp6-ctrl-socket";
+          };
+          d2 = {
+            socket-type = "unix";
+            socket-name = "/run/kea/dhcp-ddns-ctrl-socket";
+          };
+        };
+
+        loggers = [
+          {
+            name = "kea-ctrl-agent";
+            output_options = [
+              {
+                output = "stdout";
+              }
+            ];
+            severity = "INFO";
+          }
+        ];
+      };
+    };
+
     # Configure DHCP
     services.kea.dhcp4 = {
       enable = true;
@@ -1209,6 +1364,17 @@ in {
           name = "/var/lib/kea/dhcp4.leases";
           persist = true;
           type = "memfile";
+        };
+        hooks-libraries = [
+          {
+            # Enable lease commands over control socket (lease4-get, lease4-get-all, etc.)
+            library = "${pkgs.kea}/lib/kea/hooks/libdhcp_lease_cmds.so";
+            parameters = {};
+          }
+        ];
+        control-socket = {
+          socket-type = "unix";
+          socket-name = "/run/kea/dhcp4-ctrl-socket";
         };
         rebind-timer = 2000;
         renew-timer = 1000;
@@ -1307,6 +1473,14 @@ in {
       enable = true;
       settings = {
         listen_addresses = ["127.0.0.1:53"];
+        # Bootstrap without depending on /etc/resolv.conf so dnscrypt-proxy
+        # can resolve its upstream DoH/DoT hostnames even when the host
+        # resolver is empty or stale (e.g. during slow DHCP on WAN after an
+        # ISP change). ignore_system_dns forces use of these resolvers for
+        # the initial hostname resolution instead of reading resolv.conf,
+        # eliminating a boot-time chicken-and-egg for the router's own DNS.
+        bootstrap_resolvers = ["1.1.1.1:53" "9.9.9.9:53"];
+        ignore_system_dns = true;
         allowed_names = {
           allowed_names_file = pkgs.writeText "allow_list.txt" ''
             # Rabbit Cloud
@@ -1314,6 +1488,20 @@ in {
           '';
         };
       };
+    };
+
+    # Use IP-based NTP servers so timesyncd can sync the clock without
+    # waiting for DNS (dnscrypt-proxy). This breaks the boot-time deadlock
+    # where the wrong hardware clock (e.g. after power loss) prevents TLS
+    # cert validation, which blocks DNS, which blocks NTP.
+    services.timesyncd = {
+      enable = true;
+      servers = [
+        "162.159.200.1" # time.cloudflare.com
+        "162.159.200.123" # time.cloudflare.com
+        "216.239.35.0" # time.google.com
+        "216.239.35.4" # time.google.com
+      ];
     };
 
     systemd.tmpfiles.rules =
@@ -1597,6 +1785,17 @@ in {
 
     services.bind = {
       enable = true;
+      # Pin BIND to nixos-25.05 stable. The unstable channel's BIND has been
+      # segfaulting in our router setup; stable is the last known-good.
+      # Uses the `stable` overlay wired up in the server personality.
+      package = pkgs.stable.bind;
+      # Disable build-time `named-checkconf -z` because `extraConfig` includes
+      # a sops-decrypted TSIG key at /run/secrets/... which only exists at
+      # activation time, not in the Nix build sandbox. Upstream nixpkgs added
+      # the `-z` flag to the bind module's check phase, which follows
+      # includes and causes this to fail with "file not found". The syntax
+      # check still runs when bind itself starts.
+      checkConfig = false;
       forward = "only";
       forwarders = ["127.0.0.1"];
       directory = "/var/lib/bind";
@@ -1609,13 +1808,14 @@ in {
       ];
       cacheNetworks =
         map (vlan: vlan.subnet) cfg.vlans
+        ++ (optional cfg.enableLan cfg.lanSubnet)
         ++ [
           # Tailscale
           "100.64.0.0/10"
         ]
         # Add IPv6 ULA networks when IPv6 is enabled
         ++ (optionals cfg.ipv6.enable (
-          map (vlanId: "fd${substring 0 2 (builtins.hashString "sha256" cfg.domain)}:${substring 2 4 (builtins.hashString "sha256" cfg.domain)}:${toString vlanId}::/64") cfg.ipv6.radvdVlans
+          map (net: "${ipv6Hextet net.ulaId}::/64") ipv6Networks
         ));
       extraOptions = ''
         dnssec-validation no;
@@ -1716,6 +1916,11 @@ in {
         ncr-protocol = "UDP";
         ncr-format = "JSON";
 
+        control-socket = {
+          socket-type = "unix";
+          socket-name = "/run/kea/dhcp-ddns-ctrl-socket";
+        };
+
         tsig-keys = [
           {
             name = "dhcp-update-key";
@@ -1740,8 +1945,8 @@ in {
         };
         reverse-ddns = {
           ddns-domains =
-            map (vlan: {
-              name = mkReverseDnsZone vlan.subnet;
+            map (subnet: {
+              name = mkReverseDnsZone subnet;
               key-name = "dhcp-update-key";
               dns-servers = [
                 {
@@ -1751,7 +1956,8 @@ in {
                 }
               ];
             })
-            cfg.vlans;
+            ((map (vlan: vlan.subnet) cfg.vlans)
+              ++ optional (cfg.enableLan && !(any (v: mkReverseDnsZone v.subnet == mkReverseDnsZone cfg.lanSubnet) cfg.vlans)) cfg.lanSubnet);
         };
       };
     };
@@ -1805,10 +2011,41 @@ in {
       '';
     };
 
+    # QoS configuration using CAKE
+    boot.kernelModules = mkIf cfg.qos.enable ["sch_cake"];
+
+    systemd.services.qos-cake = mkIf cfg.qos.enable {
+      description = "CAKE QoS for WAN egress";
+      wantedBy = ["multi-user.target"];
+      after = ["network-online.target" "sys-subsystem-net-devices-${cfg.wanInterface}.device"];
+      wants = ["network-online.target"];
+      bindsTo = ["sys-subsystem-net-devices-${cfg.wanInterface}.device"];
+
+      path = [pkgs.iproute2];
+
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "qos-cake-start" ''
+          set -euo pipefail
+          tc qdisc replace dev ${cfg.wanInterface} root cake \
+            bandwidth ${cfg.qos.wanBandwidth} \
+            ${cfg.qos.diffserv} \
+            ${cfg.qos.flowMode} \
+            rtt ${cfg.qos.rtt} \
+            ${optionalString cfg.qos.nat "nat"} \
+            ${optionalString cfg.qos.ackFilter "ack-filter"}
+        '';
+        ExecStop = pkgs.writeShellScript "qos-cake-stop" ''
+          tc qdisc del dev ${cfg.wanInterface} root || true
+        '';
+      };
+    };
+
     # Configure additional services
     services.avahi = {
       enable = true;
-      reflector = true;
+      reflector = false;
       nssmdns4 = true;
       nssmdns6 = true;
       ipv4 = true;
@@ -1830,7 +2067,8 @@ in {
       internalIPs =
         map (vlan: "vlan${toString vlan.id}") (filter (v: v.enabled) cfg.vlans)
         ++ optional cfg.enableOob cfg.oobInterface
-        ++ optional cfg.enableLan cfg.lanInterface;
+        ++ optional cfg.enableLan cfg.lanInterface
+        ++ cfg.miniupnpdExtraInterfaces;
     };
 
     # Ensure miniupnpd waits for network interfaces and NAT to be ready

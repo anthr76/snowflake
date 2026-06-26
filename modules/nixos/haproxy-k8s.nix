@@ -48,12 +48,9 @@ in {
       default = "0.0.0.0";
       description = "Address to bind HAProxy to";
     };
-
-
   };
 
   config = mkIf cfg.enable {
-
     services.haproxy = {
       enable = true;
       config = ''
@@ -93,11 +90,12 @@ in {
           http-check expect status 200,401
           mode tcp
           balance     roundrobin
-          ${concatMapStringsSep "\n  " (node:
-            "server ${node.name} ${node.address}:${toString node.port} check"
-          ) cfg.controlPlaneNodes}
+          ${concatMapStringsSep "\n  " (
+            node: "server ${node.name} ${node.address}:${toString node.port} check"
+          )
+          cfg.controlPlaneNodes}
       '';
-    };    # Open firewall ports
+    }; # Open firewall ports
     networking.firewall.allowedTCPPorts = [
       cfg.frontendPort
       cfg.statsPort

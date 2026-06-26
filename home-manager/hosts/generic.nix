@@ -1,6 +1,5 @@
-{ ... }:
-{
-  imports = [ ../users/anthony ../users/anthony/linux.nix ];
+{...}: {
+  imports = [../users/anthony ../users/anthony/linux.nix];
 
   services.home.autoUpgrade = {
     enable = true;

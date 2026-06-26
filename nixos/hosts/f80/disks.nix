@@ -1,6 +1,8 @@
-{ disks ? [ "/dev/disk/by-id/nvme-Sabrent_SB-RKT4P-2TB_48821069801973" ]
-, luksCreds, ... }: {
-
+{
+  disks ? ["/dev/disk/by-id/nvme-Sabrent_SB-RKT4P-2TB_48821069801973"],
+  luksCreds,
+  ...
+}: {
   disk = {
     main = {
       type = "disk";
@@ -17,7 +19,7 @@
               type = "filesystem";
               format = "vfat";
               mountpoint = "/boot";
-              mountOptions = [ "defaults" "umask=0077" ];
+              mountOptions = ["defaults" "umask=0077"];
             };
           };
           luks = {
@@ -25,23 +27,23 @@
             content = {
               type = "luks";
               name = "crypted";
-              extraOpenArgs = [ "--allow-discards" ];
+              extraOpenArgs = ["--allow-discards"];
               settings.keyFile = luksCreds;
               content = {
                 type = "btrfs";
-                extraArgs = [ "-f" ];
+                extraArgs = ["-f"];
                 subvolumes = {
                   "/root" = {
                     mountpoint = "/";
-                    mountOptions = [ "noatime" ];
+                    mountOptions = ["noatime"];
                   };
                   "/home" = {
                     mountpoint = "/home";
-                    mountOptions = [ "noatime" ];
+                    mountOptions = ["noatime"];
                   };
                   "/nix" = {
                     mountpoint = "/nix";
-                    mountOptions = [ "compress=zstd" "noatime" ];
+                    mountOptions = ["compress=zstd" "noatime"];
                   };
                 };
               };
