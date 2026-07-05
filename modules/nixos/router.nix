@@ -1394,6 +1394,12 @@ in {
             map (vlan: "vlan${toString vlan.id}/${vlan.router}") (filter (v: v.enabled) cfg.vlans)
             ++ optional cfg.enableOob "${cfg.oobInterface}/${cfg.oobAddress}"
             ++ optional cfg.enableLan "${cfg.lanInterface}/${cfg.lanAddress}";
+          # After a cold boot (e.g. power outage) kea can start before the VLAN
+          # interfaces are up, fail to bind every socket, and — with the default
+          # of a single attempt — never retry, silently serving no DHCP. Retry
+          # opening sockets so kea recovers on its own once the links come up.
+          service-sockets-max-retries = 20;
+          service-sockets-retry-wait-time = 5000;
         };
 
         option-data =
