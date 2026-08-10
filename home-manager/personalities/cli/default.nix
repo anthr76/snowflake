@@ -13,7 +13,6 @@
     ./direnv.nix
     ./go.nix
     ./nh.nix
-    ./crush.nix
     ./attic.nix
     ./coreutils.nix
   ];
