@@ -13,7 +13,7 @@
     ./direnv.nix
     ./go.nix
     ./nh.nix
-    ./attic.nix
+    #./attic.nix
     ./coreutils.nix
   ];
   home.packages = with pkgs;
