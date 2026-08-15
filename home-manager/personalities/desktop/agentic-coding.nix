@@ -6,7 +6,7 @@
 }: {
   programs.claude-code = {
     enable = true;
-    package = inputs.llm-agents.packages.${pkgs.system}.claude-code;
+    package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
     # TODO: Auth via env var https://github.com/github/github-mcp-server#environment-variables-recommended
     #mcpServers = config.programs.vscode.profiles.default.userMcp.servers;
   };

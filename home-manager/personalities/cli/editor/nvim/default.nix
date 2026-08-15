@@ -1,42 +1,29 @@
 {
   inputs,
+  lib,
   pkgs,
   ...
 }: {
   imports = [inputs.nvf.homeManagerModules.default];
 
+  # nvf's curated "default" configuration -- the module nvf's default package is
+  # built from, imported directly so we track upstream instead of hand-picking a
+  # plugin list. Catppuccin (mocha) is the theme out of the box. We deliberately
+  # avoid the `maximal` variant: its extra plugins (otter, harper, scrollbar, ...)
+  # currently break against the mid-migration nvim-treesitter in nixpkgs-unstable
+  # (`nvim-treesitter.ts_utils` was removed), and it pulls a Darwin-broken sass
+  # language server. Default sidesteps both.
   programs.nvf = {
     enable = true;
-    settings.vim = {
-      viAlias = true;
-      vimAlias = true;
+    settings = {
+      imports = [(import "${inputs.nvf}/configuration.nix" false)];
 
-      theme = {
-        enable = true;
-        name = "catppuccin";
-        style = "mocha";
-      };
-
-      statusline.lualine.enable = true;
-      telescope.enable = true;
-      autocomplete.nvim-cmp.enable = true;
-      treesitter.enable = true;
-
-      lsp = {
-        enable = true;
-        formatOnSave = true;
-      };
-
-      languages = {
-        enableTreesitter = true;
-        enableFormat = true;
-        go.enable = true;
-        helm.enable = true;
-        yaml.enable = true;
-        nix.enable = true;
-        bash.enable = true;
-
-        markdown.enable = true;
+      # Default only ships nix + markdown, and gates the rest off explicitly
+      # (`isMaximal`), so mkForce is needed to turn the ones we use back on.
+      vim.languages = {
+        go.enable = lib.mkForce true; # gopls + DAP
+        helm.enable = lib.mkForce true; # helm-ls
+        yaml.enable = lib.mkForce true; # backs helm values
       };
     };
   };

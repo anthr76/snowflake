@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: {
-  home.packages = [inputs.attic.packages.${pkgs.system}.attic-client];
+  home.packages = [inputs.attic.packages.${pkgs.stdenv.hostPlatform.system}.attic-client];
   programs.fish.functions = {
     nix-build-push = {
       description = "Build a nix package and push its full closure (including build deps) to an attic cache";

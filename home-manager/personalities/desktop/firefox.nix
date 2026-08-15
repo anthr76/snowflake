@@ -7,7 +7,7 @@
     enable = true;
     profiles.anthony = {
       bookmarks = {};
-      extensions = with inputs.firefox-addons.packages.${pkgs.system}; [
+      extensions = with inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system}; [
         adnauseam
         bitwarden
         unpaywall

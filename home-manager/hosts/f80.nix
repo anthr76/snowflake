@@ -3,9 +3,9 @@
   inputs,
   ...
 }: let
-  reshade = inputs.nix-reshade.packages.${pkgs.system}.reshade;
-  reshade-shaders = inputs.nix-reshade.packages.${pkgs.system}.reshade-shaders;
-  d3dcompiler = inputs.nix-reshade.packages.${pkgs.system}.d3dcompiler_47-dll;
+  reshade = inputs.nix-reshade.packages.${pkgs.stdenv.hostPlatform.system}.reshade;
+  reshade-shaders = inputs.nix-reshade.packages.${pkgs.stdenv.hostPlatform.system}.reshade-shaders;
+  d3dcompiler = inputs.nix-reshade.packages.${pkgs.stdenv.hostPlatform.system}.d3dcompiler_47-dll;
 in {
   imports = [
     ../users/anthony

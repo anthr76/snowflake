@@ -115,14 +115,14 @@
       // {
         # Installer ISO built with nixos-generators
         installer-iso = nixos-generators.nixosGenerate {
-          system = pkgs.system;
+          system = pkgs.stdenv.hostPlatform.system;
           modules = [./nixos/iso];
           format = "install-iso";
         };
 
         # VM image for testing the ISO
         installer-vm = nixos-generators.nixosGenerate {
-          system = pkgs.system;
+          system = pkgs.stdenv.hostPlatform.system;
           modules = [./nixos/iso];
           format = "vm";
         };
@@ -325,14 +325,14 @@
           lib.filterAttrs (
             name: x:
               x.meta?platforms
-              && lib.elem pkgs.system x.meta.platforms
+              && lib.elem pkgs.stdenv.hostPlatform.system x.meta.platforms
           )
-          self.packages.${pkgs.system}
+          self.packages.${pkgs.stdenv.hostPlatform.system}
         );
 
         nixosSet = withPrefix "nixos-" (
           lib.mapAttrs (name: x: x.config.system.build.toplevel)
-          (lib.filterAttrs (name: x: x.pkgs.system == pkgs.system)
+          (lib.filterAttrs (name: x: x.pkgs.stdenv.hostPlatform.system == pkgs.stdenv.hostPlatform.system)
             self.nixosConfigurations)
         );
 
@@ -346,7 +346,7 @@
         };
         homeSet = withPrefix "home-" (
           lib.mapAttrs (name: x: x.activation-script)
-          (lib.filterAttrs (name: x: x.pkgs.system == pkgs.system)
+          (lib.filterAttrs (name: x: x.pkgs.stdenv.hostPlatform.system == pkgs.stdenv.hostPlatform.system)
             linuxHomeConfigs)
         );
       in

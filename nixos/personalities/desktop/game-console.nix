@@ -58,7 +58,7 @@
     # TODO: Find replacement for PS1
     # duckstation
     # Dreamcast
-    inputs.nixpkgs-stable.legacyPackages.${pkgs.system}.flycast
+    inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.flycast
     # Saturn
     # Currently Broken
     #yabause
@@ -96,7 +96,7 @@
       enable = true;
       theme = "steamos";
       themePackages = [
-        inputs.jovian-nixos.legacyPackages.${pkgs.system}.steamdeck-hw-theme
+        inputs.jovian-nixos.legacyPackages.${pkgs.stdenv.hostPlatform.system}.steamdeck-hw-theme
       ];
     };
     loader.timeout = 0;

@@ -8,7 +8,7 @@
       discord
       signal-desktop
     ]
-    ++ lib.optionals pkgs.stdenv.isLinux [
+    ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
       fractal
       element-desktop
       # For Discord on Wayland
@@ -17,5 +17,5 @@
       # TODO: Bugs on mac
       telegram-desktop
     ];
-  catppuccin.element-desktop.enable = pkgs.stdenv.isLinux;
+  catppuccin.element-desktop.enable = pkgs.stdenv.hostPlatform.isLinux;
 }

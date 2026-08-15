@@ -13,7 +13,7 @@
       family = "Roboto";
       package = pkgs.roboto;
     };
-    emoji = lib.mkIf pkgs.stdenv.isDarwin {
+    emoji = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       family = "Apple Color Emoji";
       package = null;
     };

@@ -9,11 +9,11 @@
   programs.ghostty = {
     enable = true;
     package =
-      if pkgs.stdenv.isDarwin
+      if pkgs.stdenv.hostPlatform.isDarwin
       then pkgs.ghostty-bin
       else pkgs.ghostty;
     enableFishIntegration = true;
-    systemd.enable = pkgs.stdenv.isLinux;
+    systemd.enable = pkgs.stdenv.hostPlatform.isLinux;
     settings = {
       gtk-titlebar = false;
       font-family = config.fontProfiles.monospace.family;
