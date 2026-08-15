@@ -35,9 +35,9 @@ in {
         };
         package = lib.mkOption {
           type = lib.types.nullOr lib.types.package;
-          default = pkgs.noto-fonts-emoji;
+          default = pkgs.noto-fonts-color-emoji;
           description = "Package for emoji font profile";
-          example = "pkgs.noto-fonts-emoji";
+          example = "pkgs.noto-fonts-color-emoji";
         };
       };
     icon =
