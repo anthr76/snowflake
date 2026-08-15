@@ -7,6 +7,7 @@ in {
   catppuccin.delta.enable = true;
   catppuccin.lazygit.enable = true;
   programs.delta = {
+    enable = true;
     enableGitIntegration = true;
   };
   # TODO: This needs to be modularized..
