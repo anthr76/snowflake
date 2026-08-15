@@ -4,7 +4,7 @@
     then "${pkgs.yubico-piv-tool}/lib/libykcs11.dylib"
     else "${pkgs.yubico-piv-tool}/lib/libykcs11.so";
 in {
-  home.packages = with pkgs; [fzf fd];
+  home.packages = with pkgs; [fd];
   programs.fish = {
     enable = true;
     shellAliases = {
@@ -24,12 +24,9 @@ in {
     };
   };
   catppuccin.fish.enable = true;
-  programs.fzf = {
-    enable = true;
-    enableFishIntegration = true;
-  };
-  catppuccin.fzf.enable = true;
 
+  # atuin owns Ctrl-R for history search; fzf's fish integration is intentionally
+  # not enabled to avoid both binding Ctrl-R.
   programs.atuin = {
     enable = true;
     enableFishIntegration = true;

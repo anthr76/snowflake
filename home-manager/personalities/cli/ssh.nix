@@ -14,26 +14,26 @@ in {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks = {
+    settings = {
       "*" = lib.hm.dag.entryAfter ["net"] {
-        forwardAgent = false;
-        addKeysToAgent = "no";
-        compression = false;
-        serverAliveInterval = 0;
-        serverAliveCountMax = 3;
-        hashKnownHosts = false;
-        userKnownHostsFile = "~/.ssh/known_hosts";
-        controlMaster = "no";
-        controlPath = "~/.ssh/master-%r@%n:%p";
-        controlPersist = "no";
+        ForwardAgent = false;
+        AddKeysToAgent = "no";
+        Compression = false;
+        ServerAliveInterval = 0;
+        ServerAliveCountMax = 3;
+        HashKnownHosts = false;
+        UserKnownHostsFile = "~/.ssh/known_hosts";
+        ControlMaster = "no";
+        ControlPath = "~/.ssh/master-%r@%n:%p";
+        ControlPersist = "no";
       };
       net = {
-        host = builtins.concatStringsSep " " hostnames;
-        forwardAgent = true;
+        header = "Host ${builtins.concatStringsSep " " hostnames}";
+        ForwardAgent = true;
       };
       trusted = lib.hm.dag.entryBefore ["net"] {
-        host = "rabbito.tech *.nwk3.rabbito.tech *.nwk2.rabbito.tech *.qgr1.rabbito.tech";
-        forwardAgent = true;
+        header = "Host rabbito.tech *.nwk3.rabbito.tech *.nwk2.rabbito.tech *.qgr1.rabbito.tech";
+        ForwardAgent = true;
       };
     };
   };
