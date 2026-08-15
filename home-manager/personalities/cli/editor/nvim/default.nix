@@ -24,6 +24,14 @@
         go.enable = lib.mkForce true; # gopls + DAP
         helm.enable = lib.mkForce true; # helm-ls
         yaml.enable = lib.mkForce true; # backs helm values
+        json.enable = lib.mkForce true; # vscode-json-language-server + jsonfmt
+      };
+      vim.assistant.copilot.enable = lib.mkForce true;
+      vim.statusline.lualine.setupOpts.options.theme = "catppuccin-nvim";
+      vim.clipboard = {
+        enable = true;
+        registers = "unnamedplus";
+        providers.wl-copy.enable = pkgs.stdenv.hostPlatform.isLinux;
       };
     };
   };
