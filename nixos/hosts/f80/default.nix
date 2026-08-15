@@ -44,7 +44,7 @@
   hardware.enableAllFirmware = true;
 
   disko.devices = import ./disks.nix {
-    disks = ["/dev/disk/by-id/nvme-Sabrent_SB-RKT4P-2TB_48821069801973"];
+    disks = ["/dev/disk/by-id/nvme-WD_BLACK_SN8100_4000GB_25248A800531"];
     luksCreds = config.sops.secrets.e39-luks-password.path;
   };
 

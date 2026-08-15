@@ -23,7 +23,8 @@
     ./syncthing.nix
   ];
   home.packages = with pkgs; [
-    moonlight-qt
+    # Currently Broken
+    #moonlight-qt
     syncthing
     system76-keyboard-configurator
     uhk-agent
