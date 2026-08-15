@@ -183,7 +183,6 @@
         modules = [
           ./nixos/hosts/f80
           nix-flatpak.nixosModules.nix-flatpak
-          nixified-ai.nixosModules.comfyui
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
