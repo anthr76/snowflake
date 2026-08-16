@@ -3,10 +3,15 @@
   luksCreds,
   ...
 }: {
-  # NOTE: the disk key is `primary` (not `main`) on purpose. disko derives GPT
-  # partition labels as `disk-<key>-<partition>`, and the old Sabrent boot disk
-  # still carries `disk-main-luks` / `EFI`. Keeping the keys distinct means both
-  # drives can be present at once without initrd unlocking the wrong device.
+  # NOTE: do not rename the `primary` disk key. disko derives GPT partition
+  # labels as `disk-<key>-<partition>`, and the labels already written to this
+  # disk (disk-primary-ESP / -luks / -games) are what initrd and fstab resolve
+  # at boot. Renaming the key changes the labels the config expects but not the
+  # ones on disk, leaving the system unbootable short of repartitioning.
+  #
+  # The key was `main` until the 2026-08-15 migration off the Sabrent 2TB. It was
+  # renamed so that both drives could be present at once without initrd having
+  # two `disk-main-luks` partitions to choose between.
   disk = {
     primary = {
       type = "disk";
