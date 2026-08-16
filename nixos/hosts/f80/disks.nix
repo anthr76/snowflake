@@ -1,6 +1,11 @@
 {
   disks ? ["/dev/disk/by-id/nvme-WD_BLACK_SN8100_4000GB_25248A800531"],
   luksCreds,
+  # Mapper name for the unlocked volume. Overridden only by disks-migration.nix,
+  # which must not reuse `crypted` while the old root still holds that name --
+  # disko skips `cryptsetup open` when a mapper of this name already exists, and
+  # would then run mkfs on the *running* root. See disks-migration.nix.
+  luksName ? "crypted",
   ...
 }: {
   # NOTE: do not rename the `primary` disk key. disko derives GPT partition
@@ -36,7 +41,7 @@
             size = "1100G";
             content = {
               type = "luks";
-              name = "crypted";
+              name = luksName;
               extraOpenArgs = ["--allow-discards"];
               settings.keyFile = luksCreds;
               content = {
