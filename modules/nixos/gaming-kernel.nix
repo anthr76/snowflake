@@ -22,7 +22,7 @@
     ];
     # suspend is struggling on newer kernels, let's go LTS.
     # pkgs.cachyosKernels.linuxPackages-cachyos-latest
-    boot.kernelPackages = lib.mkForce pkgs.cachyosKernels.linuxPackages-cachyos-lts;
+    boot.kernelPackages = lib.mkForce pkgs.cachyosKernels.linuxPackages-cachyos-latest;
     programs.gamescope.capSysNice = lib.mkForce false;
     nixpkgs = {
       overlays = [
