@@ -6,7 +6,9 @@
   catppuccin.helix.enable = true;
   programs.helix = {
     enable = true;
-    defaultEditor = true;
+    # nvf/nvim owns $EDITOR -- see ../nvim. Helix stays installed as a
+    # secondary editor.
+    defaultEditor = false;
     settings = {
       keys.normal = {
         space.space = "file_picker";

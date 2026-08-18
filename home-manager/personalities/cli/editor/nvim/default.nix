@@ -6,6 +6,14 @@
 }: {
   imports = [inputs.nvf.homeManagerModules.default];
 
+  # nvf has no `defaultEditor` option of its own, so set the variables directly.
+  # `vim`/`vi` come from nvf's viAlias/vimAlias, which the imported default
+  # configuration turns on.
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+  };
+
   # nvf's curated "default" configuration -- the module nvf's default package is
   # built from, imported directly so we track upstream instead of hand-picking a
   # plugin list. Catppuccin (mocha) is the theme out of the box. We deliberately
