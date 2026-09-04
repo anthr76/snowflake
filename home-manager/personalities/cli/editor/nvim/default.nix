@@ -35,7 +35,10 @@
         json.enable = lib.mkForce true; # vscode-json-language-server + jsonfmt
       };
       vim.assistant.copilot.enable = lib.mkForce true;
-      vim.statusline.lualine.setupOpts.options.theme = "catppuccin-nvim";
+      # nvf's own `configuration.nix` still sets the pre-2026-09-04 `lualine.theme`,
+      # which nvf's `batchRenameOptions` now forwards onto this same option as
+      # "catppuccin". mkForce breaks the resulting definition conflict.
+      vim.statusline.lualine.setupOpts.options.theme = lib.mkForce "catppuccin-nvim";
       vim.clipboard = {
         enable = true;
         registers = "unnamedplus";
