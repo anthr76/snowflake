@@ -36,7 +36,7 @@
     may be monitored if unauthorized usage is suspected.
   '';
   services.openssh.settings.Banner = "/etc/ssh/banner";
-  boot.kernelPackages = pkgs.linuxPackagest;
+  boot.kernelPackages = pkgs.linuxPackages;
   services.scx = {
     enable = true;
     scheduler = "scx_bpfland";
