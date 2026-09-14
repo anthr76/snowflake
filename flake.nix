@@ -250,6 +250,12 @@
           inputs.nixos-facter-modules.nixosModules.facter
         ];
       };
+      "rabbito" = lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nixos/hosts/rabbito
+        ];
+      };
     };
 
     homeConfigurations = {
