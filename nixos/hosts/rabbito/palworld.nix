@@ -4,18 +4,9 @@
   # Palworld Dedicated Server on Steam.
   appId = "2394010";
 in {
-  users.users.palworld = {
-    description = "Palworld dedicated server service user";
-    isSystemUser = true;
-    group = "palworld";
-    home = dataDir;
-    createHome = true;
-  };
-  users.groups.palworld = {};
-
   systemd.tmpfiles.rules = [
-    "d ${dataDir} 0750 palworld palworld -"
-    "d ${serverDir} 0750 palworld palworld -"
+    "d ${dataDir} 0750 anthony users -"
+    "d ${serverDir} 0750 anthony users -"
   ];
 
   # Not packaged in nixpkgs: the server is a proprietary Unreal build fetched
@@ -27,14 +18,15 @@ in {
     wants = ["network-online.target"];
 
     environment = {
+      # Not anthony's real home: /home is on the tmpfs, so steamcmd would
+      # re-download the ~8G depot on every reboot.
       HOME = dataDir;
-      # PalServer-Linux-Shipping dlopen()s the shipped Steam libs by bare name.
       LD_LIBRARY_PATH = "${serverDir}/linux64:${serverDir}/Pal/Binaries/Linux";
     };
 
     serviceConfig = {
-      User = "palworld";
-      Group = "palworld";
+      User = "anthony";
+      Group = "users";
       WorkingDirectory = serverDir;
       Restart = "on-failure";
       RestartSec = 30;
