@@ -2,6 +2,7 @@
   imports = [
     ../../personalities/base
     ../../personalities/server
+    ../../personalities/server/tailscale.nix
     ./minecraft.nix
     ./palworld.nix
   ];
@@ -97,9 +98,5 @@
 
   services.scx.enable = lib.mkForce false;
 
-  services.tailscale = {
-    enable = true;
-    openFirewall = true;
-  };
   networking.firewall.trustedInterfaces = ["tailscale0"];
 }

@@ -8,7 +8,7 @@
   };
   services.tailscale = {
     # useRoutingFeatures = "both";
-    extraUpFlags = ["--accept-routes" "--reset"];
+    extraUpFlags = ["--accept-routes" "--reset" "--ssh"];
     openFirewall = true;
     enable = true;
     port = 41641;
