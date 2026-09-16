@@ -5,87 +5,68 @@
     ../../personalities/server/tailscale.nix
     ./minecraft.nix
     ./palworld.nix
+    ./satisfactory.nix
+    ./backup.nix
   ];
 
   networking.hostName = "rabbito";
   networking.domain = "vms.rabbito.tech";
   system.stateVersion = "26.05";
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  microvm = {
+    hypervisor = "cloud-hypervisor";
+    vcpu = 64;
+    mem = 131072;
 
-  boot.loader.systemd-boot.enable = lib.mkForce false;
-  boot.loader.grub.enable = lib.mkForce false;
-  boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
+    machineId = "e7855a0f3cd7479fbbe86a096a258ac0";
 
-  # Mirrors the layout microvm.nix builds for us. Only /nix/.rw-store (vdb) and
-  # /var/lib/scratch (vda) survive a reboot -- / is a tmpfs.
-  fileSystems = {
-    "/" = {
-      device = "rootfs";
-      fsType = "tmpfs";
-      options = ["x-initrd.mount" "size=50%" "mode=0755"];
-    };
-    "/nix/.ro-store" = {
-      device = "ro-store";
-      fsType = "virtiofs";
-      options = [
-        "x-initrd.mount"
-        "defaults"
-        "x-systemd.after=systemd-modules-load.service"
-      ];
-      neededForBoot = true;
-    };
-    "/nix/.rw-store" = {
-      device = "/dev/vdb";
-      fsType = "ext4";
-      options = ["x-initrd.mount"];
-      neededForBoot = true;
-    };
-    "/nix/store" = {
-      device = "overlay";
-      fsType = "overlay";
-      options = [
-        "lowerdir=/sysroot/nix/.ro-store"
-        "upperdir=/sysroot/nix/.rw-store/store"
-        "workdir=/sysroot/nix/.rw-store/work"
-        "x-initrd.mount"
-        "x-systemd.requires-mounts-for=/sysroot/nix/.ro-store"
-        "x-systemd.requires-mounts-for=/sysroot/nix/.rw-store/store"
-        "x-systemd.requires-mounts-for=/sysroot/nix/.rw-store/work"
-      ];
-    };
-    "/var/lib/scratch" = {
-      device = "/dev/vda";
-      fsType = "ext4";
-    };
+    writableStoreOverlay = "/nix/.rw-store";
+
+    volumes = [
+      {
+        image = "root.img";
+        mountPoint = "/";
+        size = 512000;
+      }
+      {
+        image = "scratch.img";
+        mountPoint = "/var/lib/scratch";
+        size = 512000;
+      }
+      {
+        image = "nix-store-overlay.img";
+        mountPoint = "/nix/.rw-store";
+        size = 32768;
+      }
+    ];
+
+    shares = [
+      {
+        source = "/nix/store";
+        mountPoint = "/nix/.ro-store";
+        tag = "ro-store";
+        proto = "virtiofs";
+      }
+    ];
+
+    interfaces = [
+      {
+        type = "tap";
+        id = "vm-rabbito";
+        mac = "02:00:00:00:00:01";
+      }
+    ];
   };
 
   networking.networkmanager.enable = lib.mkForce false;
-  networking.useNetworkd = true;
   networking.useDHCP = false;
-  systemd.network = {
-    enable = true;
-    networks."10-mgmt" = {
-      matchConfig.MACAddress = "02:00:00:00:00:01";
-      address = ["10.100.0.2/24"];
-      gateway = ["10.100.0.1"];
-      dns = ["10.100.0.1"];
-      networkConfig.DHCP = "no";
-    };
+  systemd.network.networks."10-mgmt" = {
+    matchConfig.MACAddress = "02:00:00:00:00:01";
+    address = ["10.100.0.2/24"];
+    gateway = ["10.100.0.1"];
+    dns = ["10.100.0.1"];
+    networkConfig.DHCP = "no";
   };
-
-  # / is a tmpfs, so the host keys sops derives its age identity from have to
-  # live on the one disk that persists.
-  services.openssh.hostKeys = lib.mkForce [
-    {
-      path = "/var/lib/scratch/etc/ssh/ssh_host_ed25519_key";
-      type = "ed25519";
-    }
-    {
-      path = "/var/lib/scratch/etc/ssh/ssh_host_rsa_key";
-      type = "rsa";
-      bits = 4096;
-    }
-  ];
 
   services.openssh.settings.PermitRootLogin = lib.mkForce "prohibit-password";
   users.users.root.openssh.authorizedKeys.keys = [
@@ -96,6 +77,8 @@
     (builtins.readFile ../../../home-manager/users/anthony/mbp.pub)
   ];
 
+  nix.settings.auto-optimise-store = false;
+  nix.optimise.automatic = false;
   services.scx.enable = lib.mkForce false;
 
   networking.firewall.trustedInterfaces = ["tailscale0"];

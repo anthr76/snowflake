@@ -5,20 +5,28 @@
 }: let
   dataDir = "/var/lib/scratch/minecraft";
 
-  mcVersion = "1.21.11";
+  mcVersion = "26.2";
   loaderVersion = "0.19.5";
   launcherVersion = "1.1.2";
 
   fabricServerJar = pkgs.fetchurl {
     name = "fabric-server-mc.${mcVersion}-loader.${loaderVersion}-launcher.${launcherVersion}.jar";
     url = "https://meta.fabricmc.net/v2/versions/loader/${mcVersion}/${loaderVersion}/${launcherVersion}/server/jar";
-    hash = "sha256-K2PSk75UyPVISiQoWcq4QdzuOFEeEbL4LpIhHxmHLQg=";
+    hash = "sha256-8dK6/Qs7l2MLDN2OiQzRAts9vmCHejilyBOqkp5pESc=";
   };
+
+  # ${mcVersion} is the ceiling for this pack: Distant Horizons' newest build is
+  # 3.2.0-b-26.2, and ferritecore, servercore, krypton, yacl and controlify also
+  # stop there. threadtweak is dropped entirely -- it stops at 1.21.11.
+  #
+  # The full pack is kept server-side: these ship server components too (Jade
+  # registers server plugins, Controlify is a universal jar), which is why the
+  # upstream Additive setup installed them all here.
   modSpecs = [
     {
-      name = "fabric-api-0.141.6+1.21.11.jar";
-      url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/6qAuTtLR/fabric-api-0.141.6%2B1.21.11.jar";
-      hash = "sha512-hS02gsTzU/0MqGVGr4V4UT6Lz2KDd/qdScVWvFnFAkxpq1bJL8bfuhH+0Z5DFqP1Y25+B/09lvcEO1Ma71m2Nw==";
+      name = "fabric-api-0.160.0+26.2.jar";
+      url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/UWwhUX3k/fabric-api-0.160.0%2B26.2.jar";
+      hash = "sha512-Ggi2iywskPYAXvRBq3G2X0ZL6WQAW5wNGOb8bF7FP+NG5912GJxPCa3lnvm8O4NjdqLMcdTObpvkcSJHfRu9Hg==";
     }
     {
       name = "fabric-language-kotlin-1.14.1+kotlin.2.4.20.jar";
@@ -26,59 +34,54 @@
       hash = "sha512-kUBPh3dEZs6GBKr+p5HYzJe2A7wxDc4XyBiPlPd4PMptwU/HJs6HHKMXv+kDPBmdjYWNUShBBqAHVOlSFHcDuA==";
     }
     {
-      name = "lithium-fabric-0.21.4+mc1.21.11.jar";
-      url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/Ow7wA0kG/lithium-fabric-0.21.4%2Bmc1.21.11.jar";
-      hash = "sha512-8UpcPS+teGNHyiUIP5AhOWlPYYt8EDlH8v0Genxe6Ipj4e+JJvfWk+p57X0A9XMXuud++cLWML9e0BrJenUrlA==";
+      name = "lithium-fabric-0.25.3+mc26.2.jar";
+      url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/f7vZ0VWU/lithium-fabric-0.25.3%2Bmc26.2.jar";
+      hash = "sha512-FItjjzxiKfuvSHEgojRKCvXkEaWqZTPV25112gqMDYME9j60zKE/TQOyybTCPVWd10wdgyQi74owh70AXmKovQ==";
     }
     {
-      name = "ferritecore-8.2.0-fabric.jar";
-      url = "https://cdn.modrinth.com/data/uXXizFIs/versions/Ii0gP3D8/ferritecore-8.2.0-fabric.jar";
-      hash = "sha512-MhCSaoLrMu/ZvOur4vbAU9r1xDN+68bVusupbSg1EK+95kbn4ZV1HeeV7HCi6kT+93y1S/Isjle7gy1iF0GIaQ==";
+      name = "ferritecore-9.0.0-fabric.jar";
+      url = "https://cdn.modrinth.com/data/uXXizFIs/versions/d5ddUdiB/ferritecore-9.0.0-fabric.jar";
+      hash = "sha512-2B+pfhF4TBnUL4nC9DODHQB2A91xk87kX6F35KapxSs4SxmFhuBKD39jzZlv7XEzIleL3pqNtX4RiIVK5cvlhA==";
     }
     {
-      name = "c2me-fabric-mc1.21.11-0.4.0-alpha.0.26.jar";
-      url = "https://cdn.modrinth.com/data/VSNURh3q/versions/879vA5z6/c2me-fabric-mc1.21.11-0.4.0-alpha.0.26.jar";
-      hash = "sha512-vbbOBJrnx3n5r92Ash0mbe7OLvdqKvgDP1VU0qUONzSp0ERDPAyW8Msn7nChiBuX6+14Zz7iHDqr/crVgoJT5Q==";
+      name = "c2me-fabric-mc26.2-0.4.2-alpha.0.52.jar";
+      url = "https://cdn.modrinth.com/data/VSNURh3q/versions/LmKTn6Yc/c2me-fabric-mc26.2-0.4.2-alpha.0.52.jar";
+      hash = "sha512-dqfFLqmyIpXBXQK+fxykto/Gc2hGXxvTz/tHzTa/O/a53ZJbygLMssfLLCbfEjVTjZjdusQ/hZhcOf0YPJ80aA==";
     }
     {
-      name = "vmp-fabric-mc1.21.11-0.2.0+beta.7.227-all.jar";
-      url = "https://cdn.modrinth.com/data/wnEe9KBa/versions/7Cxc2cAR/vmp-fabric-mc1.21.11-0.2.0%2Bbeta.7.227-all.jar";
-      hash = "sha512-VTSlsOyItY8aOVdT5IEN3pqPD5eoiJj0th6WC9IZ7CjqYMZnbX7iTVtGWTmk/5RwUg2QFbuc2xDZNX/4LDb9qw==";
+      name = "vmp-fabric-mc26.2-0.2.0+beta.7.236-all.jar";
+      url = "https://cdn.modrinth.com/data/wnEe9KBa/versions/d6FfpWFI/vmp-fabric-mc26.2-0.2.0%2Bbeta.7.236-all.jar";
+      hash = "sha512-Lg/YfmbzXwD2NBdtQHKmxtHu6WXRgXgzcJrT6nPk8nGfoVLV6VtauCFrBkx9sSS38Tg46+qH2S96ct+Cg56b1Q==";
     }
     {
-      name = "servercore-fabric-1.5.15+1.21.11.jar";
-      url = "https://cdn.modrinth.com/data/4WWQxlQP/versions/zg8VIycZ/servercore-fabric-1.5.15%2B1.21.11.jar";
-      hash = "sha512-lkOSdp5T+XZEZuJgRFUvYOkRN/SHtJ2YqFvU3AOrjpZfDGm8GkPpbvVzfNjxqbt1zAoMCd0wurZ4bYq0u+puAQ==";
+      name = "servercore-fabric-1.5.19+26.2.jar";
+      url = "https://cdn.modrinth.com/data/4WWQxlQP/versions/edrtnY9v/servercore-fabric-1.5.19%2B26.2.jar";
+      hash = "sha512-qkz8k/jgIXKRAwJEQzDjdxPfzyBH0o5V63Mjo81dUUkzdKCVmqPmJuwr9D/HB6dVUIuDRUuzS21X1lwGmSkHSw==";
     }
     {
-      name = "krypton-0.2.10.jar";
-      url = "https://cdn.modrinth.com/data/fQEb0iXm/versions/O9LmWYR7/krypton-0.2.10.jar";
-      hash = "sha512-Tc1yKNGJDd/HjJn/KEtF+c9Aqud+9jWTCOJtBvoNk4NlJVaWr0zBLVJMRsSIbNzRkmjBZaK/Cig1IC/oV9pcqw==";
+      name = "krypton-0.3.1.jar";
+      url = "https://cdn.modrinth.com/data/fQEb0iXm/versions/5WeL0Nkz/krypton-0.3.1.jar";
+      hash = "sha512-uNmvNM0AUEk6+4piMsuPeF2qnYiHtwRfbmpTxrubX/xDGP2bA0epQOrP66R3PxDLgK4L4eec5MGIj5btoh5WTg==";
     }
     {
-      name = "threadtweak-fabric-0.1.8+mc1.21.11.jar";
-      url = "https://cdn.modrinth.com/data/vSEH1ERy/versions/9t60vZ1h/threadtweak-fabric-0.1.8%2Bmc1.21.11.jar";
-      hash = "sha512-yrRE6uyqEIsNAO6pqilBXE4mZLpk3j7tuj9jIoaGvC0zT33ga9oiNnJEz6Cksht3iOkkEI7vBL/gd7zv8cSzTg==";
+      name = "DistantHorizons-3.2.0-b-26.2-fabric-neoforge.jar";
+      url = "https://cdn.modrinth.com/data/uCdwusMi/versions/gBf0SaV1/DistantHorizons-3.2.0-b-26.2-fabric-neoforge.jar";
+      hash = "sha512-wbiFd3agAsIjKIfYkb1JGV88MSenq+EkI3atIDceMVVNi6bHySoZW3B4LK2U/pcJQUh/KvUwmI2biBlFXIWecg==";
     }
     {
-      name = "DistantHorizons-3.2.0-b-1.21.11-fabric-neoforge.jar";
-      url = "https://cdn.modrinth.com/data/uCdwusMi/versions/bCTilxSz/DistantHorizons-3.2.0-b-1.21.11-fabric-neoforge.jar";
-      hash = "sha512-FBkOviAElWlRyalyMrdML9i/vtZJbwRKVYgufUvhh8GmwmiNYv64lVG0o+0xUzcOX5AG+YGRtvhwm4kdjzubYg==";
+      name = "Jade-mc26.2-Fabric-26.2.11.jar";
+      url = "https://cdn.modrinth.com/data/nvQzSEkH/versions/ue8CO97w/Jade-mc26.2-Fabric-26.2.11.jar";
+      hash = "sha512-cw4H3Vy7+FC6Dn/UhStSiGfT4vwt5jsVbInu6e5t2S2IK3RPl/5yTyqgr8W0aFd0htlVj4DT5GzF+hM7okG5yQ==";
     }
     {
-      name = "Jade-1.21.11-Fabric-21.1.6.jar";
-      url = "https://cdn.modrinth.com/data/nvQzSEkH/versions/swJhAyak/Jade-1.21.11-Fabric-21.1.6.jar";
-      hash = "sha512-be4Q7/ptaMgixZt3BPVQb+Z0xQ1hldolFxZB3s+mhNxPFNkZZW92j+j8OQA8YZMSbLBbtZ7tihor01TcU4debQ==";
+      name = "yet_another_config_lib_v3-3.9.6+26.2-fabric.jar";
+      url = "https://cdn.modrinth.com/data/1eAoo2KR/versions/cnfPzuFU/yet_another_config_lib_v3-3.9.6%2B26.2-fabric.jar";
+      hash = "sha512-s6WOSl71RkdWkoK4suljA4mzVo8KvsucFo2qqBVHfL+WHnneKAgcrFUbabgQ9WHwQ9Zp0QNK7IDxIVOlPf9T7w==";
     }
     {
-      name = "yet_another_config_lib_v3-3.8.2+1.21.11-fabric.jar";
-      url = "https://cdn.modrinth.com/data/1eAoo2KR/versions/pHWDw3Vc/yet_another_config_lib_v3-3.8.2%2B1.21.11-fabric.jar";
-      hash = "sha512-OS231HEDDMonSD7PWMYmoUzXPXGhiv5tQXPGsDCUi4qSWzbnCNTMLIl9+j8gp/I7mZ/BiqbTbBVtopA3YBFTrA==";
-    }
-    {
-      name = "controlify-3.0.1+lts+1.21.11-fabric.jar";
-      url = "https://cdn.modrinth.com/data/DOUdJVEm/versions/qZW7FPjm/controlify-3.0.1%2Blts%2B1.21.11-fabric.jar";
-      hash = "sha512-Gnu8untyGyjtXkb6XpS/eVJRyUdpOfNASag9ZKFs5WzbKmhBx2j0OT+hsbpnIVxn/n/dFKKdF3DwPUyBKxD83g==";
+      name = "controlify-3.5.0+mc26.2-universal.jar";
+      url = "https://cdn.modrinth.com/data/DOUdJVEm/versions/9ePC9FQ4/controlify-3.5.0%2Bmc26.2-universal.jar";
+      hash = "sha512-3ULAo+zSphwSac0U1Xib3N5IDMK1dJWztSF/2uD799xLMFwNSAAR1306S24M0MOsN0lePjZezhV2VMkNkFM/rA==";
     }
   ];
 
@@ -90,8 +93,10 @@
     modSpecs
   );
 
+  # The module calls ${package}/bin/minecraft-server with jvmOpts as argv, so
+  # the JVM flags have to land before -jar.
   fabricServer = pkgs.writeShellScriptBin "minecraft-server" ''
-    exec ${pkgs.jdk21_headless}/bin/java "$@" -jar ${fabricServerJar} nogui
+    exec ${pkgs.jdk25_headless}/bin/java "$@" -jar ${fabricServerJar} nogui
   '';
 in {
   services.minecraft-server = {
@@ -100,7 +105,13 @@ in {
     inherit dataDir;
     openFirewall = true;
     package = fabricServer;
+
+    # Left stateful on purpose: server.properties, whitelist.json and ops.json
+    # are restored from the backup and carry the world seed and player list.
     declarative = false;
+
+    # Aikar's G1GC tuning. Distant Horizons keeps a large off-heap SQLite cache,
+    # so leave plenty of the guest's RAM outside the heap.
     jvmOpts = lib.concatStringsSep " " [
       "-Xms12G"
       "-Xmx12G"
@@ -124,6 +135,9 @@ in {
       "-XX:MaxTenuringThreshold=1"
     ];
   };
+
+  # Point mods/ at the Nix-built pack. Anything dropped in by hand is discarded
+  # on restart, which is the trade for the pack being reproducible.
   systemd.services.minecraft-server.preStart = lib.mkAfter ''
     rm -rf ${dataDir}/mods
     ln -sfn ${mods} ${dataDir}/mods

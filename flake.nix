@@ -54,6 +54,8 @@
     llm-agents.url = "github:numtide/llm-agents.nix";
     llm-agents.inputs.nixpkgs.follows = "nixpkgs";
     nixos-facter-modules.url = "github:nix-community/nixos-facter-modules";
+    microvm.url = "github:microvm-nix/microvm.nix";
+    microvm.inputs.nixpkgs.follows = "nixpkgs";
     nix-reshade.url = "github:LovingMelody/nix-reshade";
     nix-reshade.inputs.nixpkgs.follows = "nixpkgs";
     attic.url = "github:zhaofengli/attic";
@@ -254,6 +256,7 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/hosts/rabbito
+          inputs.microvm.nixosModules.microvm
         ];
       };
     };
