@@ -69,6 +69,15 @@
       doCheck = false;
     });
 
+    steam-unwrapped = prev.steam-unwrapped.overrideAttrs (old: {
+      postPatch =
+        (old.postPatch or "")
+        + ''
+          substituteInPlace Makefile \
+            --replace-fail "install-appdata install-apt-source" "install-appdata"
+        '';
+    });
+
     # Hehe I'm in danger
     tailscale = prev.tailscale.overrideAttrs (oldAttrs: {
       doCheck = false;
