@@ -99,6 +99,11 @@
     exec ${pkgs.jdk25_headless}/bin/java "$@" -jar ${fabricServerJar} nogui
   '';
 in {
+  # Activation runs `chmod $homeMode` on the dataDir every switch (default
+  # 700), so a manual chmod never survives. 750 + anthony in the minecraft
+  # group keeps the world browsable without sudo.
+  users.users.minecraft.homeMode = "750";
+
   services.minecraft-server = {
     enable = true;
     eula = true;
