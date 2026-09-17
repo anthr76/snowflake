@@ -7,13 +7,27 @@
   prepare = pkgs.writeShellScript "palworld-prepare" ''
     set -euo pipefail
 
-    # +login must precede +force_install_dir: the other order makes steamcmd
-    # fail a fresh install with "Missing configuration".
-    ${pkgs.steamcmd}/bin/steamcmd \
-      +login anonymous \
-      +force_install_dir ${serverDir} \
-      +app_update ${appId} validate \
-      +quit
+    # +force_install_dir must come before +login -- steamcmd says so outright
+    # ("Please use force_install_dir before logon!") and otherwise ignores the
+    # install dir. Steam also intermittently ends an update at state 0x602,
+    # which clears on a retry, so do not treat one failure as fatal.
+    ok=0
+    for attempt in 1 2 3; do
+      if ${pkgs.steamcmd}/bin/steamcmd \
+        +force_install_dir ${serverDir} \
+        +login anonymous \
+        +app_update ${appId} validate \
+        +quit; then
+        ok=1
+        break
+      fi
+      echo "steamcmd attempt $attempt failed; retrying in 15s" >&2
+      sleep 15
+    done
+    if [ "$ok" -ne 1 ]; then
+      echo "steamcmd failed to install app ${appId} after 3 attempts" >&2
+      exit 1
+    fi
 
     # The binary looks for the Steam SDK at this fixed path under $HOME.
     sdk="$(find ${dataDir}/.local/share/Steam ${serverDir} \

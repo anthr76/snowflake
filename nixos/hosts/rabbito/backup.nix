@@ -58,6 +58,10 @@
       path = "${scratch}/minecraft";
       owner = "minecraft:minecraft";
       unit = "minecraft-server.service";
+      # Presence of this proves real data. services.minecraft-server sets
+      # createHome, so dataDir always exists on a fresh host -- "directory is
+      # non-empty" is NOT evidence of a world.
+      marker = "world";
       schedule = "hourly";
       ignore = minecraftIgnore;
       quiesce = true;
@@ -67,6 +71,7 @@
       path = "${scratch}/palworld/server/Pal/Saved";
       owner = "anthony:users";
       unit = "palworld.service";
+      marker = "SaveGames";
       schedule = "daily";
       ignore = [];
       quiesce = false;
@@ -76,6 +81,7 @@
       path = "${scratch}/satisfactory/.config/Epic/FactoryGame/Saved";
       owner = "anthony:users";
       unit = "satisfactory.service";
+      marker = "SaveGames";
       schedule = "daily";
       ignore = [];
       quiesce = false;
@@ -172,6 +178,12 @@
         echo "${set.path} does not exist yet; nothing to back up"
         exit 0
       fi
+      # Never snapshot a half-restored set: doing so makes the newest snapshot
+      # the broken one, which is what a later restore would pick.
+      if [ ! -e "${set.path}/${set.marker}" ]; then
+        echo "${set.path} has no ${set.marker}; refusing to back up an incomplete set" >&2
+        exit 1
+      fi
       lease_guard
       lease_claim
       ${lib.optionalString (set.ignore != []) ''
@@ -188,11 +200,12 @@
     ${common}
 
     restore_set() {
-      local name="$1" path="$2" owner="$3" snap
-      # Only ever restore into nothing. A replacement host arrives with a blank
-      # scratch disk; a populated one must never be clobbered.
-      if [ -d "$path" ] && [ -n "$(ls -A "$path" 2>/dev/null)" ]; then
-        echo "$name: $path already populated, leaving it alone"
+      local name="$1" path="$2" owner="$3" marker="$4" snap tmp
+      # Restore only when the set has no real data. Checking for the marker
+      # rather than an empty directory matters because activation pre-creates
+      # some of these paths before this ever runs.
+      if [ -e "$path/$marker" ]; then
+        echo "$name: $path/$marker present, leaving it alone"
         return 0
       fi
       # Only consult the repository when a restore is actually needed, so an
@@ -204,15 +217,26 @@
         echo "$name: no snapshot in repository, starting fresh"
         return 0
       fi
+      # Stage then swap, so an interrupted restore never leaves a partial set
+      # in place -- which would both look "restored" and get backed up.
+      tmp="$path.restoring"
       echo "$name: restoring $snap into $path"
-      ${coreutils}/bin/mkdir -p "$path"
-      ${kopia} snapshot restore "$snap" "$path"
+      ${coreutils}/bin/rm -rf "$tmp"
+      ${coreutils}/bin/mkdir -p "$tmp"
+      ${kopia} snapshot restore "$snap" "$tmp"
+      if [ ! -e "$tmp/$marker" ]; then
+        echo "$name: restored data has no $marker; refusing to install it" >&2
+        return 1
+      fi
       # Restored as root; the services run as their own users and the uids in
       # the snapshot do not match this host's.
-      ${coreutils}/bin/chown -R "$owner" "$path"
+      ${coreutils}/bin/chown -R "$owner" "$tmp"
+      ${coreutils}/bin/rm -rf "$path"
+      ${coreutils}/bin/mv "$tmp" "$path"
+      echo "$name: restore complete"
     }
 
-    ${lib.concatMapStringsSep "\n" (s: ''restore_set "${s.name}" "${s.path}" "${s.owner}"'') sets}
+    ${lib.concatMapStringsSep "\n" (s: ''restore_set "${s.name}" "${s.path}" "${s.owner}" "${s.marker}"'') sets}
   '';
 
   renewScript = pkgs.writeShellScript "kopia-lease-renew" ''
