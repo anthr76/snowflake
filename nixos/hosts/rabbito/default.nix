@@ -18,7 +18,12 @@
     vcpu = 64;
     mem = 131072;
 
-    machineId = "e7855a0f3cd7479fbbe86a096a258ac0";
+    machineId = "e7855a0f-3cd7-479f-bbe8-6a096a258ac0";
+
+    vsock = {
+      cid = 3;
+      ssh.enable = true;
+    };
 
     writableStoreOverlay = "/nix/.rw-store";
 
