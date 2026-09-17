@@ -13,6 +13,11 @@
   networking.domain = "vms.rabbito.tech";
   system.stateVersion = "26.05";
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  # microvm.nix disables grub but not systemd-boot, which base enables;
+  # without this an in-guest nixos-rebuild fails installing to a missing /boot.
+  boot.loader.systemd-boot.enable = lib.mkForce false;
+  boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
+
   microvm = {
     hypervisor = "cloud-hypervisor";
     vcpu = 64;
