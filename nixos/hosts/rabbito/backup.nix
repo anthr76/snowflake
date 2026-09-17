@@ -56,7 +56,8 @@
     {
       name = "minecraft";
       path = "${scratch}/minecraft";
-      owner = "minecraft:minecraft";
+      user = "minecraft";
+      group = "minecraft";
       unit = "minecraft-server.service";
       # Presence of this proves real data. services.minecraft-server sets
       # createHome, so dataDir always exists on a fresh host -- "directory is
@@ -69,7 +70,8 @@
     {
       name = "palworld";
       path = "${scratch}/palworld/server/Pal/Saved";
-      owner = "anthony:users";
+      user = "anthony";
+      group = "users";
       unit = "palworld.service";
       marker = "SaveGames";
       schedule = "daily";
@@ -79,7 +81,8 @@
     {
       name = "satisfactory";
       path = "${scratch}/satisfactory/.config/Epic/FactoryGame/Saved";
-      owner = "anthony:users";
+      user = "anthony";
+      group = "users";
       unit = "satisfactory.service";
       marker = "SaveGames";
       schedule = "daily";
@@ -200,7 +203,7 @@
     ${common}
 
     restore_set() {
-      local name="$1" path="$2" owner="$3" marker="$4" snap tmp
+      local name="$1" path="$2" user="$3" group="$4" marker="$5" snap tmp
       # Restore only when the set has no real data. Checking for the marker
       # rather than an empty directory matters because activation pre-creates
       # some of these paths before this ever runs.
@@ -230,13 +233,17 @@
       fi
       # Restored as root; the services run as their own users and the uids in
       # the snapshot do not match this host's.
-      ${coreutils}/bin/chown -R "$owner" "$tmp"
+      ${coreutils}/bin/chown -R "$user:$group" "$tmp"
       ${coreutils}/bin/rm -rf "$path"
+      # install -d, not mkdir -p: the parents matter. These paths are nested
+      # (server/Pal/Saved), and root-owned intermediates leave the service
+      # unable to write beside its own save dir -- steamcmd fails with 0x602.
+      ${coreutils}/bin/install -d -o "$user" -g "$group" "$(dirname "$path")"
       ${coreutils}/bin/mv "$tmp" "$path"
       echo "$name: restore complete"
     }
 
-    ${lib.concatMapStringsSep "\n" (s: ''restore_set "${s.name}" "${s.path}" "${s.owner}" "${s.marker}"'') sets}
+    ${lib.concatMapStringsSep "\n" (s: ''restore_set "${s.name}" "${s.path}" "${s.user}" "${s.group}" "${s.marker}"'') sets}
   '';
 
   renewScript = pkgs.writeShellScript "kopia-lease-renew" ''
