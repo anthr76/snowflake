@@ -78,6 +78,8 @@
     networkConfig.DHCP = "no";
   };
 
+  users.users.anthony.extraGroups = ["minecraft"];
+
   services.openssh.settings.PermitRootLogin = lib.mkForce "prohibit-password";
   users.users.root.openssh.authorizedKeys.keys = [
     (builtins.readFile ../../../home-manager/users/anthony/yubi.pub)

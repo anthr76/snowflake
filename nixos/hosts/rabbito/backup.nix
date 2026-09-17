@@ -234,6 +234,9 @@
       # Restored as root; the services run as their own users and the uids in
       # the snapshot do not match this host's.
       ${coreutils}/bin/chown -R "$user:$group" "$tmp"
+      # kopia preserves the snapshot's mode (0700 here), which locks out the
+      # admin user; group access keeps the data browsable without sudo.
+      ${coreutils}/bin/chmod 0750 "$tmp"
       ${coreutils}/bin/rm -rf "$path"
       # install -d, not mkdir -p: the parents matter. These paths are nested
       # (server/Pal/Saved), and root-owned intermediates leave the service
