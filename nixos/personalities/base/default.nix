@@ -11,6 +11,7 @@
       ./polkit.nix
       ./bootloader.nix
       ./networking.nix
+      ./terminfo.nix
     ]
     ++ (builtins.attrValues outputs.nixosModules);
 }

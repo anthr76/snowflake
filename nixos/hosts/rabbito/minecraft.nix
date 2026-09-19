@@ -5,6 +5,10 @@
 }: let
   dataDir = "/var/lib/scratch/minecraft";
 
+  # Held at 26.2 because the Additive client pack has no 26.3 build yet. The
+  # server must match the client exactly, and Distant Horizons 3.3.0 now ships
+  # for 26.2, so staying here costs nothing -- krypton and controlify are also
+  # native again, with no dependency override needed.
   mcVersion = "26.2";
   loaderVersion = "0.19.5";
   launcherVersion = "1.1.2";
@@ -15,18 +19,11 @@
     hash = "sha256-8dK6/Qs7l2MLDN2OiQzRAts9vmCHejilyBOqkp5pESc=";
   };
 
-  # ${mcVersion} is the ceiling for this pack: Distant Horizons' newest build is
-  # 3.2.0-b-26.2, and ferritecore, servercore, krypton, yacl and controlify also
-  # stop there. threadtweak is dropped entirely -- it stops at 1.21.11.
-  #
-  # The full pack is kept server-side: these ship server components too (Jade
-  # registers server plugins, Controlify is a universal jar), which is why the
-  # upstream Additive setup installed them all here.
   modSpecs = [
     {
-      name = "fabric-api-0.160.0+26.2.jar";
-      url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/UWwhUX3k/fabric-api-0.160.0%2B26.2.jar";
-      hash = "sha512-Ggi2iywskPYAXvRBq3G2X0ZL6WQAW5wNGOb8bF7FP+NG5912GJxPCa3lnvm8O4NjdqLMcdTObpvkcSJHfRu9Hg==";
+      name = "fabric-api-0.161.0+26.2.jar";
+      url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/ewUK83HI/fabric-api-0.161.0%2B26.2.jar";
+      hash = "sha512-JQL6Wt546aEgs3R7wamiFn1mcXQ76kW/EV0xdMlBIa7ah8VJRG0aYEqcEfuCjeF6VR41FM5C8+kwad0Uva7lWw==";
     }
     {
       name = "fabric-language-kotlin-1.14.1+kotlin.2.4.20.jar";
@@ -64,9 +61,9 @@
       hash = "sha512-uNmvNM0AUEk6+4piMsuPeF2qnYiHtwRfbmpTxrubX/xDGP2bA0epQOrP66R3PxDLgK4L4eec5MGIj5btoh5WTg==";
     }
     {
-      name = "DistantHorizons-3.2.0-b-26.2-fabric-neoforge.jar";
-      url = "https://cdn.modrinth.com/data/uCdwusMi/versions/gBf0SaV1/DistantHorizons-3.2.0-b-26.2-fabric-neoforge.jar";
-      hash = "sha512-wbiFd3agAsIjKIfYkb1JGV88MSenq+EkI3atIDceMVVNi6bHySoZW3B4LK2U/pcJQUh/KvUwmI2biBlFXIWecg==";
+      name = "DistantHorizons-3.3.0-26.2-fabric-neoforge.jar";
+      url = "https://cdn.modrinth.com/data/uCdwusMi/versions/3CtFgbnO/DistantHorizons-3.3.0-26.2-fabric-neoforge.jar";
+      hash = "sha512-D2/BtxUPfbwg/CtrbB3F9eOubp5r5kGQvre1ddH/5r1uERL0ynELw7pE7BgC1hoxzGdGm4H3uV6WxJlAQx5EpQ==";
     }
     {
       name = "Jade-mc26.2-Fabric-26.2.11.jar";
@@ -94,7 +91,8 @@
   );
 
   # The module calls ${package}/bin/minecraft-server with jvmOpts as argv, so
-  # the JVM flags have to land before -jar.
+  # the JVM flags have to land before -jar. Minecraft 26.x ships class file
+  # version 69, so this needs JDK 25 -- JDK 21 only reads up to 65.
   fabricServer = pkgs.writeShellScriptBin "minecraft-server" ''
     exec ${pkgs.jdk25_headless}/bin/java "$@" -jar ${fabricServerJar} nogui
   '';
@@ -112,11 +110,12 @@ in {
     package = fabricServer;
 
     # Left stateful on purpose: server.properties, whitelist.json and ops.json
-    # are restored from the backup and carry the world seed and player list.
+    # carry the world seed, player list and the tuning applied on the host.
     declarative = false;
 
-    # Aikar's G1GC tuning. Distant Horizons keeps a large off-heap SQLite cache,
-    # so leave plenty of the guest's RAM outside the heap.
+    # Aikar's G1GC tuning. Deliberately not raised despite 128G on the guest:
+    # a larger G1 heap means longer pauses, not better TPS, and staying under
+    # 32G keeps compressed oops enabled.
     jvmOpts = lib.concatStringsSep " " [
       "-Xms12G"
       "-Xmx12G"
@@ -138,6 +137,19 @@ in {
       "-XX:SurvivorRatio=32"
       "-XX:+PerfDisableSharedMem"
       "-XX:MaxTenuringThreshold=1"
+      # G1 sizes its pools from the CPU count, which on 64 vCPUs gives ~43
+      # refinement + ~43 parallel + 11 concurrent threads for a 12G heap --
+      # oversubscribed against C2ME's 34 workers and DH's 32. Cap them to
+      # what the heap actually needs.
+      "-XX:ParallelGCThreads=10"
+      "-XX:ConcGCThreads=3"
+      "-XX:G1ConcRefinementThreads=10"
+      # The guest reports THP as madvise, so the JVM can back a pre-touched
+      # 12G heap with huge pages and cut TLB pressure.
+      "-XX:+UseTransparentHugePages"
+      # JDK 24+ warns on every sun.misc.Unsafe memory access; joml triggers it
+      # dozens of times per start. Silence rather than drown real warnings.
+      "--sun-misc-unsafe-memory-access=allow"
     ];
   };
 
@@ -146,5 +158,8 @@ in {
   systemd.services.minecraft-server.preStart = lib.mkAfter ''
     rm -rf ${dataDir}/mods
     ln -sfn ${mods} ${dataDir}/mods
+    # No longer needed at ${mcVersion}: controlify is native here, so a stale
+    # override would silently drop its real minecraft dependency check.
+    rm -f ${dataDir}/config/fabric_loader_dependencies.json
   '';
 }

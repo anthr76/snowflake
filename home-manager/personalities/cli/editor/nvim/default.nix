@@ -44,6 +44,18 @@
         registers = "unnamedplus";
         providers.wl-copy.enable = pkgs.stdenv.hostPlatform.isLinux;
       };
+
+      # nvf enables neo-tree but ships no binding for it -- it is lazy-loaded on
+      # the `Neotree` command, which this triggers.
+      vim.keymaps = [
+        {
+          key = "<leader>e";
+          mode = "n";
+          silent = true;
+          action = "<cmd>Neotree toggle<CR>";
+          desc = "Toggle file explorer";
+        }
+      ];
     };
   };
 }
