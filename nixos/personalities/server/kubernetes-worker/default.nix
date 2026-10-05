@@ -93,11 +93,21 @@
   };
 
   # TODO: Make stable
-  system.autoUpgrade = {
+  # Workers upgrade one hour apart (worker-N at 0N:40 UTC) so a kubelet
+  # restart never drains more than one node at a time.
+  system.autoUpgrade = let
+    index = builtins.match ".*-([0-9]+)" config.networking.hostName;
+    hour =
+      if index == null
+      then 4
+      else lib.mod (lib.toInt (builtins.head index)) 24;
+  in {
     enable = true;
     flake = "github:anthr76/snowflake";
     operation = "switch";
     persistent = true;
+    dates = "*-*-* ${lib.fixedWidthString 2 "0" (toString hour)}:40:00";
+    randomizedDelaySec = "0";
   };
 
   # Kubelet configuration file
@@ -247,6 +257,9 @@
     kubeletService = "docker-kubelet.service";
     drain = true;
     delete = true;
+    # Deleting the Node hands it a new podCIDR on re-registration; restart
+    # whatever the drain left behind (Cilium agent included) so it picks it up.
+    clearPodsOnDelete = true;
     uncordon = true;
 
     logLevel = "info";
