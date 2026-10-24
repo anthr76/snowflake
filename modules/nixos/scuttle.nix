@@ -112,6 +112,17 @@ in {
       default = "unix:///run/containerd/containerd.sock";
       description = "CRI runtime endpoint used by clearPodsOnDelete";
     };
+
+    criService = mkOption {
+      type = types.str;
+      default = "containerd.service";
+      description = ''
+        systemd unit serving criSocket. With clearPodsOnDelete, scuttle is
+        ordered after it so that, when both stop in one transaction (e.g. a
+        nixos-rebuild switch that changes containerd), the runtime is still up
+        while leftover pods are cleared.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -158,15 +169,34 @@ in {
           exit 0
         fi
 
+        # The runtime must be reachable, otherwise nothing gets cleared and
+        # the leftover pods keep their old addresses. Fail loudly instead.
+        for i in $(seq 1 15); do
+          ${crictl} info >/dev/null 2>&1 && break
+          if [ "$i" = 15 ]; then
+            echo "ERROR: CRI runtime at ${cfg.criSocket} unreachable; leftover pods were NOT cleared"
+            exit 1
+          fi
+          sleep 2
+        done
+
         echo "Stopping remaining containers"
         ${crictl} ps -q | xargs -r -P 16 -n 1 ${crictl} stop --timeout 30 || true
         echo "Removing remaining pod sandboxes"
         ${crictl} rmp -fa || true
+
+        # Warn only: if kubelet is still running it may already be recreating
+        # sandboxes, which is fine since they get the new Node's podCIDR.
+        echo "Pod sandboxes remaining after clear: $(${crictl} pods -q | wc -l)"
       '';
     in {
       description = "Scuttle Kubelet before Shutdown";
       wantedBy = ["multi-user.target"];
-      after = ["multi-user.target" cfg.kubeletService "network-online.target"];
+      # Units stop in reverse order, so ordering after the CRI service keeps
+      # it running until clearPods (ExecStopPost) has finished.
+      after =
+        ["multi-user.target" cfg.kubeletService "network-online.target"]
+        ++ optional cfg.clearPodsOnDelete cfg.criService;
       bindsTo = [cfg.kubeletService];
       wants = ["network-online.target"];
       serviceConfig = {
@@ -177,7 +207,7 @@ in {
       } // optionalAttrs cfg.clearPodsOnDelete {
         RuntimeDirectory = "scuttle";
         RuntimeDirectoryPreserve = "yes";
-        ExecStopPost = "-${clearPods}";
+        ExecStopPost = "${clearPods}";
       };
 
       path = [cfg.package];
