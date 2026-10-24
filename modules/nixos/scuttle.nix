@@ -191,6 +191,11 @@ in {
       '';
     in {
       description = "Scuttle Kubelet before Shutdown";
+      # Stopping scuttle drains and deletes the Node. kubelet only registers
+      # its Node at startup, so restarting scuttle alone (a switch that changes
+      # only this unit) leaves the Node deleted until kubelet restarts. The new
+      # definition takes effect on the next kubelet restart instead.
+      restartIfChanged = false;
       wantedBy = ["multi-user.target"];
       # Units stop in reverse order, so ordering after the CRI service keeps
       # it running until clearPods (ExecStopPost) has finished.
