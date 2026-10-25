@@ -14,6 +14,10 @@ buildGoModule rec {
     hash = "sha256-9KCoOK5BQqSUmbDsw+hYhbADaCeuPDbheIgCQ0xX1Eg=";
   };
 
+  # Retry PDB-blocked evictions and wait for evicted pods until -drain-timeout,
+  # instead of giving up on the first refusal (upstream v0.1.0 behaviour).
+  patches = [./drain-timeout.patch];
+
   vendorHash = "sha256-RLikbivRVGD3yYqmmzPPUaj3qs5xY5SHn47W3bDdILU=";
 
   subPackages = ["cmd/scuttle"];
