@@ -1,0 +1,259 @@
+diff --git a/cmd/scuttle/main.go b/cmd/scuttle/main.go
+index 9722344..1f438f0 100644
+--- a/cmd/scuttle/main.go
++++ b/cmd/scuttle/main.go
+@@ -13,6 +13,7 @@ import (
+ 	"os"
+ 	"os/signal"
+ 	"syscall"
++	"time"
+ 
+ 	"github.com/sirupsen/logrus"
+ 
+@@ -28,19 +29,21 @@ var (
+ 
+ func main() {
+ 	flags := struct {
+-		platform string
+-		uncordon bool
+-		drain    bool
+-		delete   bool
+-		logLevel string
+-		version  bool
+-		help     bool
++		platform     string
++		uncordon     bool
++		drain        bool
++		delete       bool
++		drainTimeout time.Duration
++		logLevel     string
++		version      bool
++		help         bool
+ 	}{}
+ 
+ 	flag.StringVar(&flags.platform, "platform", "none", "Set platform (none, aws, azure) to poll termination notices")
+ 	flag.BoolVar(&flags.uncordon, "uncordon", true, "Enabling uncordoning node on start")
+ 	flag.BoolVar(&flags.drain, "drain", true, "Enabling draining node on stop")
+ 	flag.BoolVar(&flags.delete, "delete", true, "Enable deleting node on stop")
++	flag.DurationVar(&flags.drainTimeout, "drain-timeout", 0, "Keep retrying evictions (e.g. blocked by PodDisruptionBudgets) and waiting for pods to terminate for up to this long (0 = single pass)")
+ 	flag.StringVar(&flags.logLevel, "log-level", "info", "Set the logging level")
+ 	// subcommands
+ 	flag.BoolVar(&flags.version, "version", false, "Print version and exit")
+@@ -89,6 +92,7 @@ func main() {
+ 		ShouldUncordon: flags.uncordon,
+ 		ShouldDrain:    flags.drain,
+ 		ShouldDelete:   flags.delete,
++		DrainTimeout:   flags.drainTimeout,
+ 	})
+ 	if err != nil {
+ 		log.Fatalf("main: scuttle New error: %v", err)
+diff --git a/internal/drainer/drain.go b/internal/drainer/drain.go
+index d93dfee..9c51caf 100644
+--- a/internal/drainer/drain.go
++++ b/internal/drainer/drain.go
+@@ -9,10 +9,12 @@ package drain
+ import (
+ 	"context"
+ 	"fmt"
++	"time"
+ 
+ 	"github.com/sirupsen/logrus"
+ 	v1 "k8s.io/api/core/v1"
+-	policyv1beta1 "k8s.io/api/policy/v1beta1"
++	policyv1 "k8s.io/api/policy/v1"
++	apierrors "k8s.io/apimachinery/pkg/api/errors"
+ 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+ 	"k8s.io/apimachinery/pkg/fields"
+ 	"k8s.io/apimachinery/pkg/types"
+@@ -23,6 +25,12 @@ import (
+ type Config struct {
+ 	Client kubernetes.Interface
+ 	Logger *logrus.Logger
++	// Timeout bounds how long Drain keeps retrying evictions (e.g. ones
++	// blocked by a PodDisruptionBudget) and waiting for evicted Pods to
++	// terminate. Zero means a single eviction pass without waiting.
++	Timeout time.Duration
++	// Interval between eviction passes. Defaults to 5s.
++	Interval time.Duration
+ }
+ 
+ // Drainer manages cordoning nodes and evicting Pods.
+@@ -37,16 +45,24 @@ type Drainer interface {
+ 
+ // New returns a new Drainer.
+ func New(config *Config) Drainer {
++	interval := config.Interval
++	if interval <= 0 {
++		interval = 5 * time.Second
++	}
+ 	return &drainer{
+-		client: config.Client,
+-		log:    config.Logger,
++		client:   config.Client,
++		log:      config.Logger,
++		timeout:  config.Timeout,
++		interval: interval,
+ 	}
+ }
+ 
+ // drain is a Kubernetes node cordon and drainer.
+ type drainer struct {
+-	client kubernetes.Interface
+-	log    *logrus.Logger
++	client   kubernetes.Interface
++	log      *logrus.Logger
++	timeout  time.Duration
++	interval time.Duration
+ }
+ 
+ // Cordon marks a Kubernetes Node as unschedulable.
+@@ -62,6 +78,11 @@ func (d *drainer) Uncordon(ctx context.Context, node string) error {
+ }
+ 
+ // Drain drains a Kubernetes Node.
++//
++// Each pass evicts every remaining Pod on the node. Evictions refused by a
++// PodDisruptionBudget (429) or failing transiently are retried on the next
++// pass, and Pods already terminating are waited on, until no Pods remain or
++// the timeout expires.
+ func (d *drainer) Drain(ctx context.Context, node string) error {
+ 	fields := logrus.Fields{
+ 		"node": node,
+@@ -74,25 +95,76 @@ func (d *drainer) Drain(ctx context.Context, node string) error {
+ 
+ 	d.log.WithFields(fields).Info("drainer: draining node")
+ 
+-	pods, err := d.getPodsForDeletion(ctx, node)
+-	if err != nil {
+-		d.log.WithFields(fields).Errorf("drainer: error getting pods: %v", err)
+-		return err
++	if d.timeout > 0 {
++		var cancel context.CancelFunc
++		ctx, cancel = context.WithTimeout(ctx, d.timeout)
++		defer cancel()
+ 	}
+ 
+-	for _, pod := range pods {
+-		fields["pod"] = pod.GetName()
+-		d.log.WithFields(fields).Info("drainer: evicting pod")
+-
+-		err := d.evictPod(ctx, pod)
++	blocked := map[string]bool{}
++	for {
++		pods, err := d.getPodsForDeletion(ctx, node)
+ 		if err != nil {
+-			d.log.WithFields(fields).Errorf("drainer: error evicting pod: %v", err)
+-			return err
++			d.log.WithFields(fields).Errorf("drainer: error getting pods: %v", err)
++			if d.timeout <= 0 {
++				return err
++			}
++		}
++
++		remaining := 0
++		var lastErr error
++		for _, pod := range pods {
++			podFields := logrus.Fields{
++				"node": node,
++				"pod":  pod.GetNamespace() + "/" + pod.GetName(),
++			}
++
++			// already terminating, wait for it to go away
++			if pod.GetDeletionTimestamp() != nil {
++				remaining++
++				continue
++			}
++
++			d.log.WithFields(podFields).Info("drainer: evicting pod")
++			err := d.evictPod(ctx, pod)
++			switch {
++			case err == nil:
++				remaining++
++			case apierrors.IsNotFound(err):
++			case apierrors.IsTooManyRequests(err):
++				remaining++
++				lastErr = err
++				key := pod.GetNamespace() + "/" + pod.GetName()
++				if !blocked[key] {
++					blocked[key] = true
++					d.log.WithFields(podFields).Warnf("drainer: eviction blocked, will retry: %v", err)
++				}
++			default:
++				remaining++
++				lastErr = err
++				d.log.WithFields(podFields).Errorf("drainer: error evicting pod: %v", err)
++			}
++		}
++
++		if err == nil && remaining == 0 {
++			d.log.WithFields(fields).Info("drainer: drained node")
++			return nil
+ 		}
+-	}
+ 
+-	d.log.WithFields(fields).Info("drainer: drained node")
+-	return nil
++		if d.timeout <= 0 {
++			if lastErr != nil {
++				return lastErr
++			}
++			return nil
++		}
++
++		d.log.WithFields(fields).Infof("drainer: %d pods remaining", remaining)
++		select {
++		case <-ctx.Done():
++			return fmt.Errorf("drainer: timed out after %s with %d pods remaining (last error: %v)", d.timeout, remaining, lastErr)
++		case <-time.After(d.interval):
++		}
++	}
+ }
+ 
+ // Lists pods on a node and filters our mirror and daemonset Pods.
+@@ -133,10 +205,10 @@ func (d *drainer) getPodsForDeletion(ctx context.Context, node string) ([]v1.Pod
+ // evictPod tries to create an Eviction of the given Pod.
+ func (d *drainer) evictPod(ctx context.Context, pod v1.Pod) error {
+ 
+-	// https://pkg.go.dev/k8s.io/api/policy/v1beta1#Eviction
+-	eviction := &policyv1beta1.Eviction{
++	// https://pkg.go.dev/k8s.io/api/policy/v1#Eviction
++	eviction := &policyv1.Eviction{
+ 		TypeMeta: metav1.TypeMeta{
+-			APIVersion: "policy/v1beta1",
++			APIVersion: "policy/v1",
+ 			Kind:       "Eviction",
+ 		},
+ 		ObjectMeta: metav1.ObjectMeta{
+@@ -148,7 +220,7 @@ func (d *drainer) evictPod(ctx context.Context, pod v1.Pod) error {
+ 		},
+ 	}
+ 
+-	return d.client.PolicyV1beta1().Evictions(pod.GetNamespace()).Evict(ctx, eviction)
++	return d.client.CoreV1().Pods(pod.GetNamespace()).EvictV1(ctx, eviction)
+ }
+ 
+ // setUnschedulable updates a Node's spec to mark it unschedulable or not.
+diff --git a/internal/scuttle.go b/internal/scuttle.go
+index 4939157..b453562 100644
+--- a/internal/scuttle.go
++++ b/internal/scuttle.go
+@@ -32,6 +32,7 @@ type Config struct {
+ 	ShouldUncordon bool
+ 	ShouldDrain    bool
+ 	ShouldDelete   bool
++	DrainTimeout   time.Duration
+ }
+ 
+ // Scuttle watches for termination notices and performs Kubelet teardown actions.
+@@ -133,8 +134,9 @@ func (w *Scuttle) stop(ctx context.Context) error {
+ 	if w.config.ShouldDrain {
+ 		w.log.WithFields(fields).Info("scuttle: draining node")
+ 		drainer := drain.New(&drain.Config{
+-			Client: w.kubeClient,
+-			Logger: w.log,
++			Client:  w.kubeClient,
++			Logger:  w.log,
++			Timeout: w.config.DrainTimeout,
+ 		})
+ 		err := drainer.Drain(ctx, w.hostname)
+ 		// best-effort, we need to continue even on error
