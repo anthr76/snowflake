@@ -74,6 +74,17 @@ in {
       };
     };
 
+    drainTimeout = mkOption {
+      type = types.ints.unsigned;
+      default = 600;
+      description = ''
+        Seconds to keep retrying evictions blocked by PodDisruptionBudgets and
+        waiting for evicted pods to terminate before deleting the Node anyway.
+        0 keeps upstream's single eviction pass. The unit's stop timeout is
+        derived from this.
+      '';
+    };
+
     logLevel = mkOption {
       type = types.enum ["debug" "info" "warn" "error"];
       default = "info";
@@ -237,7 +248,8 @@ in {
       wants = ["network-online.target"];
       serviceConfig = {
         Type = "simple";
-        TimeoutStopSec = 180;
+        # drain, then delete; leave headroom beyond the drain timeout
+        TimeoutStopSec = cfg.drainTimeout + 120;
         SuccessExitStatus = [0 143];
         ExecStartPre = "${pkgs.bash}/bin/bash -c 'for i in {1..60}; do [ -f ${cfg.kubeconfigPath} ] && exit 0; echo \"Waiting for ${cfg.kubeconfigPath} ($i/60)\"; sleep 5; done; echo \"ERROR: ${cfg.kubeconfigPath} not found after 5 minutes\"; exit 1'";
       } // optionalAttrs cfg.clearPodsOnDelete {
@@ -258,6 +270,7 @@ in {
             "-uncordon=${boolToString cfg.uncordon}"
             "-drain=${boolToString cfg.drain}"
             "-delete=${boolToString cfg.delete}"
+            "-drain-timeout=${toString cfg.drainTimeout}s"
             "-log-level=${cfg.logLevel}"
           ]
           ++ optional (cfg.platform != null) "-platform=${cfg.platform}"
