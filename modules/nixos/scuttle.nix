@@ -74,6 +74,17 @@ in {
       };
     };
 
+    drainTimeout = mkOption {
+      type = types.ints.unsigned;
+      default = 600;
+      description = ''
+        Seconds to keep retrying evictions blocked by PodDisruptionBudgets and
+        waiting for evicted pods to terminate before deleting the Node anyway.
+        0 keeps upstream's single eviction pass. The unit's stop timeout is
+        derived from this.
+      '';
+    };
+
     logLevel = mkOption {
       type = types.enum ["debug" "info" "warn" "error"];
       default = "info";
@@ -96,7 +107,7 @@ in {
       type = types.bool;
       default = false;
       description = ''
-        After scuttle stops, remove every remaining CRI pod sandbox on the host
+        After kubelet stops, remove every remaining CRI pod sandbox on the host
         if the Node object it was running under no longer exists (deleted, or
         re-registered with a new UID).
 
@@ -117,18 +128,20 @@ in {
       type = types.str;
       default = "containerd.service";
       description = ''
-        systemd unit serving criSocket. With clearPodsOnDelete, scuttle is
-        ordered after it so that, when both stop in one transaction (e.g. a
-        nixos-rebuild switch that changes containerd), the runtime is still up
-        while leftover pods are cleared.
+        systemd unit serving criSocket. With clearPodsOnDelete, the
+        scuttle-clear-pods unit is ordered after it so that, when both stop in
+        one transaction (e.g. a nixos-rebuild switch that changes containerd),
+        the runtime is still up while leftover pods are cleared.
       '';
     };
   };
 
-  config = mkIf cfg.enable {
-    systemd.services.scuttle = let
+  config = mkIf cfg.enable (let
       kubectl = "${pkgs.kubectl}/bin/kubectl --kubeconfig ${cfg.kubeconfigPath} --request-timeout=10s";
-      crictl = "${pkgs.cri-tools}/bin/crictl --runtime-endpoint ${cfg.criSocket}";
+      # --timeout is crictl's per-RPC deadline (default 2s). StopContainer with a
+      # 30s grace period, and StopPodSandbox/RemovePodSandbox on a busy node,
+      # need far longer or they fail with DeadlineExceeded.
+      crictl = "${pkgs.cri-tools}/bin/crictl --runtime-endpoint ${cfg.criSocket} --timeout 60s";
       uidFile = "/run/scuttle/node-uid";
 
       # Remember which Node object this boot of scuttle is guarding.
@@ -182,14 +195,47 @@ in {
 
         echo "Stopping remaining containers"
         ${crictl} ps -q | xargs -r -P 16 -n 1 ${crictl} stop --timeout 30 || true
-        echo "Removing remaining pod sandboxes"
-        ${crictl} rmp -fa || true
 
-        # Warn only: if kubelet is still running it may already be recreating
-        # sandboxes, which is fine since they get the new Node's podCIDR.
-        echo "Pod sandboxes remaining after clear: $(${crictl} pods -q | wc -l)"
+        # kubelet is already stopped here, so nothing recreates sandboxes and
+        # any that remain after a few passes are a real failure.
+        for pass in 1 2 3; do
+          pods="$(${crictl} pods -q)"
+          [ -z "$pods" ] && break
+          echo "Removing $(echo "$pods" | wc -l) pod sandboxes (pass $pass)"
+          echo "$pods" | xargs -r -P 16 -n 1 ${crictl} stopp || true
+          echo "$pods" | xargs -r -P 16 -n 1 ${crictl} rmp -f || true
+        done
+
+        left="$(${crictl} pods -q | wc -l)"
+        if [ "$left" -ne 0 ]; then
+          echo "ERROR: $left pod sandboxes remain after clearing"
+          exit 1
+        fi
+        echo "All pod sandboxes removed"
       '';
     in {
+    # Runs clearPods after kubelet has stopped and before the CRI runtime
+    # stops. Stop order is the reverse of start order, so with scuttle
+    # After=kubelet and this unit Before=kubelet, After=criService, a kubelet
+    # stop (restart, switch, shutdown) goes: scuttle (drain, delete Node) ->
+    # kubelet -> scuttle-clear-pods -> containerd.
+    systemd.services.scuttle-clear-pods = mkIf cfg.clearPodsOnDelete {
+      description = "Clear leftover pods after scuttle deletes the Node";
+      wantedBy = ["multi-user.target" cfg.kubeletService];
+      partOf = [cfg.kubeletService];
+      before = [cfg.kubeletService];
+      after = [cfg.criService];
+      restartIfChanged = false;
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.coreutils}/bin/true";
+        ExecStop = "${clearPods}";
+        TimeoutStopSec = 300;
+      };
+    };
+
+    systemd.services.scuttle = {
       description = "Scuttle Kubelet before Shutdown";
       # Stopping scuttle drains and deletes the Node. kubelet only registers
       # its Node at startup, so restarting scuttle alone (a switch that changes
@@ -197,22 +243,18 @@ in {
       # definition takes effect on the next kubelet restart instead.
       restartIfChanged = false;
       wantedBy = ["multi-user.target"];
-      # Units stop in reverse order, so ordering after the CRI service keeps
-      # it running until clearPods (ExecStopPost) has finished.
-      after =
-        ["multi-user.target" cfg.kubeletService "network-online.target"]
-        ++ optional cfg.clearPodsOnDelete cfg.criService;
+      after = ["multi-user.target" cfg.kubeletService "network-online.target"];
       bindsTo = [cfg.kubeletService];
       wants = ["network-online.target"];
       serviceConfig = {
         Type = "simple";
-        TimeoutStopSec = 180;
+        # drain, then delete; leave headroom beyond the drain timeout
+        TimeoutStopSec = cfg.drainTimeout + 120;
         SuccessExitStatus = [0 143];
         ExecStartPre = "${pkgs.bash}/bin/bash -c 'for i in {1..60}; do [ -f ${cfg.kubeconfigPath} ] && exit 0; echo \"Waiting for ${cfg.kubeconfigPath} ($i/60)\"; sleep 5; done; echo \"ERROR: ${cfg.kubeconfigPath} not found after 5 minutes\"; exit 1'";
       } // optionalAttrs cfg.clearPodsOnDelete {
         RuntimeDirectory = "scuttle";
         RuntimeDirectoryPreserve = "yes";
-        ExecStopPost = "${clearPods}";
       };
 
       path = [cfg.package];
@@ -228,6 +270,7 @@ in {
             "-uncordon=${boolToString cfg.uncordon}"
             "-drain=${boolToString cfg.drain}"
             "-delete=${boolToString cfg.delete}"
+            "-drain-timeout=${toString cfg.drainTimeout}s"
             "-log-level=${cfg.logLevel}"
           ]
           ++ optional (cfg.platform != null) "-platform=${cfg.platform}"
@@ -244,5 +287,5 @@ in {
           ${webhookArg}
       '';
     };
-  };
+  });
 }
