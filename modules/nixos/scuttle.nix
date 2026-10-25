@@ -224,7 +224,11 @@ in {
       wantedBy = ["multi-user.target" cfg.kubeletService];
       partOf = [cfg.kubeletService];
       before = [cfg.kubeletService];
-      after = [cfg.criService];
+      # The clear asks the API server whether the Node was deleted. Ordering
+      # after the network (and DNS) means that on shutdown it stops while they
+      # are still up; otherwise the lookup can fail and pods are left alone.
+      after = [cfg.criService "network-online.target" "nss-lookup.target"];
+      wants = ["network-online.target"];
       restartIfChanged = false;
       serviceConfig = {
         Type = "oneshot";
