@@ -1,6 +1,7 @@
 # This is your home-manager configuration file
 # Use this to configure your home environment (it replaces ~/.config/nixpkgs/home.nix)
 {
+  config,
   outputs,
   lib,
   inputs,
@@ -39,6 +40,8 @@
 
   # Add stuff for your user as you see fit:
   # home.packages = with pkgs; [ steam ];
+
+  home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
 
   # Enable home-manager and git
   programs.home-manager.enable = true;
