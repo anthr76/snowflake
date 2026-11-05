@@ -18,6 +18,7 @@
     ./wayland-wm/kde
     ./obs.nix
     ./agentic-coding.nix
+    ./hermes.nix
     ./ghostty.nix
     ./halloy.nix
     ./syncthing.nix

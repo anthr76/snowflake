@@ -63,6 +63,9 @@
     go-overlay.url = "github:purpleclay/go-overlay";
     go-overlay.inputs.nixpkgs.follows = "nixpkgs";
     flox.url = "github:flox/flox/latest";
+    hermes-agent.url = "github:nousresearch/hermes-agent";
+    hermes-agent.inputs.nixpkgs.follows = "nixpkgs";
+    hermes-agent.inputs.home-manager.follows = "home-manager";
   };
 
   outputs = {

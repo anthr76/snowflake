@@ -33,6 +33,32 @@
         helm.enable = lib.mkForce true; # helm-ls
         yaml.enable = lib.mkForce true; # backs helm values
         json.enable = lib.mkForce true; # vscode-json-language-server + jsonfmt
+        # Both formatters are registered; the conditions below pick one per file.
+        nix.format.type = ["alejandra" "nixfmt"];
+      };
+
+      # Format Nix with nixfmt inside a nixpkgs checkout (its CI enforces nixfmt
+      # and rejects anything else) and with Alejandra everywhere else. Detection:
+      # the enclosing git root contains pkgs/top-level/all-packages.nix.
+      vim.formatter.conform-nvim.setupOpts.formatters = let
+        inNixpkgs = ''
+          local root = vim.fs.root(ctx.dirname, ".git")
+          local in_nixpkgs = root ~= nil
+            and vim.uv.fs_stat(root .. "/pkgs/top-level/all-packages.nix") ~= nil
+        '';
+      in {
+        alejandra.condition = lib.generators.mkLuaInline ''
+          function(self, ctx)
+            ${inNixpkgs}
+            return not in_nixpkgs
+          end
+        '';
+        nixfmt.condition = lib.generators.mkLuaInline ''
+          function(self, ctx)
+            ${inNixpkgs}
+            return in_nixpkgs
+          end
+        '';
       };
       vim.assistant.copilot.enable = lib.mkForce true;
       # nvf's own `configuration.nix` still sets the pre-2026-09-04 `lualine.theme`,
