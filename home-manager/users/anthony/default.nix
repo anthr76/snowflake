@@ -38,6 +38,21 @@
   home.file.".ssh/f80_tpm2.pub".text = builtins.readFile ./f80_tpm2.pub;
   home.file.".ssh/yubi.pub".text = builtins.readFile ./yubi.pub;
 
+  # Trust every key we sign with so `git log --show-signature` can verify locally.
+  home.file.".ssh/allowed_signers".text = let
+    signer = pub: let
+      parts = lib.splitString " " (lib.trim (builtins.readFile pub));
+    in "${config.programs.git.settings.user.email} namespaces=\"git\" ${builtins.elemAt parts 0} ${builtins.elemAt parts 1}";
+  in
+    lib.concatMapStrings (pub: signer pub + "\n") [
+      ./yubi.pub
+      ./lattice_tpm2.pub
+      ./f80_tpm2.pub
+      ./mbp.pub
+      ./studio.pub
+    ];
+  programs.git.settings.gpg.ssh.allowedSignersFile = "${config.home.homeDirectory}/.ssh/allowed_signers";
+
   # Add stuff for your user as you see fit:
   # home.packages = with pkgs; [ steam ];
 
